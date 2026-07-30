@@ -1,8 +1,4 @@
-import type {
-  Answer,
-  ClaimCase,
-  ClaimResult,
-} from "@/lib/claim-guide/types"
+import type { Answer, ClaimCase, ClaimResult } from "@/lib/claim-guide/types"
 
 export const claimCases: ClaimCase[] = [
   {
@@ -14,7 +10,7 @@ export const claimCases: ClaimCase[] = [
     category: "담보가 있는 줄 몰랐던 사례",
     question: "이번 치료에서 수술을 받으셨나요?",
     questionHint:
-      "상해수술비는 진단명만으로 확인할 수 없습니다. 모르면 추정하지 않고 추가 확인 항목으로 남깁니다.",
+      "상해수술비는 진단명만으로 확인할 수 없습니다. 모르면 추정하지 않고 정보 필요 항목으로 남깁니다.",
     facts: [
       { label: "사고일", value: "2025. 04. 15" },
       { label: "진단명", value: "좌측 요골 원위부 골절 (S52.5)" },
@@ -97,7 +93,7 @@ export const claimCases: ClaimCase[] = [
       { label: "담보", meta: "교통상해" },
       { label: "지급사유", meta: "제9조" },
       { label: "면책", meta: "사고 조건", warning: true },
-      { label: "다음 행동", meta: "판단 보류" },
+      { label: "다음 행동", meta: "확인 불가" },
     ],
     actionTitle: "면책 조건 확인 Action Pack",
     documents: [
@@ -159,9 +155,9 @@ export function buildResults(
         title: "이미 지급 또는 인출했는지",
         status:
           answer === "no"
-            ? "공식 조회 필요"
+            ? "정보 필요"
             : answer === "yes"
-              ? "추가 확인 필요"
+              ? "정보 필요"
               : "확인 불가",
         tone: answer === "unknown" || answer === null ? "blocked" : "warning",
         reason:
@@ -192,8 +188,8 @@ export function buildResults(
           answer === "no"
             ? "확인 권장"
             : answer === "yes"
-              ? "판단 보류"
-              : "추가 정보 필요",
+              ? "확인 불가"
+              : "정보 필요",
         tone:
           answer === "no"
             ? "positive"
@@ -212,7 +208,7 @@ export function buildResults(
       },
       {
         title: "보상 조항 단독 검색 결과",
-        status: "사용 금지",
+        status: "확인 불가",
         tone: "blocked",
         reason:
           "대응하는 면책·정의 조항이 함께 검색되지 않으면 결과를 생성하지 않습니다.",
@@ -223,7 +219,7 @@ export function buildResults(
       {
         title: "최종 지급 여부",
         status: "확인 불가",
-        tone: "muted",
+        tone: "blocked",
         reason: "보험회사의 사고 조사와 지급 심사가 필요한 항목입니다.",
         detail:
           "Agent는 확인해야 할 조건과 서류를 준비하며 최종 지급 여부를 대신 결정하지 않습니다.",
@@ -249,13 +245,9 @@ export function buildResults(
           ? "확인 권장"
           : answer === "no"
             ? "가능성 낮음"
-            : "추가 정보 필요",
+            : "정보 필요",
       tone:
-        answer === "yes"
-          ? "positive"
-          : answer === "no"
-            ? "muted"
-            : "warning",
+        answer === "yes" ? "positive" : answer === "no" ? "muted" : "warning",
       reason:
         answer === "yes"
           ? "사용자 답변에서 수술 시행 사실을 확인했습니다."

@@ -30,11 +30,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -49,10 +45,7 @@ import {
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   Tooltip,
   TooltipContent,
@@ -73,11 +66,7 @@ import type {
 } from "@/lib/claim-guide/types"
 import { cn } from "@/lib/utils"
 
-const caseIcons: LucideIcon[] = [
-  BoneIcon,
-  CalendarClockIcon,
-  ShieldAlertIcon,
-]
+const caseIcons: LucideIcon[] = [BoneIcon, CalendarClockIcon, ShieldAlertIcon]
 
 const toneIcons: Record<ResultTone, LucideIcon> = {
   positive: CheckCircle2Icon,
@@ -101,6 +90,68 @@ type GsapRuntime = typeof import("gsap").default
 type GsapContext = ReturnType<GsapRuntime["context"]>
 
 const SESSION_KEY = "claim-guide-session:v1"
+const journeySteps: { label: string; icon: LucideIcon }[] = [
+  { label: "사례 선택", icon: ClipboardCheckIcon },
+  { label: "근거 분석", icon: ScaleIcon },
+  { label: "정보 확인", icon: ShieldCheckIcon },
+  { label: "다음 행동", icon: FolderCheckIcon },
+]
+
+function getJourneyStep(phase: Phase) {
+  if (phase === "running" || phase === "error") {
+    return 1
+  }
+  if (phase === "question") {
+    return 2
+  }
+  if (phase === "complete") {
+    return 3
+  }
+  return 0
+}
+
+function JourneyProgress({ phase }: { phase: Phase }) {
+  const currentStep = getJourneyStep(phase)
+
+  return (
+    <div className="journey-progress-wrap">
+      <div className="journey-progress-copy">
+        <span>
+          {currentStep + 1} / {journeySteps.length}
+        </span>
+        <strong>{journeySteps[currentStep].label}</strong>
+      </div>
+      <Progress
+        aria-label={`분석 여정 ${journeySteps[currentStep].label}`}
+        value={((currentStep + 1) / journeySteps.length) * 100}
+      />
+      <ol className="journey-progress" aria-label="보험금 확인 단계">
+        {journeySteps.map((step, index) => {
+          const Icon = step.icon
+          const state =
+            index < currentStep
+              ? "is-complete"
+              : index === currentStep
+                ? "is-current"
+                : ""
+
+          return (
+            <li
+              className={state}
+              key={step.label}
+              aria-current={index === currentStep ? "step" : undefined}
+            >
+              <span aria-hidden="true">
+                {index < currentStep ? <CheckCircle2Icon /> : <Icon />}
+              </span>
+              <strong>{step.label}</strong>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
+  )
+}
 
 function readSavedSession(): {
   caseId: ClaimCase["id"]
@@ -150,7 +201,7 @@ function ResultSummary({ results }: { results: ClaimResult[] }) {
   return (
     <div className="result-counts" role="group" aria-label="분석 결과 요약">
       <Badge variant="success">확인 권장 {counts.positive}</Badge>
-      <Badge variant="warning">추가 확인 {counts.warning}</Badge>
+      <Badge variant="warning">정보 필요 {counts.warning}</Badge>
       <Badge variant="secondary">가능성 낮음 {counts.muted}</Badge>
       <Badge variant="destructive">확인 불가 {counts.blocked}</Badge>
     </div>
@@ -159,22 +210,20 @@ function ResultSummary({ results }: { results: ClaimResult[] }) {
 
 function CaseFacts({ activeCase }: { activeCase: ClaimCase }) {
   return (
-    <Card size="sm">
-      <CardHeader>
-        <CardTitle>사례 사실 관계</CardTitle>
-        <CardDescription>{activeCase.category}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <dl className="fact-list">
-          {activeCase.facts.map((fact) => (
-            <div key={fact.label}>
-              <dt>{fact.label}</dt>
-              <dd>{fact.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </CardContent>
-    </Card>
+    <section className="case-facts" aria-labelledby="case-facts-title">
+      <div className="case-facts-heading">
+        <strong id="case-facts-title">확인할 사례</strong>
+        <span>{activeCase.category}</span>
+      </div>
+      <dl className="fact-list">
+        {activeCase.facts.map((fact) => (
+          <div key={fact.label}>
+            <dt>{fact.label}</dt>
+            <dd>{fact.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   )
 }
 
@@ -189,9 +238,9 @@ function ResultsPanel({
     return (
       <Alert>
         <SparklesIcon />
-        <AlertTitle>분석을 시작할 준비가 됐습니다</AlertTitle>
+        <AlertTitle>사례를 선택하면 분석을 시작할 수 있습니다</AlertTitle>
         <AlertDescription>
-          왼쪽 사례 정보를 확인한 뒤 Agent 분석 시작을 눌러주세요.
+          사례 사실을 확인한 뒤 아래의 분석 시작 버튼을 눌러주세요.
         </AlertDescription>
       </Alert>
     )
@@ -391,7 +440,7 @@ function ActionPack({
           <DownloadIcon data-icon="inline-start" />
           내려받기
         </Button>
-        <Button onClick={sharePack}>
+        <Button variant="outline" onClick={sharePack}>
           <Share2Icon data-icon="inline-start" />
           결과 공유
         </Button>
@@ -406,8 +455,7 @@ export function AgentDemo() {
   const gsapContextRef = useRef<GsapContext | null>(null)
   const timelineRef = useRef<GSAPTimeline | null>(null)
   const requestIdRef = useRef(0)
-  const [selectedId, setSelectedId] =
-    useState<ClaimCase["id"]>("fracture")
+  const [selectedId, setSelectedId] = useState<ClaimCase["id"]>("fracture")
   const [answer, setAnswer] = useState<Answer | null>(null)
   const [phase, setPhase] = useState<Phase>("idle")
   const [activeStep, setActiveStep] = useState(0)
@@ -458,9 +506,14 @@ export function AgentDemo() {
       if (!gsap) {
         return
       }
+      const targets =
+        demoRef.current?.querySelectorAll(".result-accordion-item")
+      if (!targets?.length) {
+        return
+      }
       gsapContextRef.current?.add(() => {
         gsap.fromTo(
-          ".result-accordion-item",
+          targets,
           { autoAlpha: 0, y: 14 },
           {
             autoAlpha: 1,
@@ -603,31 +656,19 @@ export function AgentDemo() {
     }
   }
 
-  const hasResults = phase === "question" || phase === "complete"
+  const isComplete = phase === "complete"
 
   return (
     <section className="section-shell demo-section" id="demo" ref={demoRef}>
       <div className="section-heading">
         <div>
-          <h2>Agent 분석 데모</h2>
+          <Badge variant="outline">Interactive demo</Badge>
+          <h2>한 번에 한 단계씩 확인해보세요</h2>
           <p>
-            준비된 합성 사례를 선택하면 실제 서버 요청과 단계별 검증 흐름이
-            작동합니다.
+            사례 선택부터 근거 검토, 추가 정보 확인, 다음 행동까지 같은 순서로
+            안내합니다.
           </p>
         </div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon-lg"
-              onClick={saveSession}
-              aria-label="현재 사례 저장"
-            >
-              <SaveIcon />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>개인정보 없이 사례 선택만 저장합니다</TooltipContent>
-        </Tooltip>
       </div>
 
       <ToggleGroup
@@ -645,7 +686,11 @@ export function AgentDemo() {
         {claimCases.map((claimCase, index) => {
           const Icon = caseIcons[index]
           return (
-            <ToggleGroupItem value={claimCase.id} key={claimCase.id}>
+            <ToggleGroupItem
+              value={claimCase.id}
+              key={claimCase.id}
+              disabled={phase === "running"}
+            >
               <Icon data-icon="inline-start" />
               {claimCase.shortTitle}
             </ToggleGroupItem>
@@ -653,151 +698,208 @@ export function AgentDemo() {
         })}
       </ToggleGroup>
 
-      <div className="demo-grid">
-        <div className="case-column">
-          <Card>
-            <CardHeader>
-              <CardTitle>{activeCase.title}</CardTitle>
-              <CardDescription>{activeCase.description}</CardDescription>
-              <CardAction>
-                <Badge variant="outline">합성 데이터</Badge>
-              </CardAction>
-            </CardHeader>
-            <CardContent>
-              <CaseFacts activeCase={activeCase} />
-            </CardContent>
-            <CardFooter>
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={startAnalysis}
-                disabled={phase === "running"}
-              >
-                {phase === "running" ? (
-                  <Spinner data-icon="inline-start" />
-                ) : (
-                  <PlayIcon data-icon="inline-start" />
-                )}
-                {phase === "running" ? "Agent 분석 중" : "Agent 분석 시작"}
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
+      <Card className="journey-card" id="case-workspace">
+        <CardHeader>
+          <div>
+            <Badge variant="outline">합성 데이터</Badge>
+            <CardTitle>{activeCase.title}</CardTitle>
+            <CardDescription>{activeCase.description}</CardDescription>
+          </div>
+          <CardAction>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon-lg"
+                  onClick={saveSession}
+                  aria-label="현재 사례 저장"
+                >
+                  <SaveIcon />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                개인정보 없이 사례 선택만 저장합니다
+              </TooltipContent>
+            </Tooltip>
+          </CardAction>
+        </CardHeader>
+        <CardContent className="journey-card-content">
+          <JourneyProgress phase={phase} />
 
-        <div className="analysis-column">
-          <Card>
-            <CardHeader>
-              <CardTitle>Agent 분석 진행 상황</CardTitle>
-              <CardDescription>
-                목표 이해부터 다음 행동까지 6단계로 확인합니다.
-              </CardDescription>
-              <CardAction>
-                <Badge variant={phase === "running" ? "warning" : "outline"}>
-                  {phase === "running"
-                    ? "분석 중"
-                    : hasResults
-                      ? "검증 완료"
-                      : "대기"}
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardContent className="analysis-progress">
-              <Progress
-                aria-label="Agent 분석 진행률"
-                value={
-                  phase === "idle"
-                    ? 0
-                    : ((activeStep + 1) / analysisSteps.length) * 100
-                }
-              />
-              <EvidenceRail
-                compact
-                items={activeCase.evidence}
-                activeStep={activeStep}
-                onSelect={hasResults ? setActiveStep : undefined}
-              />
-              {phase === "question" || phase === "complete" ? (
-                <Alert className="agent-question">
-                  <ScaleIcon />
-                  <AlertTitle>Agent 확인 질문</AlertTitle>
-                  <AlertDescription>
-                    <strong>{activeCase.question}</strong>
-                    <span>{activeCase.questionHint}</span>
-                    <ToggleGroup
-                      type="single"
-                      variant="outline"
-                      value={answer ?? ""}
-                      onValueChange={(value) => {
-                        if (value) {
-                          void applyAnswer(value as Answer)
-                        }
-                      }}
-                      aria-label="추가 정보 답변"
-                    >
-                      {answerOptions.map((option) => (
-                        <ToggleGroupItem
-                          value={option.value}
-                          key={option.value}
-                        >
-                          {option.label}
-                        </ToggleGroupItem>
-                      ))}
-                    </ToggleGroup>
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <Alert>
-                  <ClipboardCheckIcon />
-                  <AlertTitle>
-                    {phase === "running"
-                      ? `${analysisSteps[activeStep]} 단계 진행 중`
-                      : "근거가 부족하면 질문하고 멈춥니다"}
-                  </AlertTitle>
-                  <AlertDescription>
-                    보상 조항만 찾지 않고 정의·면책·사용자 사실을 함께
-                    검토합니다.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+          <div className="journey-body">
+            <CaseFacts activeCase={activeCase} />
 
-        <div className="result-column">
-          <Card>
-            <CardHeader>
-              <CardTitle>분석 결과 요약</CardTitle>
-              <CardDescription>
-                지급 확정 대신 확인 우선순위와 근거를 보여줍니다.
-              </CardDescription>
-              <CardAction>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="결과 판정 기준"
-                    >
-                      <InfoIcon />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    결과는 합성 약관·사례를 기준으로 생성됩니다
-                  </TooltipContent>
-                </Tooltip>
-              </CardAction>
-            </CardHeader>
-            <CardContent>
-              <ResultsPanel results={results} phase={phase} />
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            <section
+              className="journey-stage"
+              aria-live="polite"
+              aria-labelledby="journey-stage-title"
+            >
+              {phase === "idle" ? (
+                <>
+                  <div className="journey-stage-heading">
+                    <Badge>1단계 · 사례 선택</Badge>
+                    <h3 id="journey-stage-title">이 사례를 분석할까요?</h3>
+                    <p>
+                      Agent가 가입 시점의 약관을 찾고 정의·지급·면책 조항을 함께
+                      확인합니다.
+                    </p>
+                  </div>
+                  <Alert>
+                    <ShieldCheckIcon />
+                    <AlertTitle>근거가 부족하면 멈추고 질문합니다</AlertTitle>
+                    <AlertDescription>
+                      확인되지 않은 사실을 추정해 지급 가능성을 단정하지
+                      않습니다.
+                    </AlertDescription>
+                  </Alert>
+                  <Button size="lg" onClick={startAnalysis}>
+                    <PlayIcon data-icon="inline-start" />이 사례 분석하기
+                  </Button>
+                </>
+              ) : null}
 
-      {hasResults ? (
+              {phase === "running" ? (
+                <>
+                  <div className="journey-stage-heading">
+                    <Badge variant="warning">2단계 · 근거 분석</Badge>
+                    <h3 id="journey-stage-title">
+                      {analysisSteps[activeStep]} 정보를 확인하고 있습니다
+                    </h3>
+                    <p>
+                      적용 약관 버전과 연결된 정의·지급·면책 조항을 순서대로
+                      검토합니다.
+                    </p>
+                  </div>
+                  <Progress
+                    aria-label="Agent 근거 분석 진행률"
+                    value={((activeStep + 1) / analysisSteps.length) * 100}
+                  />
+                  <EvidenceRail
+                    compact
+                    items={activeCase.evidence}
+                    activeStep={activeStep}
+                  />
+                  <Alert>
+                    <Spinner />
+                    <AlertTitle>Agent 분석 중</AlertTitle>
+                    <AlertDescription>
+                      결과를 만들기 전 근거가 충분한지 먼저 확인합니다.
+                    </AlertDescription>
+                  </Alert>
+                </>
+              ) : null}
+
+              {phase === "question" ? (
+                <>
+                  <div className="journey-stage-heading">
+                    <Badge variant="warning">3단계 · 정보 확인</Badge>
+                    <h3 id="journey-stage-title">{activeCase.question}</h3>
+                    <p>{activeCase.questionHint}</p>
+                  </div>
+                  <ToggleGroup
+                    className="answer-options"
+                    type="single"
+                    variant="outline"
+                    value={answer ?? ""}
+                    onValueChange={(value) => {
+                      if (value) {
+                        setAnswer(value as Answer)
+                      }
+                    }}
+                    aria-label="추가 정보 답변"
+                  >
+                    {answerOptions.map((option) => (
+                      <ToggleGroupItem value={option.value} key={option.value}>
+                        {option.label}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                  <Button
+                    size="lg"
+                    disabled={!answer}
+                    onClick={() => {
+                      if (answer) {
+                        void applyAnswer(answer)
+                      }
+                    }}
+                  >
+                    <CheckCircle2Icon data-icon="inline-start" />
+                    답변 반영하고 결과 보기
+                  </Button>
+                  <Accordion
+                    className="evidence-disclosure"
+                    type="single"
+                    collapsible
+                  >
+                    <AccordionItem value="evidence">
+                      <AccordionTrigger>
+                        Agent가 확인한 근거 경로
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <EvidenceRail
+                          compact
+                          items={activeCase.evidence}
+                          activeStep={activeStep}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </>
+              ) : null}
+
+              {isComplete ? (
+                <>
+                  <div className="journey-stage-heading">
+                    <Badge variant="success">4단계 · 다음 행동</Badge>
+                    <h3 id="journey-stage-title">확인할 항목을 정리했습니다</h3>
+                    <p>
+                      지급 확정이 아니라 우선순위, 근거, 다음 행동을 같은
+                      기준으로 보여드립니다.
+                    </p>
+                  </div>
+                  <ResultsPanel results={results} phase={phase} />
+                  <Accordion
+                    className="evidence-disclosure"
+                    type="single"
+                    collapsible
+                  >
+                    <AccordionItem value="evidence">
+                      <AccordionTrigger>전체 근거 경로 확인</AccordionTrigger>
+                      <AccordionContent>
+                        <EvidenceRail
+                          compact
+                          items={activeCase.evidence}
+                          activeStep={activeStep}
+                          onSelect={setActiveStep}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </>
+              ) : null}
+
+              {phase === "error" ? (
+                <>
+                  <div className="journey-stage-heading">
+                    <Badge variant="destructive">분석 중단</Badge>
+                    <h3 id="journey-stage-title">분석을 완료하지 못했습니다</h3>
+                    <p>네트워크 상태를 확인한 뒤 다시 시도해 주세요.</p>
+                  </div>
+                  <Button size="lg" onClick={startAnalysis}>
+                    <PlayIcon data-icon="inline-start" />
+                    다시 분석하기
+                  </Button>
+                </>
+              ) : null}
+            </section>
+          </div>
+        </CardContent>
+      </Card>
+
+      {isComplete ? (
         <div className="action-pack-reveal">
           <ActionPack activeCase={activeCase} results={results} />
-          <Button variant="outline" size="lg" asChild>
+          <Button size="lg" asChild>
             <a
               href="https://cont.insure.or.kr/"
               target="_blank"
@@ -812,11 +914,10 @@ export function AgentDemo() {
 
       <Alert className="demo-boundary">
         <ShieldCheckIcon />
-        <AlertTitle>이 데모가 실제로 하는 일</AlertTitle>
+        <AlertTitle>이 데모의 역할 경계</AlertTitle>
         <AlertDescription>
           합성 사례를 서버에서 판정 규칙과 대조하고, 답변에 따라 결과·근거·
-          Action Pack을 갱신합니다. 실제 보험금 지급 여부는 판단하지
-          않습니다.
+          Action Pack을 갱신합니다. 실제 보험금 지급 여부는 판단하지 않습니다.
         </AlertDescription>
       </Alert>
     </section>

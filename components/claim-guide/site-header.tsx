@@ -1,10 +1,6 @@
 "use client"
 
-import {
-  ExternalLinkIcon,
-  MenuIcon,
-  ShieldCheckIcon,
-} from "lucide-react"
+import { ArrowRightIcon, MenuIcon, ShieldCheckIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -18,9 +14,9 @@ import {
 import { Switch } from "@/components/ui/switch"
 
 const navItems = [
-  { href: "#demo", label: "직접 확인하기" },
-  { href: "#workflow", label: "작동 방식" },
-  { href: "#trust", label: "신뢰 원칙" },
+  { href: "#demo", label: "사례 분석" },
+  { href: "#workflow", label: "Agent 작동" },
+  { href: "#trust", label: "신뢰와 한계" },
 ]
 
 function Brand() {
@@ -73,10 +69,7 @@ export function SiteHeader({
           ))}
         </nav>
         <div className="header-actions">
-          <TextSizeControl
-            largeText={largeText}
-            onChange={onTextSizeChange}
-          />
+          <TextSizeControl largeText={largeText} onChange={onTextSizeChange} />
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -99,7 +92,7 @@ export function SiteHeader({
                 {navItems.map((item) => (
                   <a href={item.href} key={item.href}>
                     {item.label}
-                    <ExternalLinkIcon aria-hidden="true" />
+                    <ArrowRightIcon aria-hidden="true" />
                   </a>
                 ))}
               </nav>

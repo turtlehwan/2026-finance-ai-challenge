@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import type { LucideIcon } from "lucide-react"
 import {
   BarChart3Icon,
@@ -14,6 +14,12 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -35,10 +41,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   Tooltip,
   TooltipContent,
@@ -115,68 +118,10 @@ const reviewChecklist = [
 ]
 
 export function PolicyOpsSection() {
-  const sectionRef = useRef<HTMLElement>(null)
   const [mode, setMode] = useState<DiffMode>("payment")
   const [approving, setApproving] = useState(false)
   const [approved, setApproved] = useState(false)
   const rows = useMemo(() => diffRows[mode], [mode])
-
-  useEffect(() => {
-    let cancelled = false
-    let cleanup = () => {}
-
-    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
-      ([{ default: gsap }, { ScrollTrigger }]) => {
-        if (cancelled) {
-          return
-        }
-        gsap.registerPlugin(ScrollTrigger)
-        const context = gsap.context(() => {
-          const media = gsap.matchMedia()
-          media.add(
-            {
-              motion: "(prefers-reduced-motion: no-preference)",
-              reduced: "(prefers-reduced-motion: reduce)",
-            },
-            (conditions) => {
-              if (conditions.conditions?.reduced) {
-                return
-              }
-
-              const timeline = gsap.timeline({
-                scrollTrigger: {
-                  trigger: sectionRef.current,
-                  start: "top 72%",
-                  toggleActions: "play none none reverse",
-                },
-                defaults: { duration: 0.55, ease: "power2.out" },
-              })
-
-              timeline
-                .from(".policy-heading", { autoAlpha: 0, y: 20 })
-                .from(
-                  ".policy-step",
-                  { autoAlpha: 0, y: 18, stagger: 0.1 },
-                  "-=0.28",
-                )
-                .from(
-                  ".policy-workspace",
-                  { autoAlpha: 0, y: 22, scale: 0.99 },
-                  "-=0.26",
-                )
-            },
-          )
-        }, sectionRef)
-
-        cleanup = () => context.revert()
-      },
-    )
-
-    return () => {
-      cancelled = true
-      cleanup()
-    }
-  }, [])
 
   const approve = async () => {
     setApproving(true)
@@ -197,169 +142,189 @@ export function PolicyOpsSection() {
   }
 
   return (
-    <section
-      className="section-shell policy-section"
-      id="policyops"
-      ref={sectionRef}
-    >
+    <section className="section-shell policy-section" id="policyops">
       <div className="section-heading policy-heading">
         <div>
-          <h2>새 약관이 들어와도, 사람의 승인 아래 안전하게 갱신됩니다</h2>
+          <Badge variant="outline">관리자 안전 장치</Badge>
+          <h2>새 약관도 검토와 승인 뒤에 반영합니다</h2>
           <p>
-            모델이 금융 판단을 스스로 바꾸지 않습니다. 변경 감지, 비교,
-            평가, 승인을 모두 통과한 지식만 반영합니다.
+            모델이 금융 판단을 스스로 바꾸지 않습니다. 변경 감지, 비교, 평가,
+            승인을 모두 통과한 지식만 반영합니다.
           </p>
         </div>
       </div>
 
-      <div className="policy-steps" role="list" aria-label="PolicyOps 갱신 절차">
-        {policyOpsSteps.map((step, index) => {
-          const Icon = stepIcons[index]
-          return (
+      <Accordion className="policy-disclosure" type="single" collapsible>
+        <AccordionItem value="policyops-demo">
+          <AccordionTrigger>
+            <span className="policy-disclosure-trigger">
+              <strong>약관 갱신 데모</strong>
+              <span>버전 비교 · 회귀 평가 · 사람 승인 과정을 확인하세요</span>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
             <div
-              className={cn(
-                "policy-step",
-                approved || index < 4 ? "is-complete" : "is-current",
-              )}
-              role="listitem"
-              key={step}
+              className="policy-steps"
+              role="list"
+              aria-label="PolicyOps 갱신 절차"
             >
-              <span aria-hidden="true">
-                <Icon />
-              </span>
-              <strong>{step}</strong>
-            </div>
-          )
-        })}
-      </div>
-
-      <Card className="policy-workspace">
-        <CardHeader>
-          <CardTitle>표준약관_상해후유장해 · v1.3 → v1.4</CardTitle>
-          <CardDescription>
-            실제 운영 반영 전, 조항 단위 변경과 영향 범위를 검토합니다.
-          </CardDescription>
-          <CardAction>
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              value={mode}
-              onValueChange={(value) => {
-                if (value) {
-                  setMode(value as DiffMode)
-                }
-              }}
-              aria-label="약관 변경 유형"
-            >
-              <ToggleGroupItem value="payment">지급 조건</ToggleGroupItem>
-              <ToggleGroupItem value="exclusion">면책 조항</ToggleGroupItem>
-            </ToggleGroup>
-          </CardAction>
-        </CardHeader>
-        <CardContent className="policy-grid">
-          <div className="diff-table-wrap">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>조항</TableHead>
-                  <TableHead>이전 버전 · 2024.04</TableHead>
-                  <TableHead>신규 버전 · 2025.05</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.clause}>
-                    <TableCell className="font-medium">{row.clause}</TableCell>
-                    <TableCell>
-                      <span
-                        className={cn(
-                          "diff-copy",
-                          row.change !== "added" && "diff-before",
-                        )}
-                      >
-                        {row.before}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={cn(
-                          "diff-copy",
-                          row.change !== "removed" && "diff-after",
-                        )}
-                      >
-                        {row.after}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Alert>
-              <InfoIcon />
-              <AlertTitle>자동 적용하지 않습니다</AlertTitle>
-              <AlertDescription>
-                이 변경은 영향 범위와 회귀 평가를 통과한 뒤 검토자가
-                승인해야 운영 검색에 반영됩니다.
-              </AlertDescription>
-            </Alert>
-          </div>
-
-          <Separator orientation="vertical" className="policy-separator" />
-
-          <div className="approval-panel">
-            <div className="approval-panel-heading">
-              <div>
-                <strong>사람 승인 체크리스트</strong>
-                <span>위험한 자동 지식 갱신을 차단합니다.</span>
-              </div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="승인 규칙 설명"
+              {policyOpsSteps.map((step, index) => {
+                const Icon = stepIcons[index]
+                return (
+                  <div
+                    className={cn(
+                      "policy-step",
+                      approved || index < 4 ? "is-complete" : "is-current",
+                    )}
+                    role="listitem"
+                    key={step}
                   >
-                    <InfoIcon />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  승인 전에는 운영 검색 결과가 바뀌지 않습니다
-                </TooltipContent>
-              </Tooltip>
+                    <span aria-hidden="true">
+                      <Icon />
+                    </span>
+                    <strong>{step}</strong>
+                  </div>
+                )
+              })}
             </div>
-            <ul>
-              {reviewChecklist.map((item) => (
-                <li key={item}>
-                  <CheckCircle2Icon aria-hidden="true" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Button
-              size="lg"
-              onClick={approve}
-              disabled={approving || approved}
-            >
-              <UserRoundCheckIcon data-icon="inline-start" />
-              {approving
-                ? "승인 처리 중"
-                : approved
-                  ? "검토 반영 완료"
-                  : "검토 후 반영"}
-            </Button>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <ShieldCheckIcon aria-hidden="true" />
-          <span>
-            거버넌스 라인: 비교 → 평가 → 사람 승인 이후에만 운영 지식으로
-            승격합니다.
-          </span>
-          <Badge variant={approved ? "success" : "outline"}>
-            {approved ? "승인됨" : "승인 대기"}
-          </Badge>
-        </CardFooter>
-      </Card>
+
+            <Card className="policy-workspace">
+              <CardHeader>
+                <CardTitle>표준약관_상해후유장해 · v1.3 → v1.4</CardTitle>
+                <CardDescription>
+                  실제 운영 반영 전, 조항 단위 변경과 영향 범위를 검토합니다.
+                </CardDescription>
+                <CardAction>
+                  <ToggleGroup
+                    type="single"
+                    variant="outline"
+                    value={mode}
+                    onValueChange={(value) => {
+                      if (value) {
+                        setMode(value as DiffMode)
+                      }
+                    }}
+                    aria-label="약관 변경 유형"
+                  >
+                    <ToggleGroupItem value="payment">지급 조건</ToggleGroupItem>
+                    <ToggleGroupItem value="exclusion">
+                      면책 조항
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                </CardAction>
+              </CardHeader>
+              <CardContent className="policy-grid">
+                <div className="diff-table-wrap">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>조항</TableHead>
+                        <TableHead>이전 버전 · 2024.04</TableHead>
+                        <TableHead>신규 버전 · 2025.05</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {rows.map((row) => (
+                        <TableRow key={row.clause}>
+                          <TableCell className="font-medium">
+                            {row.clause}
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={cn(
+                                "diff-copy",
+                                row.change !== "added" && "diff-before",
+                              )}
+                            >
+                              {row.before}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={cn(
+                                "diff-copy",
+                                row.change !== "removed" && "diff-after",
+                              )}
+                            >
+                              {row.after}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <Alert>
+                    <InfoIcon />
+                    <AlertTitle>자동 적용하지 않습니다</AlertTitle>
+                    <AlertDescription>
+                      이 변경은 영향 범위와 회귀 평가를 통과한 뒤 검토자가
+                      승인해야 운영 검색에 반영됩니다.
+                    </AlertDescription>
+                  </Alert>
+                </div>
+
+                <Separator
+                  orientation="vertical"
+                  className="policy-separator"
+                />
+
+                <div className="approval-panel">
+                  <div className="approval-panel-heading">
+                    <div>
+                      <strong>사람 승인 체크리스트</strong>
+                      <span>위험한 자동 지식 갱신을 차단합니다.</span>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="승인 규칙 설명"
+                        >
+                          <InfoIcon />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        승인 전에는 운영 검색 결과가 바뀌지 않습니다
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <ul>
+                    {reviewChecklist.map((item) => (
+                      <li key={item}>
+                        <CheckCircle2Icon aria-hidden="true" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    size="lg"
+                    onClick={approve}
+                    disabled={approving || approved}
+                  >
+                    <UserRoundCheckIcon data-icon="inline-start" />
+                    {approving
+                      ? "승인 처리 중"
+                      : approved
+                        ? "검토 반영 완료"
+                        : "검토 후 반영"}
+                  </Button>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <ShieldCheckIcon aria-hidden="true" />
+                <span>
+                  거버넌스 라인: 비교 → 평가 → 사람 승인 이후에만 운영 지식으로
+                  승격합니다.
+                </span>
+                <Badge variant={approved ? "success" : "outline"}>
+                  {approved ? "승인됨" : "승인 대기"}
+                </Badge>
+              </CardFooter>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </section>
   )
 }

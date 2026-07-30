@@ -9,7 +9,6 @@ import {
   BotIcon,
   CalendarSearchIcon,
   CheckCircle2Icon,
-  CircleHelpIcon,
   DatabaseZapIcon,
   ExternalLinkIcon,
   FileScanIcon,
@@ -38,32 +37,22 @@ import {
 
 const workflowSteps: { label: string; detail: string; icon: LucideIcon }[] = [
   {
-    label: "목표 이해",
-    detail: "보험사건과 확인 목적을 구조화",
-    icon: CircleHelpIcon,
-  },
-  {
-    label: "문서 구조화",
-    detail: "증권·치료 정보를 사실 단위로 정리",
+    label: "사례 선택",
+    detail: "보험사건과 증권·치료 사실을 확인",
     icon: FileScanIcon,
   },
   {
-    label: "약관 버전 선택",
-    detail: "가입 시점에 맞는 약관만 검색",
-    icon: CalendarSearchIcon,
-  },
-  {
-    label: "근거 교차 검증",
-    detail: "정의·지급·면책 조항을 함께 확인",
+    label: "근거 분석",
+    detail: "가입 시점 약관과 면책을 함께 검토",
     icon: ScaleIcon,
   },
   {
-    label: "추가 질문",
-    detail: "빠진 사실을 사용자에게 요청",
+    label: "정보 확인",
+    detail: "빠진 사실을 한 가지씩 질문",
     icon: MessageCircleQuestionIcon,
   },
   {
-    label: "Action Pack",
+    label: "다음 행동",
     detail: "서류·질문·공식 경로를 준비",
     icon: RouteIcon,
   },
@@ -119,11 +108,7 @@ const humanTasks = [
   "최종 청구 실행",
 ]
 
-export function TrustSections({
-  policyOps,
-}: {
-  policyOps: React.ReactNode
-}) {
+export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -186,10 +171,7 @@ export function TrustSections({
         <div className="section-heading scroll-reveal">
           <div>
             <h2>Agent는 조사하고, 사람은 결정합니다</h2>
-            <p>
-              한 번의 답변이 아니라, 사실과 근거를 완성하는 순서로
-              움직입니다.
-            </p>
+            <p>화면에서 본 네 단계를 그대로 따라 사실과 근거를 완성합니다.</p>
           </div>
         </div>
         <div className="workflow-line">
@@ -208,8 +190,6 @@ export function TrustSections({
           })}
         </div>
       </section>
-
-      {policyOps}
 
       <section className="section-shell trust-section" id="trust">
         <div className="section-heading scroll-reveal">
@@ -282,8 +262,8 @@ export function TrustSections({
           <ShieldCheckIcon />
           <AlertTitle>역할 경계</AlertTitle>
           <AlertDescription>
-            보험금 액수 확정·청구 대행·손해사정·상품 권유를 하지 않습니다.
-            최종 지급 여부는 보험회사가 결정합니다.
+            보험금 액수 확정·청구 대행·손해사정·상품 권유를 하지 않습니다. 최종
+            지급 여부는 보험회사가 결정합니다.
           </AlertDescription>
         </Alert>
       </section>
@@ -354,6 +334,8 @@ export function TrustSections({
           </div>
         </div>
       </section>
+
+      {policyOps}
     </div>
   )
 }

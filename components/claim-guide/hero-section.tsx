@@ -1,18 +1,23 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ArrowDownIcon, PlayIcon } from "lucide-react"
+import {
+  ArrowDownIcon,
+  ClipboardCheckIcon,
+  FolderCheckIcon,
+  PlayIcon,
+  ScaleIcon,
+  ShieldCheckIcon,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { EvidenceRail } from "@/components/claim-guide/evidence-rail"
 
 const heroEvidence = [
-  { label: "사건", meta: "손목 골절" },
-  { label: "진단", meta: "S52 진단군" },
-  { label: "담보", meta: "골절진단비" },
-  { label: "지급사유", meta: "제12조" },
-  { label: "면책", meta: "제14조" },
-  { label: "다음 행동", meta: "확인 권장" },
+  { label: "사례 선택", meta: "사실 확인", icon: ClipboardCheckIcon },
+  { label: "근거 분석", meta: "약관 대조", icon: ScaleIcon },
+  { label: "정보 확인", meta: "추가 질문", icon: ShieldCheckIcon },
+  { label: "다음 행동", meta: "확인 목록", icon: FolderCheckIcon },
 ]
 
 export function HeroSection() {
@@ -74,16 +79,13 @@ export function HeroSection() {
             heroEvidence.forEach((_, index) => {
               rail
                 .call(() => setActiveStep(index))
-                .to(
-                  `[data-evidence-node="${index}"] .evidence-icon-wrap`,
-                  {
-                    scale: 1.07,
-                    duration: 0.24,
-                    ease: "power2.out",
-                    yoyo: true,
-                    repeat: 1,
-                  },
-                )
+                .to(`[data-evidence-node="${index}"] .evidence-icon-wrap`, {
+                  scale: 1.07,
+                  duration: 0.24,
+                  ease: "power2.out",
+                  yoyo: true,
+                  repeat: 1,
+                })
                 .to({}, { duration: 0.42 })
             })
           },
@@ -100,7 +102,15 @@ export function HeroSection() {
   }, [])
 
   const scrollToDemo = () => {
-    document.querySelector("#demo")?.scrollIntoView({
+    document.querySelector("#case-workspace")?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    })
+  }
+
+  const scrollToWorkflow = () => {
+    document.querySelector("#workflow")?.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "auto"
         : "smooth",
@@ -126,21 +136,21 @@ export function HeroSection() {
             <PlayIcon data-icon="inline-start" />
             합성 사례로 시작하기
           </Button>
-          <Button variant="ghost" size="lg" onClick={scrollToDemo}>
-            분석 과정 보기
+          <Button variant="ghost" size="lg" onClick={scrollToWorkflow}>
+            Agent 작동 방식
             <ArrowDownIcon data-icon="inline-end" />
           </Button>
         </div>
       </div>
       <div className="hero-rail">
         <div className="hero-rail-header">
-          <strong>근거 경로</strong>
-          <span>Agent가 확인 중인 단계</span>
+          <strong>4단계 확인 여정</strong>
+          <span>한 번에 한 단계씩</span>
         </div>
         <EvidenceRail items={heroEvidence} activeStep={activeStep} />
         <div className="hero-status" aria-live="polite">
           <span aria-hidden="true" />
-          {heroEvidence[activeStep].label} 정보를 확인하고 있습니다
+          {heroEvidence[activeStep].label} 단계입니다
         </div>
       </div>
     </section>

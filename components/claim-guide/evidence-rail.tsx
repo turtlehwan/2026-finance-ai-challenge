@@ -1,5 +1,6 @@
 "use client"
 
+import type { CSSProperties } from "react"
 import type { LucideIcon } from "lucide-react"
 import {
   CalendarDaysIcon,
@@ -25,6 +26,7 @@ export type EvidenceRailItem = {
   label: string
   meta?: string
   warning?: boolean
+  icon?: LucideIcon
 }
 
 export function EvidenceRail({
@@ -45,12 +47,18 @@ export function EvidenceRail({
       className={cn("evidence-rail", compact && "evidence-rail-compact")}
       role="group"
       aria-label="근거 경로"
+      style={
+        {
+          "--evidence-count": items.length,
+          "--evidence-edge": `${100 / Math.max(items.length * 2, 1)}%`,
+        } as CSSProperties
+      }
     >
       <div className="evidence-line" aria-hidden="true">
         <span style={{ transform: `scaleX(${progress})` }} />
       </div>
       {items.map((item, index) => {
-        const Icon = evidenceIcons[index] ?? FileTextIcon
+        const Icon = item.icon ?? evidenceIcons[index] ?? FileTextIcon
         const isActive = index === activeStep
         const isComplete = index < activeStep
         const content = (
