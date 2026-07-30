@@ -120,7 +120,8 @@ React Flow가 같은 경로를 화면에 표시한다.
 
 ### 검증 절차
 
-1. 배포 URL에 접속한다.
+1. 배포 URL
+   `https://insurance-claim-guide-agent.turtlehwan.chatgpt.site`에 접속한다.
 2. `실데이터 연결 샘플 불러오기`를 누른다.
 3. `P400073`, `2025-05-10`, `생활재해보장특약Ⅱ`, `S52.5`가 구조화되어
    표시되는지 확인한다.
