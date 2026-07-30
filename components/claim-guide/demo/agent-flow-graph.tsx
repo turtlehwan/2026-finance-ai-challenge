@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useGSAP } from "@gsap/react"
 import {
   Background,
   Handle,
@@ -14,7 +13,6 @@ import {
   type NodeTypes,
   type ReactFlowInstance,
 } from "@xyflow/react"
-import gsap from "gsap"
 import type { LucideIcon } from "lucide-react"
 import {
   BotIcon,
@@ -36,8 +34,6 @@ import type {
   AgentTraceEvent,
 } from "@/lib/claim-guide/types"
 import { cn } from "@/lib/utils"
-
-gsap.registerPlugin(useGSAP)
 
 type GraphNodeId = AgentTraceEvent["nodeId"]
 
@@ -381,33 +377,44 @@ export function AgentFlowGraph({
     })
   }, [activeNodeId, flowInstance, isCompact])
 
-  useGSAP(
-    () => {
-      if (
-        !activeNodeId ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ) {
+  useEffect(() => {
+    let cancelled = false
+    let cleanup = () => {}
+
+    if (
+      !activeNodeId ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return
+    }
+
+    void import("gsap").then(({ default: gsap }) => {
+      if (cancelled) {
         return
       }
 
-      gsap.fromTo(
-        `[data-id="${activeNodeId}"] [data-agent-pulse]`,
-        { scale: 0.96, autoAlpha: 0.68 },
-        {
-          scale: 1,
-          autoAlpha: 1,
-          duration: 0.42,
-          ease: "power2.out",
-          clearProps: "transform,opacity,visibility",
-        },
-      )
-    },
-    {
-      scope: scopeRef,
-      dependencies: [activeNodeId],
-      revertOnUpdate: true,
-    },
-  )
+      const context = gsap.context(() => {
+        gsap.fromTo(
+          `[data-id="${activeNodeId}"] [data-agent-pulse]`,
+          { scale: 0.96, autoAlpha: 0.68 },
+          {
+            scale: 1,
+            autoAlpha: 1,
+            duration: 0.42,
+            ease: "power2.out",
+            clearProps: "transform,opacity,visibility",
+          },
+        )
+      }, scopeRef)
+
+      cleanup = () => context.revert()
+    })
+
+    return () => {
+      cancelled = true
+      cleanup()
+    }
+  }, [activeNodeId])
 
   return (
     <section className="agent-flow-shell" ref={scopeRef}>
