@@ -147,6 +147,7 @@ export function HeroSection() {
           alt="보험 서류를 함께 확인하는 어머니와 딸"
           width={1536}
           height={1024}
+          loading="eager"
           fetchPriority="high"
           unoptimized
         />
