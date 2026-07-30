@@ -16,7 +16,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { EvaluationSummary } from "@/lib/claim-guide/evaluation"
 
@@ -103,7 +109,8 @@ export function EvaluationPanel() {
             )
           })}
         </div>
-
+      </CardContent>
+      <CardFooter>
         <Accordion type="single" collapsible>
           <AccordionItem value="methodology">
             <AccordionTrigger>평가셋 구성과 한계 보기</AccordionTrigger>
@@ -127,7 +134,7 @@ export function EvaluationPanel() {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </CardContent>
+      </CardFooter>
     </Card>
   )
 }
