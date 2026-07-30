@@ -325,7 +325,7 @@ test("PolicyOps approval endpoint stays human-gated", async () => {
   assert.equal(result.regression.total, 24);
 });
 
-test("design system keeps one icon library and readable text tokens", async () => {
+test("design system keeps one icon library and a global 14px text floor", async () => {
   const [styles, badge, button, tooltip] = await Promise.all([
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../components/ui/badge.tsx", import.meta.url), "utf8"),
@@ -333,10 +333,13 @@ test("design system keeps one icon library and readable text tokens", async () =
     readFile(new URL("../components/ui/tooltip.tsx", import.meta.url), "utf8"),
   ]);
 
-  assert.match(styles, /--text-caption: 0\.875rem/);
+  assert.match(styles, /--text-min: 0\.875rem/);
+  assert.match(styles, /--text-caption: var\(--text-min\)/);
+  assert.match(styles, /--text-xs: var\(--text-min\)/);
+  assert.match(styles, /--text-sm: var\(--text-min\)/);
   assert.match(styles, /--leading-tight: 1\.35/);
   assert.match(styles, /--leading-body: 1\.65/);
   assert.doesNotMatch(styles, /linear-gradient|radial-gradient/);
-  assert.doesNotMatch(`${badge}\n${button}\n${tooltip}`, /text-xs|0\.8rem/);
+  assert.doesNotMatch(`${badge}\n${button}\n${tooltip}`, /0\.8rem|text-\[(?:1[0-3]|[0-9])px\]/);
   assert.match(badge, /from "lucide-react"|badgeVariants/);
 });
