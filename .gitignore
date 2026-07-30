@@ -40,3 +40,7 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+# Local product intent and decision history. Move validated decisions into a PRD
+# if the project adds one; never commit the working conversation log itself.
+/docs/local/
