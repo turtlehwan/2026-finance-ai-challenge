@@ -143,8 +143,8 @@ export function HeroSection() {
       <div className="hero-visual">
         <Image
           className="hero-photo"
-          src="/family-policy-review-v1.webp"
-          alt="보험 서류를 함께 확인하는 어머니와 딸"
+          src="/family-policy-review-v2.webp"
+          alt="태블릿의 AI 근거 흐름과 보험 서류를 함께 확인하는 어머니와 청년 자녀"
           width={1536}
           height={1024}
           loading="eager"
@@ -153,7 +153,7 @@ export function HeroSection() {
         />
         <div className="hero-photo-note">
           <ShieldCheckIcon aria-hidden="true" />
-          <span>사람이 최종 확인하는 금융 Agent</span>
+          <span>AI는 근거를 찾고, 가족이 함께 확인합니다</span>
         </div>
         <div className="hero-rail">
           <div className="hero-rail-header">

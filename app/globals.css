@@ -340,7 +340,8 @@ svg {
 .hero-visual {
   position: relative;
   min-width: 0;
-  min-height: 38rem;
+  min-height: 0;
+  padding-bottom: 1.25rem;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 2rem;
@@ -351,10 +352,10 @@ svg {
 }
 
 .hero-photo {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  display: block;
   width: 100%;
-  height: 100%;
+  height: 25rem;
   object-fit: cover;
   object-position: 62% center;
   will-change: transform;
@@ -386,11 +387,12 @@ svg {
 }
 
 .hero-rail {
-  position: absolute;
-  right: 1.25rem;
-  bottom: 1.25rem;
-  left: 1.25rem;
+  position: relative;
+  right: auto;
+  bottom: auto;
+  left: auto;
   z-index: 2;
+  margin: -2.5rem 1.25rem 0;
   padding: 1.25rem;
   border: 1px solid rgb(213 224 235 / 90%);
   border-radius: 1.25rem;
@@ -2092,6 +2094,10 @@ button.evidence-node {
     max-width: 46rem;
   }
 
+  .hero-photo {
+    height: clamp(28rem, 56vw, 34rem);
+  }
+
   .journey-body {
     grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr);
   }
@@ -2178,7 +2184,6 @@ button.evidence-node {
   }
 
   .hero-visual {
-    min-height: 0;
     padding-bottom: 0.75rem;
     border-radius: 1.25rem;
   }
@@ -2197,11 +2202,7 @@ button.evidence-node {
   }
 
   .hero-rail {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    left: auto;
-    margin: -3.5rem 0.75rem 0;
+    margin: -1.5rem 0.75rem 0;
     padding: 1.25rem;
     border-radius: 1.125rem;
   }
