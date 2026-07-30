@@ -4,6 +4,7 @@
 @import "@xyflow/react/dist/style.css";
 
 :root {
+  --page-canvas: #f7fafc;
   --background: #ffffff;
   --foreground: #0b2348;
   --card: #ffffff;
@@ -110,7 +111,7 @@ html {
 body {
   min-width: 20rem;
   margin: 0;
-  background: var(--background);
+  background: var(--page-canvas);
   color: var(--foreground);
   font-family: var(--font-sans);
   font-size: var(--text-body);
@@ -289,13 +290,13 @@ svg {
 
 .hero-section {
   display: grid;
-  grid-template-columns: minmax(0, 0.93fr) minmax(30rem, 1.07fr);
+  grid-template-columns: minmax(0, 0.95fr) minmax(32rem, 1.05fr);
   align-items: center;
-  gap: clamp(3rem, 7vw, 7rem);
+  gap: clamp(3rem, 4.5vw, 4.5rem);
   width: min(100% - 3rem, 78rem);
   min-height: calc(100svh - 4.75rem);
   margin: 0 auto;
-  padding: 6rem 0;
+  padding: 5rem 0;
 }
 
 .hero-copy {
@@ -336,14 +337,66 @@ svg {
   margin-top: 2rem;
 }
 
-.hero-rail {
+.hero-visual {
+  position: relative;
   min-width: 0;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
+  min-height: 38rem;
+  overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 1.5rem;
-  background: var(--card);
+  border-radius: 2rem;
+  background: var(--muted);
   box-shadow: var(--shadow-float);
+  isolation: isolate;
   will-change: transform, opacity;
+}
+
+.hero-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% center;
+  will-change: transform;
+}
+
+.hero-photo-note {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgb(213 224 235 / 88%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 8px 24px rgb(11 35 72 / 10%);
+  color: var(--foreground);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  backdrop-filter: blur(12px);
+}
+
+.hero-photo-note svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  color: var(--success);
+}
+
+.hero-rail {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  z-index: 2;
+  padding: 1.25rem;
+  border: 1px solid rgb(213 224 235 / 90%);
+  border-radius: 1.25rem;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 14px 36px rgb(11 35 72 / 14%);
+  backdrop-filter: blur(16px);
 }
 
 .hero-rail-header {
@@ -351,11 +404,11 @@ svg {
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .hero-rail-header strong {
-  font-size: var(--text-title);
+  font-size: var(--text-lead);
   letter-spacing: -0.025em;
 }
 
@@ -368,7 +421,7 @@ svg {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  margin-top: 2rem;
+  margin-top: 1.25rem;
   padding: 0.85rem 1rem;
   border: 1px solid var(--success-border);
   border-radius: 0.75rem;
@@ -2124,7 +2177,31 @@ button.evidence-node {
     width: 100%;
   }
 
+  .hero-visual {
+    min-height: 0;
+    padding-bottom: 0.75rem;
+    border-radius: 1.25rem;
+  }
+
+  .hero-photo {
+    position: relative;
+    display: block;
+    height: clamp(20rem, 86vw, 24rem);
+    object-position: 63% center;
+  }
+
+  .hero-photo-note {
+    top: 0.75rem;
+    left: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+  }
+
   .hero-rail {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    margin: -3.5rem 0.75rem 0;
     padding: 1.25rem;
     border-radius: 1.125rem;
   }

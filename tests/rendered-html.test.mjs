@@ -57,6 +57,9 @@ test("server-renders the insurance claim guide MVP", async () => {
   assert.match(html, /<title>보험금 길잡이 Agent<\/title>/);
   assert.match(html, /부모님의 보험,/);
   assert.match(html, /<em>Agent<\/em>가 함께 확인합니다/);
+  assert.match(html, /\/family-policy-review-v1\.webp/);
+  assert.match(html, /보험 서류를 함께 확인하는 어머니와 딸/);
+  assert.match(html, /사람이 최종 확인하는 금융 Agent/);
   assert.match(html, /근거 경로/);
   assert.match(html, /새 약관도 검토와 승인 뒤에 반영합니다/);
   assert.match(html, /한 번에 한 단계씩 확인해보세요/);
@@ -139,6 +142,9 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(packageJson, /"shadcn"/);
 
   await access(new URL("../public/og-v2.png", import.meta.url));
+  await access(
+    new URL("../public/family-policy-review-v1.webp", import.meta.url),
+  );
   await assert.rejects(
     access(
       new URL("../app/_sites-preview/SkeletonPreview.tsx", import.meta.url),

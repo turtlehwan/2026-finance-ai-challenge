@@ -1,9 +1,11 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 import {
   ArrowDownIcon,
   PlayIcon,
+  ShieldCheckIcon,
 } from "lucide-react"
 
 import { journeyPresentation } from "@/components/claim-guide/journey-presentation"
@@ -37,7 +39,8 @@ export function HeroSection() {
                   ".hero-title-line",
                   ".hero-support",
                   ".hero-actions",
-                  ".hero-rail",
+                  ".hero-visual",
+                  ".hero-photo",
                 ],
                 { clearProps: "all" },
               )
@@ -57,9 +60,14 @@ export function HeroSection() {
               .from(".hero-support", { autoAlpha: 0, y: 18 }, "-=0.42")
               .from(".hero-actions", { autoAlpha: 0, y: 14 }, "-=0.5")
               .from(
-                ".hero-rail",
+                ".hero-visual",
                 { autoAlpha: 0, y: 22, scale: 0.985 },
                 "-=0.52",
+              )
+              .from(
+                ".hero-photo",
+                { scale: 1.035, duration: 1.35, ease: "power2.out" },
+                "-=0.72",
               )
 
             const rail = gsap.timeline({
@@ -132,15 +140,30 @@ export function HeroSection() {
           </Button>
         </div>
       </div>
-      <div className="hero-rail">
-        <div className="hero-rail-header">
-          <strong>4단계 확인 여정</strong>
-          <span>한 번에 한 단계씩</span>
+      <div className="hero-visual">
+        <Image
+          className="hero-photo"
+          src="/family-policy-review-v1.webp"
+          alt="보험 서류를 함께 확인하는 어머니와 딸"
+          width={1536}
+          height={1024}
+          fetchPriority="high"
+          unoptimized
+        />
+        <div className="hero-photo-note">
+          <ShieldCheckIcon aria-hidden="true" />
+          <span>사람이 최종 확인하는 금융 Agent</span>
         </div>
-        <EvidenceRail items={journeyPresentation} activeStep={activeStep} />
-        <div className="hero-status" aria-live="polite">
-          <span aria-hidden="true" />
-          {journeyPresentation[activeStep].label} 단계입니다
+        <div className="hero-rail">
+          <div className="hero-rail-header">
+            <strong>4단계 확인 여정</strong>
+            <span>한 번에 한 단계씩</span>
+          </div>
+          <EvidenceRail items={journeyPresentation} activeStep={activeStep} />
+          <div className="hero-status" aria-live="polite">
+            <span aria-hidden="true" />
+            {journeyPresentation[activeStep].label} 단계입니다
+          </div>
         </div>
       </div>
     </section>
