@@ -39,6 +39,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { ActionPack } from "@/components/claim-guide/demo/action-pack"
+import { AgentFlowGraph } from "@/components/claim-guide/demo/agent-flow-graph"
 import { CaseFacts } from "@/components/claim-guide/demo/case-facts"
 import { DocumentIntake } from "@/components/claim-guide/demo/document-intake"
 import { JourneyProgress } from "@/components/claim-guide/demo/journey-progress"
@@ -54,10 +55,13 @@ import type { DocumentBundle } from "@/lib/claim-guide/documents"
 const caseIcons: LucideIcon[] = [BoneIcon, CalendarClockIcon, ShieldAlertIcon]
 
 export function AgentDemo() {
-  const [, setDocumentBundle] = useState<DocumentBundle | null>(null)
+  const [documentBundle, setDocumentBundle] = useState<DocumentBundle | null>(
+    null,
+  )
   const {
     activeCase,
     activeStep,
+    activeTraceIndex,
     answer,
     applyAnswer,
     changeCase,
@@ -69,7 +73,8 @@ export function AgentDemo() {
     setActiveStep,
     setAnswer,
     startAnalysis,
-  } = useClaimAnalysis()
+    trace,
+  } = useClaimAnalysis(documentBundle)
   const isComplete = phase === "complete"
 
   return (
@@ -145,6 +150,13 @@ export function AgentDemo() {
         </CardHeader>
         <CardContent className="journey-card-content">
           <JourneyProgress phase={phase} />
+
+          {phase !== "idle" ? (
+            <AgentFlowGraph
+              trace={trace}
+              activeTraceIndex={activeTraceIndex}
+            />
+          ) : null}
 
           <div className="journey-body">
             <CaseFacts activeCase={activeCase} />

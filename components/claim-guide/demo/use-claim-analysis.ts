@@ -4,8 +4,10 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 
 import { claimCases, answerOptions } from "@/lib/claim-guide/cases"
+import type { DocumentBundle } from "@/lib/claim-guide/documents"
 import { ANALYSIS_STEPS } from "@/lib/claim-guide/presentation"
 import type {
+  AgentTraceEvent,
   AnalysisResponse,
   Answer,
   ClaimCase,
@@ -41,11 +43,12 @@ function readSavedSession(): {
 async function requestAnalysis(
   caseId: ClaimCase["id"],
   answer: Answer | null,
+  documentBundle: DocumentBundle | null,
 ): Promise<AnalysisResponse> {
   const response = await fetch("/api/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ caseId, answer }),
+    body: JSON.stringify({ caseId, answer, documentBundle }),
   })
 
   if (!response.ok) {
@@ -55,7 +58,7 @@ async function requestAnalysis(
   return (await response.json()) as AnalysisResponse
 }
 
-export function useClaimAnalysis() {
+export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
   const demoRef = useRef<HTMLElement>(null)
   const gsapRef = useRef<GsapRuntime | null>(null)
   const gsapContextRef = useRef<GsapContext | null>(null)
@@ -65,6 +68,8 @@ export function useClaimAnalysis() {
   const [answer, setAnswer] = useState<Answer | null>(null)
   const [phase, setPhase] = useState<DemoPhase>("idle")
   const [activeStep, setActiveStep] = useState(0)
+  const [activeTraceIndex, setActiveTraceIndex] = useState(0)
+  const [trace, setTrace] = useState<AgentTraceEvent[]>([])
   const [results, setResults] = useState<ClaimResult[]>([])
 
   const activeCase = useMemo(
@@ -152,11 +157,14 @@ export function useClaimAnalysis() {
         },
       })
 
-      ANALYSIS_STEPS.forEach((_, index) => {
+      payload.trace.forEach((_, index) => {
         timeline!
-          .call(() => setActiveStep(index))
+          .call(() => {
+            setActiveTraceIndex(index)
+            setActiveStep(Math.min(index, ANALYSIS_STEPS.length - 1))
+          })
           .fromTo(
-            `[data-evidence-node="${index}"] .evidence-icon-wrap`,
+            `[data-id="${payload.trace[index].nodeId}"] [data-agent-pulse]`,
             { scale: 0.88, y: 6 },
             {
               scale: 1.08,
@@ -178,18 +186,23 @@ export function useClaimAnalysis() {
     timelineRef.current?.kill()
     setAnswer(null)
     setResults([])
+    setTrace([])
+    setActiveTraceIndex(0)
     setActiveStep(0)
     setPhase("running")
 
     try {
-      const payload = await requestAnalysis(selectedId, null)
+      const payload = await requestAnalysis(selectedId, null, documentBundle)
       if (requestId !== requestIdRef.current) {
         return
       }
 
+      setTrace(payload.trace)
+
       const media = window.matchMedia("(prefers-reduced-motion: reduce)")
       if (media.matches) {
         setActiveStep(ANALYSIS_STEPS.length - 1)
+        setActiveTraceIndex(payload.trace.length - 1)
         setResults(payload.results)
         setPhase("question")
         return
@@ -218,11 +231,17 @@ export function useClaimAnalysis() {
     setActiveStep(ANALYSIS_STEPS.length - 2)
 
     try {
-      const payload = await requestAnalysis(selectedId, value)
+      const payload = await requestAnalysis(
+        selectedId,
+        value,
+        documentBundle,
+      )
       if (requestId !== requestIdRef.current) {
         return
       }
       setResults(payload.results)
+      setTrace(payload.trace)
+      setActiveTraceIndex(payload.trace.length - 1)
       setActiveStep(ANALYSIS_STEPS.length - 1)
       setPhase("complete")
       animateResults()
@@ -245,6 +264,8 @@ export function useClaimAnalysis() {
     setSelectedId(nextCase.id)
     setAnswer(null)
     setResults([])
+    setTrace([])
+    setActiveTraceIndex(0)
     setActiveStep(0)
     setPhase("idle")
   }
@@ -264,6 +285,7 @@ export function useClaimAnalysis() {
   return {
     activeCase,
     activeStep,
+    activeTraceIndex,
     answer,
     applyAnswer,
     changeCase,
@@ -275,5 +297,6 @@ export function useClaimAnalysis() {
     setActiveStep,
     setAnswer,
     startAnalysis,
+    trace,
   }
 }

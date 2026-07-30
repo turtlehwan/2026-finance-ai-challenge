@@ -13,6 +13,40 @@ export type ClaimStatus = (typeof CLAIM_STATUS)[keyof typeof CLAIM_STATUS]
 
 export type DemoPhase = "idle" | "running" | "question" | "complete" | "error"
 
+export type AgentNodeStatus =
+  | "pending"
+  | "completed"
+  | "waiting"
+  | "attention"
+  | "blocked"
+
+export type AgentTraceEvent = {
+  nodeId:
+    | "case_analyst"
+    | "document_tool"
+    | "version_resolver"
+    | "coverage_matcher"
+    | "graph_retriever"
+    | "information_gate"
+    | "human_review"
+    | "evidence_auditor"
+    | "action_planner"
+  label: string
+  role: "Agent" | "Tool" | "Gate" | "Human"
+  status: Exclude<AgentNodeStatus, "pending">
+  inputSummary: string
+  outputSummary: string
+  durationMs: number
+}
+
+export type EvidenceAudit = {
+  approved: boolean
+  versionMatched: boolean
+  citationValidated: boolean
+  exclusionIncluded: boolean
+  findings: string[]
+}
+
 export type ClaimResult = {
   title: string
   status: ClaimStatus
@@ -57,5 +91,9 @@ export type AnalysisResponse = {
   answer: Answer | null
   needsAnswer: boolean
   results: ClaimResult[]
+  trace: AgentTraceEvent[]
+  audit: EvidenceAudit | null
+  policyResolution: import("@/lib/claim-guide/policies").PolicyResolution | null
+  dataMode: "user-document" | "official-sample" | "synthetic-safety-case"
   generatedAt: string
 }

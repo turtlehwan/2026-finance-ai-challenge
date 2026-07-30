@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@xyflow/react/dist/style.css";
 
 :root {
   --background: #ffffff;
@@ -675,6 +676,224 @@ button.evidence-node {
   flex: 1;
   background: var(--border);
   content: "";
+}
+
+.agent-flow-shell {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--muted);
+}
+
+.agent-flow-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+
+.agent-flow-header > div:first-child {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.agent-flow-header h3 {
+  margin: 0.2rem 0 0;
+  font-size: var(--text-title);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.03em;
+}
+
+.agent-flow-header p {
+  max-width: 48rem;
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
+.agent-flow-legend {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.agent-flow-canvas {
+  height: 33rem;
+}
+
+.agent-flow-canvas .react-flow__pane {
+  cursor: grab;
+}
+
+.agent-flow-canvas .react-flow__pane:active {
+  cursor: grabbing;
+}
+
+.agent-flow-canvas .react-flow__background {
+  color: var(--border);
+}
+
+.agent-flow-canvas .react-flow__attribution {
+  padding: 0.2rem 0.35rem;
+  border-radius: 0.35rem 0 0;
+  background: rgb(255 255 255 / 88%);
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+}
+
+.agent-flow-canvas .react-flow__edge-path {
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.agent-flow-canvas .react-flow__edge.is-traversed .react-flow__edge-path {
+  stroke: var(--success);
+}
+
+.agent-flow-canvas .react-flow__edge.is-pending marker path {
+  fill: var(--border);
+  stroke: var(--border);
+}
+
+.agent-flow-canvas .react-flow__edge.is-traversed marker path {
+  fill: var(--success);
+  stroke: var(--success);
+}
+
+.agent-flow-handle {
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+}
+
+.agent-flow-node {
+  width: 13.75rem;
+  min-height: 9rem;
+  border-color: var(--border);
+  border-radius: 0.85rem;
+  background: var(--background);
+  box-shadow: var(--shadow-card);
+}
+
+.agent-flow-node [data-slot="card-content"] {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.8rem;
+}
+
+.agent-flow-node.is-completed {
+  border-color: var(--success-border);
+}
+
+.agent-flow-node.is-waiting,
+.agent-flow-node.is-attention {
+  border-color: var(--warning-border);
+  background: var(--warning-soft);
+}
+
+.agent-flow-node.is-blocked {
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
+}
+
+.agent-flow-node.is-active {
+  outline: 3px solid rgb(12 140 132 / 20%);
+  outline-offset: 3px;
+}
+
+.agent-flow-node-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.agent-flow-node-heading > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 0.55rem;
+  background: var(--secondary);
+  color: var(--primary);
+}
+
+.agent-flow-node-heading > span svg {
+  width: 1rem;
+}
+
+.agent-flow-node-heading > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.05rem;
+}
+
+.agent-flow-node-heading strong,
+.agent-flow-node-heading small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agent-flow-node-heading strong {
+  font-size: var(--text-caption);
+}
+
+.agent-flow-node-heading small {
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+}
+
+.agent-flow-io {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.agent-flow-io p {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  gap: 0.35rem;
+  overflow: hidden;
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agent-flow-io p span {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.agent-flow-node time {
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.agent-flow-footnote {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--border);
+  background: var(--background);
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+}
+
+.agent-flow-footnote svg {
+  width: 1rem;
+  color: var(--success);
 }
 
 .case-tabs {
@@ -1836,6 +2055,24 @@ button.evidence-node {
 
   .document-facts {
     grid-template-columns: 1fr;
+  }
+
+  .agent-flow-header {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .agent-flow-header h3 {
+    font-size: var(--text-lead);
+  }
+
+  .agent-flow-legend {
+    justify-content: flex-start;
+  }
+
+  .agent-flow-canvas {
+    height: 34rem;
   }
 
   .case-tabs {

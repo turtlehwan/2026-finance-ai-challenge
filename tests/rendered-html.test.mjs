@@ -156,6 +156,9 @@ test("analysis API asks for missing facts and updates the result", async () => {
   const first = await firstResponse.json();
   assert.equal(first.needsAnswer, true);
   assert.equal(first.results.length, 3);
+  assert.equal(first.trace.length, 7);
+  assert.equal(first.trace.at(-1).nodeId, "human_review");
+  assert.equal(first.trace.at(-1).status, "waiting");
 
   const answeredResponse = await fetchWorker("/api/analyze", {
     method: "POST",
@@ -168,6 +171,11 @@ test("analysis API asks for missing facts and updates the result", async () => {
   assert.equal(answered.results[1].status, "확인 권장");
   assert.equal(answered.results[0].citations.length, 6);
   assert.match(answered.results[0].clause, /생활재해보장특약Ⅱ 2504/);
+  assert.equal(answered.trace.length, 8);
+  assert.equal(answered.trace.at(-2).nodeId, "evidence_auditor");
+  assert.equal(answered.trace.at(-1).nodeId, "action_planner");
+  assert.equal(answered.audit.approved, true);
+  assert.equal(answered.dataMode, "official-sample");
 });
 
 test("policy resolver selects the official version by product code and date", async () => {
@@ -233,6 +241,63 @@ test("document parser masks PII and structures uploaded facts", async () => {
     result.documents.map((document) => document.maskedPreview).join(" "),
     /550312-1234567|김가상/,
   );
+});
+
+test("user document facts run through the graph and block unsupported versions", async () => {
+  const response = await fetchWorker("/api/analyze", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      caseId: "fracture",
+      answer: "no",
+      documentBundle: {
+        documents: [
+          {
+            filename: "unsupported.txt",
+            mediaType: "text/plain",
+            totalPages: null,
+            characterCount: 80,
+            kind: "mixed",
+            maskedPreview: "상품코드 P999999 계약일 2025-05-10 S52.5",
+            piiMasked: false,
+            facts: {
+              productCode: "P999999",
+              contractDate: "2025-05-10",
+              coverages: ["생활재해보장특약"],
+              diagnosisCodes: ["S52.5"],
+              accidentDate: "2025-05-22",
+              treatment: "부목 고정",
+            },
+          },
+        ],
+        combinedFacts: {
+          productCode: "P999999",
+          contractDate: "2025-05-10",
+          coverages: ["생활재해보장특약"],
+          diagnosisCodes: ["S52.5"],
+          accidentDate: "2025-05-22",
+          treatment: "부목 고정",
+        },
+        warnings: [],
+        processing: {
+          originalStored: false,
+          trainingUse: false,
+          maxFiles: 2,
+          maxFileSizeMb: 5,
+        },
+      },
+    }),
+  });
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.dataMode, "user-document");
+  assert.equal(result.audit.approved, false);
+  assert.equal(result.results[0].status, "확인 불가");
+  assert.equal(
+    result.trace.find((event) => event.nodeId === "version_resolver").status,
+    "attention",
+  );
+  assert.equal(result.trace.at(-1).status, "blocked");
 });
 
 test("PolicyOps approval endpoint stays human-gated", async () => {
