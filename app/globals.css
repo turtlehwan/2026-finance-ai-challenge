@@ -384,6 +384,7 @@ svg {
 .evidence-rail {
   position: relative;
   display: grid;
+  width: 100%;
   grid-template-columns: repeat(var(--evidence-count), minmax(0, 1fr));
   gap: 0.5rem;
 }
@@ -722,7 +723,7 @@ button.evidence-node {
 }
 
 .agent-flow-canvas {
-  height: 33rem;
+  height: 40rem;
 }
 
 .agent-flow-canvas .react-flow__pane {
@@ -743,6 +744,10 @@ button.evidence-node {
   background: rgb(255 255 255 / 88%);
   color: var(--muted-foreground);
   font-size: var(--text-caption);
+}
+
+.agent-flow-canvas .react-flow__attribution a {
+  color: var(--foreground);
 }
 
 .agent-flow-canvas .react-flow__edge-path {
@@ -781,10 +786,20 @@ button.evidence-node {
   box-shadow: var(--shadow-card);
 }
 
+.agent-flow-node [data-slot="card-header"],
 .agent-flow-node [data-slot="card-content"] {
   display: grid;
   gap: 0.7rem;
   padding: 0.8rem;
+}
+
+.agent-flow-node [data-slot="card-content"] {
+  padding-top: 0;
+}
+
+.agent-flow-node [data-slot="card-footer"] {
+  justify-content: flex-end;
+  padding: 0.45rem 0.8rem;
 }
 
 .agent-flow-node.is-completed {

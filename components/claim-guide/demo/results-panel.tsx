@@ -17,6 +17,13 @@ import {
 } from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { Skeleton } from "@/components/ui/skeleton"
 import { RESULT_STATE_ORDER } from "@/lib/claim-guide/presentation"
 import type {
@@ -68,13 +75,17 @@ export function ResultsPanel({
 }) {
   if (phase === "idle") {
     return (
-      <Alert>
-        <SparklesIcon />
-        <AlertTitle>사례를 선택하면 분석을 시작할 수 있습니다</AlertTitle>
-        <AlertDescription>
-          사례 사실을 확인한 뒤 아래의 분석 시작 버튼을 눌러주세요.
-        </AlertDescription>
-      </Alert>
+      <Empty className="border">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <SparklesIcon />
+          </EmptyMedia>
+          <EmptyTitle>사례를 선택하면 분석을 시작할 수 있습니다</EmptyTitle>
+          <EmptyDescription>
+            사례 사실을 확인한 뒤 아래의 분석 시작 버튼을 눌러주세요.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     )
   }
 

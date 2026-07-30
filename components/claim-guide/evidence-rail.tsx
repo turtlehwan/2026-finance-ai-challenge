@@ -11,6 +11,10 @@ import {
   StethoscopeIcon,
 } from "lucide-react"
 
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/ui/toggle-group"
 import { cn } from "@/lib/utils"
 
 const evidenceIcons: LucideIcon[] = [
@@ -41,19 +45,17 @@ export function EvidenceRail({
   compact?: boolean
 }) {
   const progress = items.length > 1 ? activeStep / (items.length - 1) : 0
+  const className = cn(
+    "evidence-rail",
+    compact && "evidence-rail-compact",
+  )
+  const style = {
+    "--evidence-count": items.length,
+    "--evidence-edge": `${100 / Math.max(items.length * 2, 1)}%`,
+  } as CSSProperties
 
-  return (
-    <div
-      className={cn("evidence-rail", compact && "evidence-rail-compact")}
-      role="group"
-      aria-label="근거 경로"
-      style={
-        {
-          "--evidence-count": items.length,
-          "--evidence-edge": `${100 / Math.max(items.length * 2, 1)}%`,
-        } as CSSProperties
-      }
-    >
+  const content = (
+    <>
       <div className="evidence-line" aria-hidden="true">
         <span style={{ transform: `scaleX(${progress})` }} />
       </div>
@@ -61,7 +63,13 @@ export function EvidenceRail({
         const Icon = item.icon ?? evidenceIcons[index] ?? FileTextIcon
         const isActive = index === activeStep
         const isComplete = index < activeStep
-        const content = (
+        const itemClassName = cn(
+          "evidence-node",
+          isActive && "is-active",
+          isComplete && "is-complete",
+          item.warning && "is-warning",
+        )
+        const itemContent = (
           <>
             <span className="evidence-icon-wrap" aria-hidden="true">
               <Icon />
@@ -72,36 +80,51 @@ export function EvidenceRail({
         )
 
         return onSelect ? (
-          <button
-            type="button"
-            className={cn(
-              "evidence-node",
-              isActive && "is-active",
-              isComplete && "is-complete",
-              item.warning && "is-warning",
-            )}
+          <ToggleGroupItem
+            value={String(index)}
+            className={itemClassName}
             data-evidence-node={index}
-            aria-pressed={isActive}
+            aria-label={`${item.label}${item.meta ? `: ${item.meta}` : ""}`}
             key={`${item.label}-${item.meta ?? index}`}
-            onClick={() => onSelect(index)}
           >
-            {content}
-          </button>
+            {itemContent}
+          </ToggleGroupItem>
         ) : (
           <div
-            className={cn(
-              "evidence-node",
-              isActive && "is-active",
-              isComplete && "is-complete",
-              item.warning && "is-warning",
-            )}
+            className={itemClassName}
             data-evidence-node={index}
             key={`${item.label}-${item.meta ?? index}`}
           >
-            {content}
+            {itemContent}
           </div>
         )
       })}
+    </>
+  )
+
+  return onSelect ? (
+    <ToggleGroup
+      type="single"
+      value={String(activeStep)}
+      className={className}
+      aria-label="근거 경로"
+      style={style}
+      onValueChange={(value) => {
+        if (value) {
+          onSelect(Number(value))
+        }
+      }}
+    >
+      {content}
+    </ToggleGroup>
+  ) : (
+    <div
+      className={className}
+      role="group"
+      aria-label="근거 경로"
+      style={style}
+    >
+      {content}
     </div>
   )
 }

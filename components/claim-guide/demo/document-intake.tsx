@@ -20,8 +20,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
 import type { DocumentBundle } from "@/lib/claim-guide/documents"
 
@@ -139,25 +144,34 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
       <CardContent>
         <div className="document-intake-grid">
           <div className="document-upload-panel">
-            <Label htmlFor="claim-documents">보험증권·진료자료</Label>
-            <Input
-              ref={inputRef}
-              id="claim-documents"
-              type="file"
-              accept=".pdf,.txt,application/pdf,text/plain"
-              multiple
-              disabled={phase === "running"}
-              onChange={(event) => {
-                const files = Array.from(event.target.files ?? []).slice(0, 2)
-                setSelectedFiles(files)
-                setBundle(null)
-                setPhase("idle")
-              }}
-            />
-            <p>
-              텍스트 레이어 PDF 또는 TXT · 파일당 5MB · 최대 2개 · 원본 저장
-              안 함
-            </p>
+            <FieldGroup>
+              <Field data-disabled={phase === "running"}>
+                <FieldLabel htmlFor="claim-documents">
+                  보험증권·진료자료
+                </FieldLabel>
+                <Input
+                  ref={inputRef}
+                  id="claim-documents"
+                  type="file"
+                  accept=".pdf,.txt,application/pdf,text/plain"
+                  multiple
+                  disabled={phase === "running"}
+                  onChange={(event) => {
+                    const files = Array.from(event.target.files ?? []).slice(
+                      0,
+                      2,
+                    )
+                    setSelectedFiles(files)
+                    setBundle(null)
+                    setPhase("idle")
+                  }}
+                />
+                <FieldDescription>
+                  텍스트 레이어 PDF 또는 TXT · 파일당 5MB · 최대 2개 ·
+                  원본 저장 안 함
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
 
             {selectedFiles.length ? (
               <div className="selected-documents" aria-label="선택한 문서">

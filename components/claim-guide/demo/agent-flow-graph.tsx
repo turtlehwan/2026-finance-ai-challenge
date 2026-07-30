@@ -28,7 +28,12 @@ import {
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card"
 import type {
   AgentNodeStatus,
   AgentTraceEvent,
@@ -89,35 +94,35 @@ const graphDefinition: Array<{
     id: "graph_retriever",
     label: "Domain GraphRAG",
     role: "Tool",
-    position: { x: 750, y: 190 },
+    position: { x: 750, y: 260 },
     icon: RouteIcon,
   },
   {
     id: "information_gate",
     label: "Information Gate",
     role: "Gate",
-    position: { x: 500, y: 190 },
+    position: { x: 500, y: 260 },
     icon: ScaleIcon,
   },
   {
     id: "human_review",
     label: "Human-in-the-loop",
     role: "Human",
-    position: { x: 500, y: 380 },
+    position: { x: 500, y: 520 },
     icon: UserRoundCheckIcon,
   },
   {
     id: "evidence_auditor",
     label: "Evidence Auditor",
     role: "Agent",
-    position: { x: 250, y: 190 },
+    position: { x: 250, y: 260 },
     icon: ShieldCheckIcon,
   },
   {
     id: "action_planner",
     label: "Action Planner",
     role: "Agent",
-    position: { x: 0, y: 190 },
+    position: { x: 0, y: 260 },
     icon: BotIcon,
   },
 ]
@@ -226,6 +231,7 @@ function AgentFlowCard({ data }: NodeProps<AgentFlowNode>) {
         className="agent-flow-handle"
       />
       <Card
+        size="sm"
         className={cn(
           "agent-flow-node",
           `is-${data.status}`,
@@ -233,31 +239,33 @@ function AgentFlowCard({ data }: NodeProps<AgentFlowNode>) {
         )}
         data-agent-pulse
       >
-        <CardContent>
-          <div className="agent-flow-node-heading">
-            <span>
-              <Icon aria-hidden="true" />
-            </span>
-            <div>
-              <strong>{data.label}</strong>
-              <small>{data.role}</small>
-            </div>
-            <Badge variant={statusBadgeVariants[data.status]}>
-              {statusLabels[data.status]}
-            </Badge>
+        <CardHeader className="agent-flow-node-heading">
+          <span>
+            <Icon aria-hidden="true" />
+          </span>
+          <div>
+            <strong>{data.label}</strong>
+            <small>{data.role}</small>
           </div>
-          <div className="agent-flow-io">
-            <p>
-              <span>IN</span>
-              {data.inputSummary}
-            </p>
-            <p>
-              <span>OUT</span>
-              {data.outputSummary}
-            </p>
-          </div>
-          {data.durationMs ? <time>{data.durationMs}ms</time> : null}
+          <Badge variant={statusBadgeVariants[data.status]}>
+            {statusLabels[data.status]}
+          </Badge>
+        </CardHeader>
+        <CardContent className="agent-flow-io">
+          <p>
+            <span>IN</span>
+            {data.inputSummary}
+          </p>
+          <p>
+            <span>OUT</span>
+            {data.outputSummary}
+          </p>
         </CardContent>
+        {data.durationMs ? (
+          <CardFooter>
+            <time>{data.durationMs}ms</time>
+          </CardFooter>
+        ) : null}
       </Card>
       <Handle
         id="source-right"
@@ -309,7 +317,7 @@ export function AgentFlowGraph({
           id: definition.id,
           type: "agentFlow",
           position: isCompact
-            ? { x: 0, y: index * 220 }
+            ? { x: 0, y: index * 270 }
             : definition.position,
           draggable: false,
           selectable: true,
@@ -430,7 +438,11 @@ export function AgentFlowGraph({
             확대·축소로 경로를 살펴볼 수 있습니다.
           </p>
         </div>
-        <div className="agent-flow-legend" aria-label="Agent 그래프 범례">
+        <div
+          className="agent-flow-legend"
+          role="group"
+          aria-label="Agent 그래프 범례"
+        >
           <Badge variant="success">완료</Badge>
           <Badge variant="warning">사람 확인</Badge>
           <Badge variant="destructive">안전 중단</Badge>
