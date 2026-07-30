@@ -156,6 +156,7 @@ export function AgentDemo() {
             <AgentFlowGraph
               trace={trace}
               activeTraceIndex={activeTraceIndex}
+              humanAnswer={answer}
             />
           ) : null}
 

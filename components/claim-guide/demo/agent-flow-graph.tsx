@@ -37,6 +37,7 @@ import {
 import type {
   AgentNodeStatus,
   AgentTraceEvent,
+  Answer,
 } from "@/lib/claim-guide/types"
 import { cn } from "@/lib/utils"
 
@@ -196,6 +197,16 @@ const statusLabels: Record<AgentNodeStatus, string> = {
   blocked: "안전 중단",
 }
 
+const answerLabels: Record<Answer, string> = {
+  yes: "예",
+  no: "아니오",
+  unknown: "잘 모르겠어요",
+}
+
+function getAnswerLabel(answer: Answer | null) {
+  return answer ? answerLabels[answer] : "미확인"
+}
+
 const statusBadgeVariants: Record<
   AgentNodeStatus,
   "outline" | "success" | "warning" | "destructive"
@@ -296,9 +307,11 @@ const nodeTypes: NodeTypes = {
 export function AgentFlowGraph({
   trace,
   activeTraceIndex,
+  humanAnswer,
 }: {
   trace: AgentTraceEvent[]
   activeTraceIndex: number
+  humanAnswer: Answer | null
 }) {
   const scopeRef = useRef<HTMLDivElement>(null)
   const [isCompact, setIsCompact] = useState(false)
@@ -313,6 +326,8 @@ export function AgentFlowGraph({
     () =>
       graphDefinition.map((definition, index) => {
         const event = traceByNode.get(definition.id)
+        const isAnsweredHumanStep =
+          definition.id === "human_review" && humanAnswer !== null
         return {
           id: definition.id,
           type: "agentFlow",
@@ -324,16 +339,26 @@ export function AgentFlowGraph({
           data: {
             label: event?.label ?? definition.label,
             role: event?.role ?? definition.role,
-            status: event?.status ?? "pending",
-            inputSummary: event?.inputSummary ?? "이전 단계 결과 대기",
-            outputSummary: event?.outputSummary ?? "아직 실행되지 않음",
+            status:
+              event?.status ??
+              (isAnsweredHumanStep ? "completed" : "pending"),
+            inputSummary:
+              event?.inputSummary ??
+              (isAnsweredHumanStep
+                ? "사용자가 확인한 추가 정보"
+                : "이전 단계 결과 대기"),
+            outputSummary:
+              event?.outputSummary ??
+              (isAnsweredHumanStep
+                ? `사용자 답변 반영: ${getAnswerLabel(humanAnswer)}`
+                : "아직 실행되지 않음"),
             durationMs: event?.durationMs ?? null,
             icon: definition.icon,
             isActive: definition.id === activeNodeId,
           },
         }
       }),
-    [activeNodeId, isCompact, traceByNode],
+    [activeNodeId, humanAnswer, isCompact, traceByNode],
   )
   const edges = useMemo<Edge[]>(
     () =>
@@ -341,6 +366,8 @@ export function AgentFlowGraph({
         const targetEvent = traceByNode.get(
           definition.target as AgentTraceEvent["nodeId"],
         )
+        const isHumanAnswerEdge =
+          definition.target === "human_review" && humanAnswer !== null
         return {
           ...definition,
           sourceHandle: isCompact
@@ -349,7 +376,8 @@ export function AgentFlowGraph({
           targetHandle: isCompact ? "target-top" : definition.targetHandle,
           type: "smoothstep",
           animated: targetEvent?.nodeId === activeNodeId,
-          className: targetEvent ? "is-traversed" : "is-pending",
+          className:
+            targetEvent || isHumanAnswerEdge ? "is-traversed" : "is-pending",
           markerEnd: {
             type: MarkerType.ArrowClosed,
             width: 16,
@@ -357,7 +385,7 @@ export function AgentFlowGraph({
           },
         }
       }),
-    [activeNodeId, isCompact, traceByNode],
+    [activeNodeId, humanAnswer, isCompact, traceByNode],
   )
 
   useEffect(() => {

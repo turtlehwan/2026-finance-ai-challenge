@@ -36,6 +36,16 @@ const emptyFacts: GraphFacts = {
   treatment: null,
 }
 
+const answerLabels: Record<Answer, string> = {
+  yes: "예",
+  no: "아니오",
+  unknown: "잘 모르겠어요",
+}
+
+function getAnswerLabel(answer: Answer | null) {
+  return answer ? answerLabels[answer] : "미확인"
+}
+
 const ClaimGraphState = Annotation.Root({
   caseId: Annotation<ClaimCase["id"]>(),
   answer: Annotation<Answer | null>(),
@@ -254,7 +264,7 @@ function informationGate(state: ClaimGraphStateValue) {
           inputSummary: "수술·면책·기존 처리 사실",
           outputSummary: needsAnswer
             ? "사용자 확인이 필요한 질문 1건"
-            : `사용자 답변 반영: ${state.answer}`,
+            : `사용자 답변 반영: ${getAnswerLabel(state.answer)}`,
         },
         startedAt,
       ),
@@ -346,7 +356,7 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
           label: "Evidence Auditor",
           role: "Agent",
           status: approved ? "completed" : "blocked",
-          inputSummary: `${state.evidence.length}개 근거 · 사용자 답변 ${state.answer}`,
+          inputSummary: `${state.evidence.length}개 근거 · 사용자 답변 ${getAnswerLabel(state.answer)}`,
           outputSummary: approved
             ? "4개 안전성 검사 통과"
             : findings.join(" · "),
