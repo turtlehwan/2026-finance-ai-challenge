@@ -57,8 +57,8 @@ test("server-renders the insurance claim guide MVP", async () => {
   assert.match(html, /<title>보험금 길잡이 Agent<\/title>/);
   assert.match(html, /부모님의 보험,/);
   assert.match(html, /<em>Agent<\/em>가 함께 확인합니다/);
-  assert.match(html, /\/family-policy-review-v3\.webp/);
-  assert.match(html, /태블릿의 AI 근거 흐름과 보험 서류/);
+  assert.match(html, /\/family-policy-review-v4\.webp/);
+  assert.match(html, /태블릿의 약관 문서와 보험 서류/);
   assert.match(html, /AI는 근거를 찾고, 가족이 함께 확인합니다/);
   assert.match(html, /근거 경로/);
   assert.match(html, /새 약관도 검토와 승인 뒤에 반영합니다/);
@@ -150,6 +150,9 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   );
   await access(
     new URL("../public/family-policy-review-v3.webp", import.meta.url),
+  );
+  await access(
+    new URL("../public/family-policy-review-v4.webp", import.meta.url),
   );
   await assert.rejects(
     access(
