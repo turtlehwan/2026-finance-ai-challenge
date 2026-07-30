@@ -1,4 +1,8 @@
 import type { Answer, ClaimCase, ClaimResult } from "@/lib/claim-guide/types"
+import {
+  CLAIM_STATUS,
+  RESULT_STATE,
+} from "@/lib/claim-guide/presentation"
 
 export const claimCases: ClaimCase[] = [
   {
@@ -23,7 +27,7 @@ export const claimCases: ClaimCase[] = [
       { label: "담보", meta: "골절진단비" },
       { label: "지급사유", meta: "제12조" },
       { label: "면책", meta: "제14조" },
-      { label: "다음 행동", meta: "확인 권장" },
+      { label: "다음 행동", meta: CLAIM_STATUS.recommended },
     ],
     actionTitle: "골절진단비 확인 Action Pack",
     documents: [
@@ -93,7 +97,7 @@ export const claimCases: ClaimCase[] = [
       { label: "담보", meta: "교통상해" },
       { label: "지급사유", meta: "제9조" },
       { label: "면책", meta: "사고 조건", warning: true },
-      { label: "다음 행동", meta: "확인 불가" },
+      { label: "다음 행동", meta: CLAIM_STATUS.unavailable },
     ],
     actionTitle: "면책 조건 확인 Action Pack",
     documents: [
@@ -114,23 +118,6 @@ export const answerOptions: { value: Answer; label: string }[] = [
   { value: "unknown", label: "잘 모르겠어요" },
 ]
 
-export const analysisSteps = [
-  "사건",
-  "진단",
-  "담보",
-  "지급사유",
-  "면책",
-  "다음 행동",
-]
-
-export const policyOpsSteps = [
-  "신규 약관 감지",
-  "버전·조항 비교",
-  "근거 그래프 갱신",
-  "회귀 평가",
-  "사람 승인",
-]
-
 export function getClaimCase(caseId: string): ClaimCase {
   return claimCases.find((item) => item.id === caseId) ?? claimCases[0]
 }
@@ -142,9 +129,8 @@ export function buildResults(
   if (caseId === "maturity") {
     return [
       {
+        ...RESULT_STATE.recommended,
         title: "중도보험금 발생 시점",
-        status: "확인 권장",
-        tone: "positive",
         reason:
           "계약일과 약관의 경과기간 조건을 대조하면 2022년이 최초 후보 시점입니다.",
         detail:
@@ -152,14 +138,10 @@ export function buildResults(
         clause: "주계약 약관 제21조 · 중도보험금 지급",
       },
       {
+        ...(answer === "unknown" || answer === null
+          ? RESULT_STATE.unavailable
+          : RESULT_STATE.informationRequired),
         title: "이미 지급 또는 인출했는지",
-        status:
-          answer === "no"
-            ? "정보 필요"
-            : answer === "yes"
-              ? "정보 필요"
-              : "확인 불가",
-        tone: answer === "unknown" || answer === null ? "blocked" : "warning",
         reason:
           answer === "yes"
             ? "사용자 기억과 보험사 지급 이력을 대조해야 합니다."
@@ -169,9 +151,8 @@ export function buildResults(
         clause: "보험사 내부 계약·지급 데이터 필요",
       },
       {
+        ...RESULT_STATE.unavailable,
         title: "확정 금액",
-        status: "확인 불가",
-        tone: "blocked",
         reason: "지급 심사 전에는 금액을 확정할 수 없습니다.",
         detail:
           "서비스는 ‘못 받은 돈’처럼 단정하지 않습니다. 공식 조회에서 확정된 금액만 신뢰해야 합니다.",
@@ -183,19 +164,12 @@ export function buildResults(
   if (caseId === "exclusion") {
     return [
       {
+        ...(answer === "no"
+          ? RESULT_STATE.recommended
+          : answer === "yes"
+            ? RESULT_STATE.unavailable
+            : RESULT_STATE.informationRequired),
         title: "교통상해 담보",
-        status:
-          answer === "no"
-            ? "확인 권장"
-            : answer === "yes"
-              ? "확인 불가"
-              : "정보 필요",
-        tone:
-          answer === "no"
-            ? "positive"
-            : answer === "yes"
-              ? "blocked"
-              : "warning",
         reason:
           answer === "yes"
             ? "답변이 면책 검토가 필요한 고위험 조건과 연결됩니다."
@@ -207,9 +181,8 @@ export function buildResults(
         clause: "교통상해 특별약관 제9조 · 제11조",
       },
       {
+        ...RESULT_STATE.unavailable,
         title: "보상 조항 단독 검색 결과",
-        status: "확인 불가",
-        tone: "blocked",
         reason:
           "대응하는 면책·정의 조항이 함께 검색되지 않으면 결과를 생성하지 않습니다.",
         detail:
@@ -217,9 +190,8 @@ export function buildResults(
         clause: "Evidence Validator 규칙 EV-02",
       },
       {
+        ...RESULT_STATE.unavailable,
         title: "최종 지급 여부",
-        status: "확인 불가",
-        tone: "blocked",
         reason: "보험회사의 사고 조사와 지급 심사가 필요한 항목입니다.",
         detail:
           "Agent는 확인해야 할 조건과 서류를 준비하며 최종 지급 여부를 대신 결정하지 않습니다.",
@@ -230,24 +202,20 @@ export function buildResults(
 
   return [
     {
+      ...RESULT_STATE.recommended,
       title: "골절진단비 특약",
-      status: "확인 권장",
-      tone: "positive",
       reason: "증권의 골절진단비 특약과 S52 계열 진단이 연결됩니다.",
       detail:
         "실손 청구와 별개로 정액 담보를 확인할 가치가 있습니다. 지급 여부는 약관상 골절 정의, 진단 확정, 기존 청구 여부에 따라 달라집니다.",
       clause: "골절진단비 특별약관 제12조 · 제14조",
     },
     {
+      ...(answer === "yes"
+        ? RESULT_STATE.recommended
+        : answer === "no"
+          ? RESULT_STATE.lowLikelihood
+          : RESULT_STATE.informationRequired),
       title: "상해수술비 특약",
-      status:
-        answer === "yes"
-          ? "확인 권장"
-          : answer === "no"
-            ? "가능성 낮음"
-            : "정보 필요",
-      tone:
-        answer === "yes" ? "positive" : answer === "no" ? "muted" : "warning",
       reason:
         answer === "yes"
           ? "사용자 답변에서 수술 시행 사실을 확인했습니다."
@@ -259,9 +227,8 @@ export function buildResults(
       clause: "상해수술비 특별약관 제8조 · 수술분류표",
     },
     {
+      ...RESULT_STATE.lowLikelihood,
       title: "입원일당",
-      status: "가능성 낮음",
-      tone: "muted",
       reason: "입원 사실이 입력 자료에서 확인되지 않았습니다.",
       detail:
         "입원 치료를 받았다면 입퇴원확인서를 추가해 다시 확인할 수 있습니다. 현재 자료만으로는 후보 우선순위가 낮습니다.",

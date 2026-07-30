@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import type { LucideIcon } from "lucide-react"
 import {
   ArrowRightIcon,
   BanknoteXIcon,
@@ -11,13 +10,9 @@ import {
   CheckCircle2Icon,
   DatabaseZapIcon,
   ExternalLinkIcon,
-  FileScanIcon,
   FileStackIcon,
   LandmarkIcon,
   ListChecksIcon,
-  MessageCircleQuestionIcon,
-  RouteIcon,
-  ScaleIcon,
   ShieldCheckIcon,
   StethoscopeIcon,
   UserCheckIcon,
@@ -25,6 +20,7 @@ import {
   WalletCardsIcon,
 } from "lucide-react"
 
+import { journeyPresentation } from "@/components/claim-guide/journey-presentation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -34,29 +30,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-
-const workflowSteps: { label: string; detail: string; icon: LucideIcon }[] = [
-  {
-    label: "사례 선택",
-    detail: "보험사건과 증권·치료 사실을 확인",
-    icon: FileScanIcon,
-  },
-  {
-    label: "근거 분석",
-    detail: "가입 시점 약관과 면책을 함께 검토",
-    icon: ScaleIcon,
-  },
-  {
-    label: "정보 확인",
-    detail: "빠진 사실을 한 가지씩 질문",
-    icon: MessageCircleQuestionIcon,
-  },
-  {
-    label: "다음 행동",
-    detail: "서류·질문·공식 경로를 준비",
-    icon: RouteIcon,
-  },
-]
 
 const confirmable = [
   {
@@ -175,7 +148,7 @@ export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
           </div>
         </div>
         <div className="workflow-line">
-          {workflowSteps.map((step, index) => {
+          {journeyPresentation.map((step, index) => {
             const Icon = step.icon
             return (
               <div className="workflow-step scroll-reveal" key={step.label}>

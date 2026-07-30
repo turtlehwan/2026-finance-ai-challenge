@@ -75,8 +75,17 @@ test("server-renders the insurance claim guide MVP", async () => {
 });
 
 test("keeps starter-only assets removed and production metadata wired", async () => {
-  const [page, layout, app, demo, policyOps, preferenceHook, packageJson] =
-    await Promise.all([
+  const [
+    page,
+    layout,
+    app,
+    demo,
+    analysisHook,
+    journeyPresentation,
+    policyOps,
+    preferenceHook,
+    packageJson,
+  ] = await Promise.all([
       readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
       readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
       readFile(
@@ -85,6 +94,17 @@ test("keeps starter-only assets removed and production metadata wired", async ()
       ),
       readFile(
         new URL("../components/claim-guide/agent-demo.tsx", import.meta.url),
+        "utf8",
+      ),
+      readFile(
+        new URL(
+          "../components/claim-guide/demo/use-claim-analysis.ts",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+      readFile(
+        new URL("../lib/claim-guide/presentation.ts", import.meta.url),
         "utf8",
       ),
       readFile(
@@ -102,15 +122,18 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(layout, /generateMetadata/);
   assert.match(layout, /summary_large_image/);
   assert.match(app, /<AgentDemo \/>/);
-  assert.match(demo, /requestAnimationFrame/);
+  assert.match(demo, /useClaimAnalysis/);
   assert.match(demo, /이 사례 분석하기/);
   assert.match(demo, /답변 반영하고 결과 보기/);
-  assert.match(demo, /\/api\/analyze/);
+  assert.match(analysisHook, /requestAnimationFrame/);
+  assert.match(analysisHook, /\/api\/analyze/);
+  assert.match(journeyPresentation, /JOURNEY_STEPS/);
+  assert.match(journeyPresentation, /RESULT_STATE/);
   assert.match(policyOps, /검토 후 반영/);
   assert.match(policyOps, /\/api\/policyops\/review/);
   assert.match(preferenceHook, /claim-guide-preferences:v1/);
   assert.match(packageJson, /"gsap"/);
-  assert.match(demo, /import\("gsap"\)/);
+  assert.match(analysisHook, /import\("gsap"\)/);
   assert.match(packageJson, /"lucide-react"/);
   assert.match(packageJson, /"radix-ui"/);
   assert.match(packageJson, /"shadcn"/);

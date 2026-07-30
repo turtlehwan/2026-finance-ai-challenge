@@ -47,7 +47,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { policyOpsSteps } from "@/lib/claim-guide/cases"
+import { POLICY_OPS_STEPS } from "@/lib/claim-guide/presentation"
 import { cn } from "@/lib/utils"
 
 type DiffMode = "payment" | "exclusion"
@@ -168,7 +168,7 @@ export function PolicyOpsSection() {
               role="list"
               aria-label="PolicyOps 갱신 절차"
             >
-              {policyOpsSteps.map((step, index) => {
+              {POLICY_OPS_STEPS.map((step, index) => {
                 const Icon = stepIcons[index]
                 return (
                   <div

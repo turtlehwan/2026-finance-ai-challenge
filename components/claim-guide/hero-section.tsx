@@ -3,22 +3,12 @@
 import { useEffect, useRef, useState } from "react"
 import {
   ArrowDownIcon,
-  ClipboardCheckIcon,
-  FolderCheckIcon,
   PlayIcon,
-  ScaleIcon,
-  ShieldCheckIcon,
 } from "lucide-react"
 
+import { journeyPresentation } from "@/components/claim-guide/journey-presentation"
 import { Button } from "@/components/ui/button"
 import { EvidenceRail } from "@/components/claim-guide/evidence-rail"
-
-const heroEvidence = [
-  { label: "사례 선택", meta: "사실 확인", icon: ClipboardCheckIcon },
-  { label: "근거 분석", meta: "약관 대조", icon: ScaleIcon },
-  { label: "정보 확인", meta: "추가 질문", icon: ShieldCheckIcon },
-  { label: "다음 행동", meta: "확인 목록", icon: FolderCheckIcon },
-]
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -76,7 +66,7 @@ export function HeroSection() {
               repeat: -1,
               repeatDelay: 0.5,
             })
-            heroEvidence.forEach((_, index) => {
+            journeyPresentation.forEach((_, index) => {
               rail
                 .call(() => setActiveStep(index))
                 .to(`[data-evidence-node="${index}"] .evidence-icon-wrap`, {
@@ -147,10 +137,10 @@ export function HeroSection() {
           <strong>4단계 확인 여정</strong>
           <span>한 번에 한 단계씩</span>
         </div>
-        <EvidenceRail items={heroEvidence} activeStep={activeStep} />
+        <EvidenceRail items={journeyPresentation} activeStep={activeStep} />
         <div className="hero-status" aria-live="polite">
           <span aria-hidden="true" />
-          {heroEvidence[activeStep].label} 단계입니다
+          {journeyPresentation[activeStep].label} 단계입니다
         </div>
       </div>
     </section>
