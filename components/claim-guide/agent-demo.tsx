@@ -42,6 +42,7 @@ import { ActionPack } from "@/components/claim-guide/demo/action-pack"
 import { AgentFlowGraph } from "@/components/claim-guide/demo/agent-flow-graph"
 import { CaseFacts } from "@/components/claim-guide/demo/case-facts"
 import { DocumentIntake } from "@/components/claim-guide/demo/document-intake"
+import { EvaluationPanel } from "@/components/claim-guide/demo/evaluation-panel"
 import { JourneyProgress } from "@/components/claim-guide/demo/journey-progress"
 import { ResultsPanel } from "@/components/claim-guide/demo/results-panel"
 import { useClaimAnalysis } from "@/components/claim-guide/demo/use-claim-analysis"
@@ -360,6 +361,8 @@ export function AgentDemo() {
           Action Pack을 갱신합니다. 실제 보험금 지급 여부는 판단하지 않습니다.
         </AlertDescription>
       </Alert>
+
+      <EvaluationPanel />
     </section>
   )
 }

@@ -302,8 +302,19 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
     types.has("limitation") &&
     types.has("exclusion") &&
     types.has("classification")
+  const caseFactsMatched =
+    !isFracture ||
+    (state.facts.coverages.some((coverage) =>
+      coverage.includes("생활재해보장특약"),
+    ) &&
+      state.facts.diagnosisCodes.some((code) => code.startsWith("S52")))
   const approved = isFracture
-    ? Boolean(versionMatched && citationValidated && coverageAndLimits)
+    ? Boolean(
+        versionMatched &&
+          citationValidated &&
+          coverageAndLimits &&
+          caseFactsMatched,
+      )
     : true
   const findings = approved
     ? [
@@ -315,6 +326,7 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
     : [
         !versionMatched ? "적용 약관 버전 미확인" : "",
         !coverageAndLimits ? "지급·면책 근거 경로 불완전" : "",
+        !caseFactsMatched ? "가입특약 또는 S52 진단 근거 미확인" : "",
         !citationValidated ? "공식 원문 인용 검증 실패" : "",
       ].filter(Boolean)
   const audit: EvidenceAudit = {

@@ -300,6 +300,20 @@ test("user document facts run through the graph and block unsupported versions",
   assert.equal(result.trace.at(-1).status, "blocked");
 });
 
+test("evaluation endpoint runs all 50 fixtures through the graph", async () => {
+  const response = await fetchWorker("/api/evaluation/summary");
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.dataset.total, 50);
+  assert.equal(result.dataset.supported, 30);
+  assert.equal(result.dataset.unsupported, 20);
+  assert.equal(result.metrics.versionSelection, 100);
+  assert.equal(result.metrics.evidenceCompleteness, 100);
+  assert.equal(result.metrics.safeAbstention, 100);
+  assert.equal(result.metrics.traceIntegrity, 100);
+  assert.match(result.limitations.join(" "), /실제 보험금 지급 정확도/);
+});
+
 test("PolicyOps approval endpoint stays human-gated", async () => {
   const response = await fetchWorker("/api/policyops/review", {
     method: "POST",

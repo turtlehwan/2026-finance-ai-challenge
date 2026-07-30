@@ -1404,6 +1404,89 @@ button.evidence-node {
   margin-top: 1rem;
 }
 
+.evaluation-card {
+  margin-top: 1rem;
+  border-color: var(--success-border);
+  box-shadow: var(--shadow-card);
+}
+
+.evaluation-card > [data-slot="card-header"] {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.evaluation-card > [data-slot="card-header"] > div {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.evaluation-card [data-slot="card-title"] {
+  margin-top: 0.2rem;
+}
+
+.evaluation-card [data-slot="badge"] {
+  width: fit-content;
+}
+
+.evaluation-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.evaluation-metrics > div {
+  display: grid;
+  justify-items: start;
+  gap: 0.35rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  background: var(--muted);
+}
+
+.evaluation-metrics > div > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 0.55rem;
+  background: var(--accent);
+  color: var(--success);
+}
+
+.evaluation-metrics svg {
+  width: 1rem;
+}
+
+.evaluation-metrics strong {
+  font-size: var(--text-title);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--leading-tight);
+}
+
+.evaluation-metrics p,
+.evaluation-method p,
+.evaluation-method li {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+}
+
+.evaluation-method {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.65rem;
+  background: var(--muted);
+}
+
+.evaluation-method ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
 .policy-section,
 .workflow-section,
 .trust-section {
@@ -2137,6 +2220,14 @@ button.evidence-node {
 
   .action-pack-grid {
     grid-template-columns: 1fr;
+  }
+
+  .evaluation-card > [data-slot="card-header"] {
+    grid-template-columns: 1fr;
+  }
+
+  .evaluation-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .action-pack-actions {
