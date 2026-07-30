@@ -143,7 +143,7 @@ export function HeroSection() {
       <div className="hero-visual">
         <Image
           className="hero-photo"
-          src="/family-policy-review-v2.webp"
+          src="/family-policy-review-v3.webp"
           alt="태블릿의 AI 근거 흐름과 보험 서류를 함께 확인하는 어머니와 청년 자녀"
           width={1536}
           height={1024}
