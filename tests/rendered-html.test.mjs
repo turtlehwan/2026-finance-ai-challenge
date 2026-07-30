@@ -58,8 +58,12 @@ test("server-renders the insurance claim guide MVP", async () => {
   assert.match(html, /부모님의 보험,/);
   assert.match(html, /<em>Agent<\/em>가 함께 확인합니다/);
   assert.match(html, /근거 경로/);
-  assert.match(html, /새 약관이 들어와도/);
-  assert.match(html, /Agent 분석 데모/);
+  assert.match(html, /새 약관도 검토와 승인 뒤에 반영합니다/);
+  assert.match(html, /한 번에 한 단계씩 확인해보세요/);
+  assert.match(html, /사례 선택/);
+  assert.match(html, /근거 분석/);
+  assert.match(html, /정보 확인/);
+  assert.match(html, /다음 행동/);
   assert.match(html, /알 수 있는 것과 없는 것/);
   assert.match(html, /https:\/\/cont\.insure\.or\.kr\//);
   assert.match(html, /https:\/\/www\.silson24\.or\.kr\/claim\/web\//);
@@ -73,33 +77,34 @@ test("server-renders the insurance claim guide MVP", async () => {
 test("keeps starter-only assets removed and production metadata wired", async () => {
   const [page, layout, app, demo, policyOps, preferenceHook, packageJson] =
     await Promise.all([
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
-    readFile(
-      new URL("../app/components/ClaimGuideApp.tsx", import.meta.url),
-      "utf8",
-    ),
-    readFile(
-      new URL("../components/claim-guide/agent-demo.tsx", import.meta.url),
-      "utf8",
-    ),
-    readFile(
-      new URL(
-        "../components/claim-guide/policy-ops-section.tsx",
-        import.meta.url,
+      readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+      readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+      readFile(
+        new URL("../app/components/ClaimGuideApp.tsx", import.meta.url),
+        "utf8",
       ),
-      "utf8",
-    ),
-    readFile(new URL("../hooks/use-large-text.ts", import.meta.url), "utf8"),
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
-  ]);
+      readFile(
+        new URL("../components/claim-guide/agent-demo.tsx", import.meta.url),
+        "utf8",
+      ),
+      readFile(
+        new URL(
+          "../components/claim-guide/policy-ops-section.tsx",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+      readFile(new URL("../hooks/use-large-text.ts", import.meta.url), "utf8"),
+      readFile(new URL("../package.json", import.meta.url), "utf8"),
+    ]);
 
   assert.match(page, /<ClaimGuideApp \/>/);
   assert.match(layout, /generateMetadata/);
   assert.match(layout, /summary_large_image/);
   assert.match(app, /<AgentDemo \/>/);
   assert.match(demo, /requestAnimationFrame/);
-  assert.match(demo, /Agent 분석 시작/);
+  assert.match(demo, /이 사례 분석하기/);
+  assert.match(demo, /답변 반영하고 결과 보기/);
   assert.match(demo, /\/api\/analyze/);
   assert.match(policyOps, /검토 후 반영/);
   assert.match(policyOps, /\/api\/policyops\/review/);
@@ -113,10 +118,7 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   await access(new URL("../public/og-v2.png", import.meta.url));
   await assert.rejects(
     access(
-      new URL(
-        "../app/_sites-preview/SkeletonPreview.tsx",
-        import.meta.url,
-      ),
+      new URL("../app/_sites-preview/SkeletonPreview.tsx", import.meta.url),
     ),
   );
 });
@@ -163,6 +165,8 @@ test("design system keeps one icon library and readable text tokens", async () =
   ]);
 
   assert.match(styles, /--text-caption: 0\.875rem/);
+  assert.match(styles, /--leading-tight: 1\.35/);
+  assert.match(styles, /--leading-body: 1\.65/);
   assert.doesNotMatch(styles, /linear-gradient|radial-gradient/);
   assert.doesNotMatch(`${badge}\n${button}\n${tooltip}`, /text-xs|0\.8rem/);
   assert.match(badge, /from "lucide-react"|badgeVariants/);
