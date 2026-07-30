@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+
+import { ClaimGuideProviders } from "@/components/claim-guide/providers";
+
 import "./globals.css";
 
 const title = "보험금 길잡이 Agent";
@@ -16,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     requestHeaders.get("x-forwarded-proto") ??
     (host.startsWith("localhost") ? "http" : "https");
   const baseUrl = new URL(`${protocol}://${host}`);
-  const imageUrl = new URL("/og.png", baseUrl).toString();
+  const imageUrl = new URL("/og-v2.png", baseUrl).toString();
 
   return {
     metadataBase: baseUrl,
@@ -44,7 +47,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <ClaimGuideProviders>{children}</ClaimGuideProviders>
+      </body>
     </html>
   );
 }
