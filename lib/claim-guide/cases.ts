@@ -1,4 +1,5 @@
 import type { Answer, ClaimCase, ClaimResult } from "@/lib/claim-guide/types"
+import { getFractureEvidence } from "@/lib/claim-guide/policies"
 import {
   CLAIM_STATUS,
   RESULT_STATE,
@@ -16,17 +17,17 @@ export const claimCases: ClaimCase[] = [
     questionHint:
       "상해수술비는 진단명만으로 확인할 수 없습니다. 모르면 추정하지 않고 정보 필요 항목으로 남깁니다.",
     facts: [
-      { label: "사고일", value: "2025. 04. 15" },
+      { label: "사고일", value: "2025. 05. 22" },
       { label: "진단명", value: "좌측 요골 원위부 골절 (S52.5)" },
-      { label: "치료", value: "석고 고정 4주 · 통원 치료" },
-      { label: "계약", value: "종합보험 · 2012년 가입" },
+      { label: "가입특약", value: "생활재해보장특약Ⅱ 2504" },
+      { label: "계약", value: "P400073 · 2025. 05. 10" },
     ],
     evidence: [
       { label: "사건", meta: "손목 골절" },
-      { label: "진단", meta: "S52 진단군" },
-      { label: "담보", meta: "골절진단비" },
-      { label: "지급사유", meta: "제12조" },
-      { label: "면책", meta: "제14조" },
+      { label: "진단", meta: "S52.5" },
+      { label: "약관 버전", meta: "P400073 · 2504" },
+      { label: "지급사유", meta: "특약 제3조" },
+      { label: "면책·제한", meta: "특약 제4·8조" },
       { label: "다음 행동", meta: CLAIM_STATUS.recommended },
     ],
     actionTitle: "골절진단비 확인 Action Pack",
@@ -200,14 +201,28 @@ export function buildResults(
     ]
   }
 
+  const fractureEvidence = getFractureEvidence()
+  const findEvidence = (...types: string[]) =>
+    fractureEvidence.filter((clause) => types.includes(clause.type))
+
   return [
     {
       ...RESULT_STATE.recommended,
-      title: "골절진단비 특약",
-      reason: "증권의 골절진단비 특약과 S52 계열 진단이 연결됩니다.",
+      title: "재해골절(치아파절제외)보험금",
+      reason:
+        "P400073 증권의 생활재해보장특약Ⅱ와 S52.5 진단이 2504 약관 근거로 연결됩니다.",
       detail:
-        "실손 청구와 별개로 정액 담보를 확인할 가치가 있습니다. 지급 여부는 약관상 골절 정의, 진단 확정, 기존 청구 여부에 따라 달라집니다.",
-      clause: "골절진단비 특별약관 제12조 · 제14조",
+        "확인 권장 상태이며 지급 확정이 아닙니다. 재해 여부, 보장개시일, 기존 청구 여부와 공통 면책은 보험사 공식 채널에서 함께 확인해야 합니다.",
+      clause:
+        "무배당 생활재해보장특약Ⅱ 2504 제3조·제4조·제6조·제8조·별표1·별표5",
+      citations: findEvidence(
+        "coverage",
+        "definition",
+        "limitation",
+        "exclusion",
+        "benefit-table",
+        "classification",
+      ),
     },
     {
       ...(answer === "yes"
@@ -223,16 +238,16 @@ export function buildResults(
             ? "사용자 답변에서 수술을 받지 않은 것으로 확인했습니다."
             : "수술 여부가 확인되지 않아 약관상 수술 정의를 대조할 수 없습니다.",
       detail:
-        "의료행위가 있었다는 사실만으로 약관상 수술에 해당한다고 단정하지 않습니다. 수술기록지와 특약의 수술 정의가 추가로 필요합니다.",
-      clause: "상해수술비 특별약관 제8조 · 수술분류표",
+        "현재 불러온 생활재해보장특약Ⅱ는 수술비 담보가 아닙니다. 증권에 별도 수술 특약이 있는지와 해당 약관 버전을 추가 확인해야 합니다.",
+      clause: "현재 증권 입력에서 별도 수술 특약 근거 미확인",
     },
     {
       ...RESULT_STATE.lowLikelihood,
       title: "입원일당",
       reason: "입원 사실이 입력 자료에서 확인되지 않았습니다.",
       detail:
-        "입원 치료를 받았다면 입퇴원확인서를 추가해 다시 확인할 수 있습니다. 현재 자료만으로는 후보 우선순위가 낮습니다.",
-      clause: "상해입원일당 특별약관 제6조",
+        "입원 치료를 받았거나 증권에 별도 입원 특약이 있다면 관련 자료를 추가해 다시 확인할 수 있습니다.",
+      clause: "현재 증권·진료 입력에서 입원 담보와 입원 사실 미확인",
     },
   ]
 }

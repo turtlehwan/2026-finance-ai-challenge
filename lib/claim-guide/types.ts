@@ -20,12 +20,21 @@ export type ClaimResult = {
   reason: string
   detail: string
   clause: string
+  citations?: EvidenceCitation[]
 }
 
 export type EvidenceNode = {
   label: string
   meta: string
   warning?: boolean
+}
+
+export type EvidenceCitation = {
+  sourceTitle: string
+  sourceUrl: string
+  page: number
+  article: string
+  excerpt: string
 }
 
 export type ClaimCase = {

@@ -939,6 +939,36 @@ button.evidence-node {
   margin: 0;
 }
 
+.result-citations {
+  display: grid;
+  gap: 0.4rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--border);
+}
+
+.result-citations a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.55rem;
+  background: var(--background);
+}
+
+.result-citations a:hover,
+.result-citations a:focus-visible {
+  border-color: var(--ring);
+}
+
+.result-citations a svg {
+  width: 1rem;
+  min-width: 1rem;
+  color: var(--primary);
+}
+
 .action-pack-reveal {
   display: grid;
   justify-items: end;

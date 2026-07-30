@@ -166,6 +166,21 @@ test("analysis API asks for missing facts and updates the result", async () => {
   const answered = await answeredResponse.json();
   assert.equal(answered.needsAnswer, false);
   assert.equal(answered.results[1].status, "확인 권장");
+  assert.equal(answered.results[0].citations.length, 6);
+  assert.match(answered.results[0].clause, /생활재해보장특약Ⅱ 2504/);
+});
+
+test("policy resolver selects the official version by product code and date", async () => {
+  const response = await fetchWorker(
+    "/api/policies/resolve?productCode=P400073&contractDate=2025-05-10",
+  );
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.status, "resolved");
+  assert.equal(result.policy.versionLabel, "2504");
+  assert.equal(result.policy.evidenceReady, true);
+  assert.equal(result.policy.clauses.length, 7);
+  assert.match(result.policy.sourceUrl, /epostlife\.go\.kr/);
 });
 
 test("PolicyOps approval endpoint stays human-gated", async () => {

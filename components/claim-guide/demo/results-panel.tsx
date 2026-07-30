@@ -3,6 +3,7 @@ import type { LucideIcon } from "lucide-react"
 import {
   AlertTriangleIcon,
   CheckCircle2Icon,
+  ExternalLinkIcon,
   InfoIcon,
   ShieldAlertIcon,
   SparklesIcon,
@@ -145,6 +146,24 @@ export function ResultsPanel({
                     <span>{result.clause}</span>
                   </div>
                   <p>{result.detail}</p>
+                  {result.citations?.length ? (
+                    <div className="result-citations">
+                      <strong>공식 원문</strong>
+                      {result.citations.map((citation) => (
+                        <a
+                          href={`${citation.sourceUrl}#page=${citation.page}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          key={`${citation.article}-${citation.page}`}
+                        >
+                          <span>
+                            {citation.article} · PDF {citation.page}쪽
+                          </span>
+                          <ExternalLinkIcon aria-hidden="true" />
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
               </AccordionContent>
             </AccordionItem>
