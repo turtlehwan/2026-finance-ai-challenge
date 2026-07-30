@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import type { LucideIcon } from "lucide-react"
 import {
   BoneIcon,
@@ -39,6 +40,7 @@ import {
 } from "@/components/ui/tooltip"
 import { ActionPack } from "@/components/claim-guide/demo/action-pack"
 import { CaseFacts } from "@/components/claim-guide/demo/case-facts"
+import { DocumentIntake } from "@/components/claim-guide/demo/document-intake"
 import { JourneyProgress } from "@/components/claim-guide/demo/journey-progress"
 import { ResultsPanel } from "@/components/claim-guide/demo/results-panel"
 import { useClaimAnalysis } from "@/components/claim-guide/demo/use-claim-analysis"
@@ -47,10 +49,12 @@ import { journeyPresentation } from "@/components/claim-guide/journey-presentati
 import { answerOptions, claimCases } from "@/lib/claim-guide/cases"
 import { ANALYSIS_STEPS } from "@/lib/claim-guide/presentation"
 import type { Answer } from "@/lib/claim-guide/types"
+import type { DocumentBundle } from "@/lib/claim-guide/documents"
 
 const caseIcons: LucideIcon[] = [BoneIcon, CalendarClockIcon, ShieldAlertIcon]
 
 export function AgentDemo() {
+  const [, setDocumentBundle] = useState<DocumentBundle | null>(null)
   const {
     activeCase,
     activeStep,
@@ -79,6 +83,12 @@ export function AgentDemo() {
             안내합니다.
           </p>
         </div>
+      </div>
+
+      <DocumentIntake onBundle={setDocumentBundle} />
+
+      <div className="demo-divider" aria-hidden="true">
+        <span>또는 준비된 사례로 빠르게 확인</span>
       </div>
 
       <ToggleGroup

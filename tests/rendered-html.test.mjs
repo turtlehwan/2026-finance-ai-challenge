@@ -183,6 +183,58 @@ test("policy resolver selects the official version by product code and date", as
   assert.match(result.policy.sourceUrl, /epostlife\.go\.kr/);
 });
 
+test("document parser masks PII and structures uploaded facts", async () => {
+  const formData = new FormData();
+  formData.append(
+    "files",
+    new File(
+      [
+        [
+          "상품코드: P400073",
+          "계약일: 2025-05-10",
+          "피보험자: 김가상",
+          "주민등록번호: 550312-1234567",
+          "가입특약: 무배당 생활재해보장특약Ⅱ 2504",
+        ].join("\n"),
+      ],
+      "certificate.txt",
+      { type: "text/plain" },
+    ),
+  );
+  formData.append(
+    "files",
+    new File(
+      [
+        [
+          "환자명: 김가상",
+          "사고일: 2025-05-22",
+          "질병분류코드: S52.5",
+          "치료: 부목 고정",
+        ].join("\n"),
+      ],
+      "medical.txt",
+      { type: "text/plain" },
+    ),
+  );
+
+  const response = await fetchWorker("/api/documents/parse", {
+    method: "POST",
+    body: formData,
+  });
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.documents.length, 2);
+  assert.equal(result.combinedFacts.productCode, "P400073");
+  assert.equal(result.combinedFacts.contractDate, "2025-05-10");
+  assert.deepEqual(result.combinedFacts.diagnosisCodes, ["S52.5"]);
+  assert.equal(result.processing.originalStored, false);
+  assert.equal(result.processing.trainingUse, false);
+  assert.doesNotMatch(
+    result.documents.map((document) => document.maskedPreview).join(" "),
+    /550312-1234567|김가상/,
+  );
+});
+
 test("PolicyOps approval endpoint stays human-gated", async () => {
   const response = await fetchWorker("/api/policyops/review", {
     method: "POST",
