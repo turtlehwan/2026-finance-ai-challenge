@@ -30,7 +30,7 @@ export const claimCases: ClaimCase[] = [
       { label: "면책·제한", meta: "특약 제4·8조" },
       { label: "다음 행동", meta: CLAIM_STATUS.recommended },
     ],
-    actionTitle: "골절진단비 확인 Action Pack",
+    actionTitle: "재해골절보험금 확인 Action Pack",
     documents: [
       "진단명·질병분류코드가 있는 진단서",
       "보험증권 또는 가입내역",
@@ -226,14 +226,14 @@ export function buildResults(
     },
     {
       ...(answer === "yes"
-        ? RESULT_STATE.recommended
+        ? RESULT_STATE.informationRequired
         : answer === "no"
           ? RESULT_STATE.lowLikelihood
           : RESULT_STATE.informationRequired),
       title: "상해수술비 특약",
       reason:
         answer === "yes"
-          ? "사용자 답변에서 수술 시행 사실을 확인했습니다."
+          ? "수술 사실은 확인됐지만 현재 증권에서 별도 수술 특약 근거를 찾지 못했습니다."
           : answer === "no"
             ? "사용자 답변에서 수술을 받지 않은 것으로 확인했습니다."
             : "수술 여부가 확인되지 않아 약관상 수술 정의를 대조할 수 없습니다.",

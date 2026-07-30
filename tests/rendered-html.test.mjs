@@ -168,7 +168,7 @@ test("analysis API asks for missing facts and updates the result", async () => {
   assert.equal(answeredResponse.status, 200);
   const answered = await answeredResponse.json();
   assert.equal(answered.needsAnswer, false);
-  assert.equal(answered.results[1].status, "확인 권장");
+  assert.equal(answered.results[1].status, "정보 필요");
   assert.equal(answered.results[0].citations.length, 6);
   assert.match(answered.results[0].clause, /생활재해보장특약Ⅱ 2504/);
   assert.equal(answered.trace.length, 8);

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useGSAP } from "@gsap/react"
 import {
   Background,
@@ -12,6 +12,7 @@ import {
   type Node,
   type NodeProps,
   type NodeTypes,
+  type ReactFlowInstance,
 } from "@xyflow/react"
 import gsap from "gsap"
 import type { LucideIcon } from "lucide-react"
@@ -296,6 +297,9 @@ export function AgentFlowGraph({
   activeTraceIndex: number
 }) {
   const scopeRef = useRef<HTMLDivElement>(null)
+  const [isCompact, setIsCompact] = useState(false)
+  const [flowInstance, setFlowInstance] =
+    useState<ReactFlowInstance<AgentFlowNode, Edge> | null>(null)
   const activeNodeId = trace[activeTraceIndex]?.nodeId ?? null
   const traceByNode = useMemo(
     () => new Map(trace.map((event) => [event.nodeId, event])),
@@ -303,12 +307,14 @@ export function AgentFlowGraph({
   )
   const nodes = useMemo<AgentFlowNode[]>(
     () =>
-      graphDefinition.map((definition) => {
+      graphDefinition.map((definition, index) => {
         const event = traceByNode.get(definition.id)
         return {
           id: definition.id,
           type: "agentFlow",
-          position: definition.position,
+          position: isCompact
+            ? { x: 0, y: index * 220 }
+            : definition.position,
           draggable: false,
           selectable: true,
           data: {
@@ -323,7 +329,7 @@ export function AgentFlowGraph({
           },
         }
       }),
-    [activeNodeId, traceByNode],
+    [activeNodeId, isCompact, traceByNode],
   )
   const edges = useMemo<Edge[]>(
     () =>
@@ -333,6 +339,10 @@ export function AgentFlowGraph({
         )
         return {
           ...definition,
+          sourceHandle: isCompact
+            ? "source-bottom"
+            : definition.sourceHandle,
+          targetHandle: isCompact ? "target-top" : definition.targetHandle,
           type: "smoothstep",
           animated: targetEvent?.nodeId === activeNodeId,
           className: targetEvent ? "is-traversed" : "is-pending",
@@ -343,8 +353,33 @@ export function AgentFlowGraph({
           },
         }
       }),
-    [activeNodeId, traceByNode],
+    [activeNodeId, isCompact, traceByNode],
   )
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 48rem)")
+    const update = () => setIsCompact(media.matches)
+    update()
+    media.addEventListener("change", update)
+
+    return () => media.removeEventListener("change", update)
+  }, [])
+
+  useEffect(() => {
+    if (!isCompact || !flowInstance || !activeNodeId) {
+      return
+    }
+
+    void flowInstance.fitView({
+      nodes: [{ id: activeNodeId }],
+      padding: 0.45,
+      minZoom: 0.9,
+      maxZoom: 0.9,
+      duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? 0
+        : 280,
+    })
+  }, [activeNodeId, flowInstance, isCompact])
 
   useGSAP(
     () => {
@@ -396,17 +431,28 @@ export function AgentFlowGraph({
       </div>
       <div className="agent-flow-canvas">
         <ReactFlow
+          key={isCompact ? "compact" : "wide"}
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
-          fitView
+          fitView={!isCompact}
           fitViewOptions={{ padding: 0.14, maxZoom: 1 }}
-          minZoom={0.55}
+          defaultViewport={
+            isCompact
+              ? {
+                  x: 72,
+                  y: 24,
+                  zoom: 0.9,
+                }
+              : undefined
+          }
+          minZoom={isCompact ? 0.7 : 0.55}
           maxZoom={1.35}
           nodesDraggable={false}
           nodesConnectable={false}
           panOnScroll
           zoomOnDoubleClick={false}
+          onInit={setFlowInstance}
           aria-label="보험금 확인 Agent 실행 그래프"
         >
           <Background gap={24} size={1} />

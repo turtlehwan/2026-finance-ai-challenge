@@ -120,13 +120,24 @@ export function extractDocumentFacts(
     normalizedText.toUpperCase(),
     /\b([A-Z]\d{2}(?:\.\d{1,2})?)\b/g,
   ).slice(0, 10)
-  const coverages = uniqueMatches(
-    normalizedText,
-    /([^\n\r:：]{2,40}(?:특약|보험금|진단비|수술비|입원일당))/g,
-  )
-    .map((coverage) => coverage.replace(/^[·\-*\s]+/, "").trim())
-    .filter((coverage) => !coverage.includes("지급사유"))
-    .slice(0, 10)
+  const coverages = [
+    ...new Set(
+      normalizedText
+        .split("\n")
+        .map((line) =>
+          line
+            .replace(/^[·\-*\s]+/, "")
+            .replace(/^(?:가입특약|가입담보)\s*[:：]\s*/, "")
+            .trim(),
+        )
+        .filter(
+          (line) =>
+            /(특약|보험금|진단비|수술비|입원일당)/.test(line) &&
+            !/^(?:가입특약|가입담보|특약)$/.test(line) &&
+            !/(?:특약보험가입금액|지급사유)/.test(line),
+        ),
+    ),
+  ].slice(0, 10)
   const treatment =
     normalizedText.match(
       /(?:치료|처치|수술명|진료내용)\s*[:：]?\s*([^\n\r]{2,100})/,

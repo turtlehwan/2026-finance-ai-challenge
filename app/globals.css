@@ -809,7 +809,7 @@ button.evidence-node {
 
 .agent-flow-node-heading {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 0.55rem;
 }
@@ -832,6 +832,11 @@ button.evidence-node {
   display: grid;
   min-width: 0;
   gap: 0.05rem;
+}
+
+.agent-flow-node-heading > [data-slot="badge"] {
+  grid-column: 1 / -1;
+  justify-self: start;
 }
 
 .agent-flow-node-heading strong,
