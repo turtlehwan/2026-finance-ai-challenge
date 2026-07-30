@@ -1,9 +1,6 @@
 "use client"
 
-import { useRef } from "react"
-import { useGSAP } from "@gsap/react"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useEffect, useRef } from "react"
 import type { LucideIcon } from "lucide-react"
 import {
   ArrowRightIcon,
@@ -122,8 +119,6 @@ const humanTasks = [
   "최종 청구 실행",
 ]
 
-gsap.registerPlugin(useGSAP, ScrollTrigger)
-
 export function TrustSections({
   policyOps,
 }: {
@@ -131,43 +126,59 @@ export function TrustSections({
 }) {
   const rootRef = useRef<HTMLDivElement>(null)
 
-  useGSAP(
-    () => {
-      const media = gsap.matchMedia()
-      media.add(
-        {
-          motion: "(prefers-reduced-motion: no-preference)",
-          reduced: "(prefers-reduced-motion: reduce)",
-        },
-        (context) => {
-          if (context.conditions?.reduced) {
-            return
-          }
+  useEffect(() => {
+    let cancelled = false
+    let cleanup = () => {}
 
-          ScrollTrigger.batch(".scroll-reveal", {
-            start: "top 84%",
-            once: true,
-            onEnter: (elements) => {
-              gsap.fromTo(
-                elements,
-                { autoAlpha: 0, y: 22 },
-                {
-                  autoAlpha: 1,
-                  y: 0,
-                  duration: 0.62,
-                  stagger: 0.08,
-                  ease: "power2.out",
-                  clearProps: "transform,opacity,visibility",
-                },
-              )
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
+      ([{ default: gsap }, { ScrollTrigger }]) => {
+        if (cancelled) {
+          return
+        }
+        gsap.registerPlugin(ScrollTrigger)
+        const context = gsap.context(() => {
+          const media = gsap.matchMedia()
+          media.add(
+            {
+              motion: "(prefers-reduced-motion: no-preference)",
+              reduced: "(prefers-reduced-motion: reduce)",
             },
-          })
-        },
-      )
-      return () => media.revert()
-    },
-    { scope: rootRef },
-  )
+            (conditions) => {
+              if (conditions.conditions?.reduced) {
+                return
+              }
+
+              ScrollTrigger.batch(".scroll-reveal", {
+                start: "top 84%",
+                once: true,
+                onEnter: (elements) => {
+                  gsap.fromTo(
+                    elements,
+                    { autoAlpha: 0, y: 22 },
+                    {
+                      autoAlpha: 1,
+                      y: 0,
+                      duration: 0.62,
+                      stagger: 0.08,
+                      ease: "power2.out",
+                      clearProps: "transform,opacity,visibility",
+                    },
+                  )
+                },
+              })
+            },
+          )
+        }, rootRef)
+
+        cleanup = () => context.revert()
+      },
+    )
+
+    return () => {
+      cancelled = true
+      cleanup()
+    }
+  }, [])
 
   return (
     <div ref={rootRef}>

@@ -1,8 +1,6 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useGSAP } from "@gsap/react"
-import gsap from "gsap"
 import type { LucideIcon } from "lucide-react"
 import {
   AlertTriangleIcon,
@@ -99,10 +97,10 @@ const toneVariants: Record<
 }
 
 type Phase = "idle" | "running" | "question" | "complete" | "error"
+type GsapRuntime = typeof import("gsap").default
+type GsapContext = ReturnType<GsapRuntime["context"]>
 
 const SESSION_KEY = "claim-guide-session:v1"
-
-gsap.registerPlugin(useGSAP)
 
 function readSavedSession(): {
   caseId: ClaimCase["id"]
@@ -404,7 +402,9 @@ function ActionPack({
 
 export function AgentDemo() {
   const demoRef = useRef<HTMLElement>(null)
-  const timelineRef = useRef<gsap.core.Timeline | null>(null)
+  const gsapRef = useRef<GsapRuntime | null>(null)
+  const gsapContextRef = useRef<GsapContext | null>(null)
+  const timelineRef = useRef<GSAPTimeline | null>(null)
   const requestIdRef = useRef(0)
   const [selectedId, setSelectedId] =
     useState<ClaimCase["id"]>("fracture")
@@ -431,36 +431,61 @@ export function AgentDemo() {
     return () => window.clearTimeout(restoreTimer)
   }, [])
 
-  const { contextSafe } = useGSAP(
-    () => {
-      return () => {
-        timelineRef.current?.kill()
-        requestIdRef.current += 1
+  useEffect(() => {
+    let cancelled = false
+
+    void import("gsap").then(({ default: gsap }) => {
+      if (cancelled) {
+        return
       }
-    },
-    { scope: demoRef },
-  )
-
-  const animateResults = contextSafe(() => {
-    requestAnimationFrame(() => {
-      gsap.fromTo(
-        ".result-accordion-item",
-        { autoAlpha: 0, y: 14 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.45,
-          stagger: 0.08,
-          ease: "power2.out",
-          clearProps: "transform,opacity,visibility",
-        },
-      )
+      gsapRef.current = gsap
+      gsapContextRef.current = gsap.context(() => {}, demoRef)
     })
-  })
 
-  const playAnalysisTimeline = contextSafe(
-    (payload: AnalysisResponse): gsap.core.Timeline => {
-      const timeline = gsap.timeline({
+    return () => {
+      cancelled = true
+      timelineRef.current?.kill()
+      gsapContextRef.current?.revert()
+      gsapContextRef.current = null
+      gsapRef.current = null
+      requestIdRef.current += 1
+    }
+  }, [])
+
+  const animateResults = () => {
+    requestAnimationFrame(() => {
+      const gsap = gsapRef.current
+      if (!gsap) {
+        return
+      }
+      gsapContextRef.current?.add(() => {
+        gsap.fromTo(
+          ".result-accordion-item",
+          { autoAlpha: 0, y: 14 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.45,
+            stagger: 0.08,
+            ease: "power2.out",
+            clearProps: "transform,opacity,visibility",
+          },
+        )
+      })
+    })
+  }
+
+  const playAnalysisTimeline = (
+    payload: AnalysisResponse,
+  ): GSAPTimeline | null => {
+    const gsap = gsapRef.current
+    if (!gsap) {
+      return null
+    }
+
+    let timeline: GSAPTimeline | null = null
+    gsapContextRef.current?.add(() => {
+      timeline = gsap.timeline({
         defaults: { duration: 0.28, ease: "power2.out" },
         onComplete: () => {
           setResults(payload.results)
@@ -470,7 +495,7 @@ export function AgentDemo() {
       })
 
       analysisSteps.forEach((_, index) => {
-        timeline
+        timeline!
           .call(() => setActiveStep(index))
           .fromTo(
             `[data-evidence-node="${index}"] .evidence-icon-wrap`,
@@ -485,10 +510,10 @@ export function AgentDemo() {
           )
           .to({}, { duration: 0.18 })
       })
+    })
 
-      return timeline
-    },
-  )
+    return timeline
+  }
 
   const startAnalysis = async () => {
     const requestId = ++requestIdRef.current
@@ -513,6 +538,12 @@ export function AgentDemo() {
       }
 
       const timeline = playAnalysisTimeline(payload)
+      if (!timeline) {
+        setActiveStep(5)
+        setResults(payload.results)
+        setPhase("question")
+        return
+      }
       timelineRef.current = timeline
     } catch {
       if (requestId === requestIdRef.current) {

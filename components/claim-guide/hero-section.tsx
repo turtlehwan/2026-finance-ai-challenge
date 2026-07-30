@@ -1,8 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { useGSAP } from "@gsap/react"
-import gsap from "gsap"
+import { useEffect, useRef, useState } from "react"
 import { ArrowDownIcon, PlayIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -17,74 +15,89 @@ const heroEvidence = [
   { label: "다음 행동", meta: "확인 권장" },
 ]
 
-gsap.registerPlugin(useGSAP)
-
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const [activeStep, setActiveStep] = useState(0)
 
-  useGSAP(
-    () => {
-      const media = gsap.matchMedia()
+  useEffect(() => {
+    let cancelled = false
+    let cleanup = () => {}
 
-      media.add(
-        {
-          motion: "(prefers-reduced-motion: no-preference)",
-          reduced: "(prefers-reduced-motion: reduce)",
-        },
-        (context) => {
-          if (context.conditions?.reduced) {
-            gsap.set(
-              [".hero-title-line", ".hero-support", ".hero-actions", ".hero-rail"],
-              { clearProps: "all" },
-            )
-            return
-          }
+    void import("gsap").then(({ default: gsap }) => {
+      if (cancelled) {
+        return
+      }
 
-          const intro = gsap.timeline({
-            defaults: { duration: 0.72, ease: "power3.out" },
-          })
-
-          intro
-            .from(".hero-title-line", {
-              autoAlpha: 0,
-              y: 28,
-              stagger: 0.1,
-            })
-            .from(".hero-support", { autoAlpha: 0, y: 18 }, "-=0.42")
-            .from(".hero-actions", { autoAlpha: 0, y: 14 }, "-=0.5")
-            .from(
-              ".hero-rail",
-              { autoAlpha: 0, y: 22, scale: 0.985 },
-              "-=0.52",
-            )
-
-          const rail = gsap.timeline({
-            repeat: -1,
-            repeatDelay: 0.5,
-          })
-          heroEvidence.forEach((_, index) => {
-            rail
-              .call(() => setActiveStep(index))
-              .to(
-                `[data-evidence-node="${index}"] .evidence-icon-wrap`,
-                {
-                  scale: 1.07,
-                  duration: 0.24,
-                  ease: "power2.out",
-                  yoyo: true,
-                  repeat: 1,
-                },
+      const context = gsap.context(() => {
+        const media = gsap.matchMedia()
+        media.add(
+          {
+            motion: "(prefers-reduced-motion: no-preference)",
+            reduced: "(prefers-reduced-motion: reduce)",
+          },
+          (conditions) => {
+            if (conditions.conditions?.reduced) {
+              gsap.set(
+                [
+                  ".hero-title-line",
+                  ".hero-support",
+                  ".hero-actions",
+                  ".hero-rail",
+                ],
+                { clearProps: "all" },
               )
-              .to({}, { duration: 0.42 })
-          })
-        },
-      )
+              return
+            }
 
-      return () => media.revert()
-    },
-    { scope: sectionRef },
-  )
+            const intro = gsap.timeline({
+              defaults: { duration: 0.72, ease: "power3.out" },
+            })
+
+            intro
+              .from(".hero-title-line", {
+                autoAlpha: 0,
+                y: 28,
+                stagger: 0.1,
+              })
+              .from(".hero-support", { autoAlpha: 0, y: 18 }, "-=0.42")
+              .from(".hero-actions", { autoAlpha: 0, y: 14 }, "-=0.5")
+              .from(
+                ".hero-rail",
+                { autoAlpha: 0, y: 22, scale: 0.985 },
+                "-=0.52",
+              )
+
+            const rail = gsap.timeline({
+              repeat: -1,
+              repeatDelay: 0.5,
+            })
+            heroEvidence.forEach((_, index) => {
+              rail
+                .call(() => setActiveStep(index))
+                .to(
+                  `[data-evidence-node="${index}"] .evidence-icon-wrap`,
+                  {
+                    scale: 1.07,
+                    duration: 0.24,
+                    ease: "power2.out",
+                    yoyo: true,
+                    repeat: 1,
+                  },
+                )
+                .to({}, { duration: 0.42 })
+            })
+          },
+        )
+      }, sectionRef)
+
+      cleanup = () => context.revert()
+    })
+
+    return () => {
+      cancelled = true
+      cleanup()
+    }
+  }, [])
 
   const scrollToDemo = () => {
     document.querySelector("#demo")?.scrollIntoView({

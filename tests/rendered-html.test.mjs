@@ -104,7 +104,8 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(policyOps, /검토 후 반영/);
   assert.match(policyOps, /\/api\/policyops\/review/);
   assert.match(preferenceHook, /claim-guide-preferences:v1/);
-  assert.match(packageJson, /"@gsap\/react"/);
+  assert.match(packageJson, /"gsap"/);
+  assert.match(demo, /import\("gsap"\)/);
   assert.match(packageJson, /"lucide-react"/);
   assert.match(packageJson, /"radix-ui"/);
   assert.match(packageJson, /"shadcn"/);

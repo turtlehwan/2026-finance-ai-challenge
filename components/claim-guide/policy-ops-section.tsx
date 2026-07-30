@@ -1,9 +1,6 @@
 "use client"
 
-import { useMemo, useRef, useState } from "react"
-import { useGSAP } from "@gsap/react"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useEffect, useMemo, useRef, useState } from "react"
 import type { LucideIcon } from "lucide-react"
 import {
   BarChart3Icon,
@@ -117,8 +114,6 @@ const reviewChecklist = [
   "운영 검색 결과 자동 변경 없음",
 ]
 
-gsap.registerPlugin(useGSAP, ScrollTrigger)
-
 export function PolicyOpsSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const [mode, setMode] = useState<DiffMode>("payment")
@@ -126,47 +121,62 @@ export function PolicyOpsSection() {
   const [approved, setApproved] = useState(false)
   const rows = useMemo(() => diffRows[mode], [mode])
 
-  useGSAP(
-    () => {
-      const media = gsap.matchMedia()
-      media.add(
-        {
-          motion: "(prefers-reduced-motion: no-preference)",
-          reduced: "(prefers-reduced-motion: reduce)",
-        },
-        (context) => {
-          if (context.conditions?.reduced) {
-            return
-          }
+  useEffect(() => {
+    let cancelled = false
+    let cleanup = () => {}
 
-          const timeline = gsap.timeline({
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 72%",
-              toggleActions: "play none none reverse",
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
+      ([{ default: gsap }, { ScrollTrigger }]) => {
+        if (cancelled) {
+          return
+        }
+        gsap.registerPlugin(ScrollTrigger)
+        const context = gsap.context(() => {
+          const media = gsap.matchMedia()
+          media.add(
+            {
+              motion: "(prefers-reduced-motion: no-preference)",
+              reduced: "(prefers-reduced-motion: reduce)",
             },
-            defaults: { duration: 0.55, ease: "power2.out" },
-          })
+            (conditions) => {
+              if (conditions.conditions?.reduced) {
+                return
+              }
 
-          timeline
-            .from(".policy-heading", { autoAlpha: 0, y: 20 })
-            .from(
-              ".policy-step",
-              { autoAlpha: 0, y: 18, stagger: 0.1 },
-              "-=0.28",
-            )
-            .from(
-              ".policy-workspace",
-              { autoAlpha: 0, y: 22, scale: 0.99 },
-              "-=0.26",
-            )
-        },
-      )
+              const timeline = gsap.timeline({
+                scrollTrigger: {
+                  trigger: sectionRef.current,
+                  start: "top 72%",
+                  toggleActions: "play none none reverse",
+                },
+                defaults: { duration: 0.55, ease: "power2.out" },
+              })
 
-      return () => media.revert()
-    },
-    { scope: sectionRef },
-  )
+              timeline
+                .from(".policy-heading", { autoAlpha: 0, y: 20 })
+                .from(
+                  ".policy-step",
+                  { autoAlpha: 0, y: 18, stagger: 0.1 },
+                  "-=0.28",
+                )
+                .from(
+                  ".policy-workspace",
+                  { autoAlpha: 0, y: 22, scale: 0.99 },
+                  "-=0.26",
+                )
+            },
+          )
+        }, sectionRef)
+
+        cleanup = () => context.revert()
+      },
+    )
+
+    return () => {
+      cancelled = true
+      cleanup()
+    }
+  }, [])
 
   const approve = async () => {
     setApproving(true)
