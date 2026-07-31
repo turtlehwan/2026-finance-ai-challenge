@@ -176,4 +176,4 @@ React Flow가 같은 경로를 화면에 표시한다.
 - [공공데이터포털, 우체국보험 상품별 약관 정보](https://www.data.go.kr/data/15111699/openapi.do)
 - [금융감독원·국가법령정보센터, 보험업감독업무시행세칙](https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2200000108867&chrClsCd=010202)
 - [국가법령정보센터, 표준약관 별표 15 PDF](https://www.law.go.kr/LSW/flDownload.do?flSeq=167076957&flNm=%5B별표+15%5D+표준약관%28제5-13조제1항관련%29&bylClsCd=200201)
-- [KB손해보험 상품목록(약관)](https://www.kbinsure.co.kr/CG802030001.ecs)
+- [손해보험협회 소비자포털, 실손의료보험금 청구서류 표준화·간소화](https://consumer.knia.or.kr/m/consumer/insurance-guide/0202.do)

@@ -82,7 +82,7 @@ scope: "2026 금융 AI Challenge 예선"
 | 우체국보험 공시실 | 상품코드, 판매기간, 실제 약관 PDF | 원문 근거와 페이지 인용 |
 | 국가법령정보센터 표준약관 | 공통 정의·지급 절차 | 공통 구조 검증 |
 | 금융감독원 표준약관 현행본 (2026-07-15 시행) | 별표 15 질병·상해보험 제2·3·4·5·7·8조 원문 | 상품 약관과 정의·지급·면책·청구 교차검토 |
-| KB손해보험 상품목록(약관) | 상품코드·판매중지·공시 약관 연결 구조 | 민간 보험사 공시 구조 확장 검증 |
+| 손해보험협회 소비자포털 | 실손의료보험금 표준 청구서류·간소화 기준 | Action Pack의 공식 서류 안내 기준 |
 | 심평원 질병정보 | KCD 질병명·상병코드 | 진단명과 약관 분류표 연결 |
 | 심평원 수가기준 | 의료행위 코드·명칭 | 수술·처치 후보 정규화 |
 | 공식 구비서류 안내 | 사고 유형별 필요 서류 | Action Pack |
@@ -190,7 +190,9 @@ Hybrid RAG 검색 결과에서 정의·지급·면책 인접 조항만 확장한
 - [우체국와이드건강보험 2504 공식 약관 PDF](https://www.epostlife.go.kr/resources/js/biz/ip/gs/pdf/YAK_P400073_202504.pdf)
 - [금융감독원·국가법령정보센터 보험업감독업무시행세칙](https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2200000108867&chrClsCd=010202)
 - [국가법령정보센터 표준약관 별표 15 PDF](https://www.law.go.kr/LSW/flDownload.do?flSeq=167076957&flNm=%5B별표+15%5D+표준약관%28제5-13조제1항관련%29&bylClsCd=200201)
-- [KB손해보험 상품목록(약관)](https://www.kbinsure.co.kr/CG802030001.ecs)
+- [손해보험협회 소비자포털, 실손의료보험금 청구서류 표준화·간소화](https://consumer.knia.or.kr/m/consumer/insurance-guide/0202.do)
+- [공공누리 이용조건 안내](https://www.kogl.or.kr/info/publicGuide.do)
+- [금융소비자보호법 제12조·제22조](https://www.law.go.kr/LSW/LsiJoLinkP.do?docType=JO&joNo=003200000&languageType=KO&lsNm=%EA%B8%88%EC%9C%B5%EC%86%8C%EB%B9%84%EC%9E%90%20%EB%B3%B4%ED%98%B8%EC%97%90%20%EA%B4%80%ED%95%9C%20%EB%B2%95%EB%A5%A0&paras=1)
 - [React Flow Custom Nodes](https://reactflow.dev/learn/customization/custom-nodes)
 - [unpdf](https://github.com/unjs/unpdf)
 - [LangGraph JS Streaming](https://docs.langchain.com/oss/javascript/langgraph/streaming)
