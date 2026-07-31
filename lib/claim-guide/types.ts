@@ -44,7 +44,28 @@ export type EvidenceAudit = {
   versionMatched: boolean
   citationValidated: boolean
   exclusionIncluded: boolean
+  standardTermsIncluded?: boolean
   findings: string[]
+}
+
+export type PolicySource = {
+  id: string
+  title: string
+  sourceOrganization: string
+  sourceKind:
+    | "official-product-policy"
+    | "official-standard-terms"
+    | "official-catalog"
+  sourceUrl: string
+  documentUrl?: string
+  effectiveDate?: string
+  effectiveStart?: string
+  effectiveEnd?: string
+  retrievedAt: string
+  documentPages?: number
+  pageRange?: string
+  sha256?: string
+  rightsNote: string
 }
 
 export type ClaimResult = {
@@ -94,6 +115,7 @@ export type AnalysisResponse = {
   trace: AgentTraceEvent[]
   audit: EvidenceAudit | null
   policyResolution: import("@/lib/claim-guide/policies").PolicyResolution | null
+  sources: PolicySource[]
   dataMode: "user-document" | "official-sample" | "synthetic-safety-case"
   generatedAt: string
 }

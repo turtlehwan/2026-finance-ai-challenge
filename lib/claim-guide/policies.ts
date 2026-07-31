@@ -1,4 +1,4 @@
-import type { EvidenceCitation } from "@/lib/claim-guide/types"
+import type { EvidenceCitation, PolicySource } from "@/lib/claim-guide/types"
 
 export type PolicyClauseType =
   | "coverage"
@@ -27,6 +27,7 @@ export type PolicyVersion = {
   effectiveEnd: string
   sourceUrl: string
   publicDataUrl: string
+  source: PolicySource
   documentPages: number
   evidenceReady: boolean
   riderName: string
@@ -53,6 +54,42 @@ const POLICY_2504_URL =
   "https://www.epostlife.go.kr/resources/js/biz/ip/gs/pdf/YAK_P400073_202504.pdf"
 
 const PUBLIC_DATA_URL = "https://www.data.go.kr/data/15111699/openapi.do"
+
+const EPOSTLIFE_2504_SOURCE: PolicySource = {
+  id: "epostlife-wide-health-2504",
+  title: "무배당 우체국와이드건강보험 2504 약관",
+  sourceOrganization: "우정사업본부 · 우체국보험",
+  sourceKind: "official-product-policy",
+  sourceUrl: POLICY_2504_URL,
+  documentUrl: POLICY_2504_URL,
+  effectiveStart: "2025-04-03",
+  effectiveEnd: "2025-06-04",
+  retrievedAt: "2026-07-31",
+  documentPages: 550,
+  sha256:
+    "fc21574f8cc63a413ac0b45f8b08526a6d90fa760732cbf831579ab7eea1ab87",
+  rightsNote:
+    "우체국보험 공식 약관 원문을 적용기간 확인과 근거 인용에 사용합니다. 상품별 이용조건을 준수하며 원문 전체를 재배포하지 않습니다.",
+}
+
+const EPOSTLIFE_2112_SOURCE: PolicySource = {
+  id: "epostlife-wide-health-2112",
+  title: "무배당 우체국와이드건강보험 2112 약관",
+  sourceOrganization: "우정사업본부 · 우체국보험",
+  sourceKind: "official-product-policy",
+  sourceUrl:
+    "https://www.epostlife.go.kr/resources/js/biz/ip/gs/pdf/40190.pdf",
+  documentUrl:
+    "https://www.epostlife.go.kr/resources/js/biz/ip/gs/pdf/40190.pdf",
+  effectiveStart: "2021-12-01",
+  effectiveEnd: "2025-04-02",
+  retrievedAt: "2026-07-31",
+  documentPages: 0,
+  sha256:
+    "e55697e8a90b1bcea972aea216d096b012e0850df81283f6665904f2cd81cb1a",
+  rightsNote:
+    "판매기간 확인용 공식 원문입니다. 버전별 특약을 추가 검증하기 전에는 보험금 근거로 사용하지 않습니다.",
+}
 
 const policy2504Base = {
   sourceTitle: "무배당 우체국와이드건강보험 2504 약관",
@@ -162,6 +199,7 @@ export const policyVersions: PolicyVersion[] = [
     sourceUrl:
       "https://www.epostlife.go.kr/resources/js/biz/ip/gs/pdf/40190.pdf",
     publicDataUrl: PUBLIC_DATA_URL,
+    source: EPOSTLIFE_2112_SOURCE,
     documentPages: 0,
     evidenceReady: false,
     riderName: "버전별 특약 확인 필요",
@@ -178,6 +216,7 @@ export const policyVersions: PolicyVersion[] = [
     effectiveEnd: "2025-06-04",
     sourceUrl: POLICY_2504_URL,
     publicDataUrl: PUBLIC_DATA_URL,
+    source: EPOSTLIFE_2504_SOURCE,
     documentPages: 550,
     evidenceReady: true,
     riderName: "무배당 생활재해보장특약Ⅱ 2504",

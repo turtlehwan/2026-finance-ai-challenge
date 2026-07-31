@@ -9,6 +9,10 @@ import {
   type PolicyResolution,
 } from "@/lib/claim-guide/policies"
 import {
+  getStandardTermsEvidence,
+  STANDARD_TERMS_SOURCE,
+} from "@/lib/claim-guide/standard-terms"
+import {
   CLAIM_STATUS,
   type AgentTraceEvent,
   type AnalysisResponse,
@@ -218,7 +222,7 @@ function graphRetrievalTool(state: ClaimGraphStateValue) {
     state.caseId === "fracture" &&
     state.resolution?.status === "resolved" &&
     state.resolution.policy.evidenceReady
-      ? getFractureEvidence()
+      ? [...getFractureEvidence(), ...getStandardTermsEvidence()]
       : []
   const clauseTypes = new Set(evidence.map((clause) => clause.type))
 
@@ -302,7 +306,8 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
     state.evidence.length > 0 &&
     state.evidence.every(
       (clause) =>
-        clause.sourceUrl.startsWith("https://www.epostlife.go.kr/") &&
+        (clause.sourceUrl.startsWith("https://www.epostlife.go.kr/") ||
+          clause.sourceUrl.startsWith("https://www.law.go.kr/")) &&
         clause.page > 0 &&
         clause.article.length > 0,
     )
@@ -344,6 +349,11 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
     versionMatched,
     citationValidated,
     exclusionIncluded: types.has("exclusion") || !isFracture,
+    standardTermsIncluded:
+      !isFracture ||
+      state.evidence.some((clause) =>
+        clause.sourceUrl.startsWith("https://www.law.go.kr/"),
+      ),
     findings,
   }
 
@@ -453,6 +463,10 @@ export async function runClaimGraph(input: {
     trace: state.trace,
     audit: state.audit,
     policyResolution: state.resolution,
+    sources:
+      state.caseId === "fracture" && state.resolution?.status === "resolved"
+        ? [state.resolution.policy.source, STANDARD_TERMS_SOURCE]
+        : [],
     dataMode:
       state.documentBundle && state.documentBundle.documents.length
         ? "user-document"
