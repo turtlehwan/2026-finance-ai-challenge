@@ -1,0 +1,68 @@
+{
+  "manifestVersion": "1.0",
+  "retrievedAt": "2026-07-31",
+  "purpose": "예선 MVP에서 실제 공식 약관의 출처·적용기간·해시를 재현하기 위한 provenance manifest",
+  "notice": "개인 보험증권·진료기록은 포함하지 않습니다. 운영 인덱스 자동 갱신이 아니라 검토 가능한 시연용 데이터입니다.",
+  "sources": [
+    {
+      "id": "epostlife-wide-health-2504",
+      "organization": "우정사업본부 · 우체국보험",
+      "title": "무배당 우체국와이드건강보험 2504 약관",
+      "sourceUrl": "https://www.epostlife.go.kr/resources/js/biz/ip/gs/pdf/YAK_P400073_202504.pdf",
+      "publicDataUrl": "https://www.data.go.kr/data/15111699/openapi.do",
+      "effectiveStart": "2025-04-03",
+      "effectiveEnd": "2025-06-04",
+      "documentPages": 550,
+      "sha256": "fc21574f8cc63a413ac0b45f8b08526a6d90fa760732cbf831579ab7eea1ab87",
+      "localFile": null,
+      "sourceKind": "official-product-policy"
+    },
+    {
+      "id": "epostlife-wide-health-2112",
+      "organization": "우정사업본부 · 우체국보험",
+      "title": "무배당 우체국와이드건강보험 2112 약관",
+      "sourceUrl": "https://www.epostlife.go.kr/resources/js/biz/ip/gs/pdf/40190.pdf",
+      "publicDataUrl": "https://www.data.go.kr/data/15111699/openapi.do",
+      "effectiveStart": "2021-12-01",
+      "effectiveEnd": "2025-04-02",
+      "documentPages": null,
+      "sha256": "e55697e8a90b1bcea972aea216d096b012e0850df81283f6665904f2cd81cb1a",
+      "localFile": null,
+      "sourceKind": "official-product-policy"
+    },
+    {
+      "id": "fss-standard-terms-20260715",
+      "organization": "금융감독원 · 국가법령정보센터",
+      "title": "질병·상해보험 표준약관 (보험업감독업무시행세칙 별표 15)",
+      "sourceUrl": "https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2200000108867&chrClsCd=010202",
+      "documentUrl": "https://www.law.go.kr/LSW/flDownload.do?flSeq=167076957&flNm=%5B별표+15%5D+표준약관%28제5-13조제1항관련%29&bylClsCd=200201",
+      "effectiveDate": "2026-07-15",
+      "documentPages": 491,
+      "pageRange": "질병·상해보험 인쇄면 143~149",
+      "sha256": "3ca9d2cdb152770d43d3301e37d528a57df859d44bad7c47adcc6092dde80c35",
+      "localFile": "fss-standard-terms-20260715.pdf",
+      "sourceKind": "official-standard-terms"
+    },
+    {
+      "id": "fss-standard-terms-20250611",
+      "organization": "금융감독원 · 국가법령정보센터",
+      "title": "질병·상해보험 표준약관 (2025.06.11 시행본)",
+      "sourceUrl": "https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2200000107393&chrClsCd=010202",
+      "documentUrl": "https://www.law.go.kr/LSW/flDownload.do?flSeq=152932717&flNm=%5B별표+15%5D+표준약관%28제5-13조제1항관련%29&bylClsCd=200201",
+      "effectiveDate": "2025-06-11",
+      "documentPages": 416,
+      "pageRange": "질병·상해보험 인쇄면 143~149",
+      "sha256": "3b9ee9ba6c72788b1d8e3bb85e2e81fbf578786a20a99a659d0c5504c06486be",
+      "localFile": "fss-standard-terms-20250611.pdf",
+      "sourceKind": "official-standard-terms"
+    },
+    {
+      "id": "kb-insurance-policy-catalog",
+      "organization": "KB손해보험",
+      "title": "KB손해보험 상품목록(약관)",
+      "sourceUrl": "https://www.kbinsure.co.kr/CG802030001.ecs",
+      "retrievedAt": "2026-07-31",
+      "sourceKind": "official-catalog"
+    }
+  ]
+}

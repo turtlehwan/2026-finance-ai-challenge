@@ -1,98 +1,52 @@
-# vinext-starter
+# 보험금 길잡이 Agent
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+고령 부모의 보험을 대신 챙기는 가족을 위한 약관 근거 기반 확인·행동 Agent다.
+보험금 지급을 확정하지 않고, 실제 공식 약관과 합성 사건을 연결해 확인할 항목,
+근거, 추가 질문, 필요 서류를 준비한다.
 
-## Prerequisites
-
-- Node.js `>=22.13.0`
-
-## Quick Start
+## 빠른 실행
 
 ```bash
 npm install
 npm run dev
+```
+
+Node.js `>=22.13.0`이 필요하다. 브라우저에서 `http://localhost:5173`을 열고
+`실데이터 연결 샘플 불러오기` → `손목 골절` → `이 사례 분석하기` 순서로 실행한다.
+
+## 검증 명령
+
+```bash
+npm test
+npm run lint
 npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+테스트는 LangGraph 분석 API, 50건 결정론적 회귀 fixture, 표준약관 provenance
+API, PolicyOps의 승인 payload 검증까지 실행한다. 회귀 지표의 100%는 실제 보험금
+지급 정확도가 아니다.
 
-## Included Shape
+## 실제 데이터 출처
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+- 우체국보험 공식 약관과 공공데이터포털 판매기간 메타데이터
+- 금융감독원·국가법령정보센터 `보험업감독업무시행세칙 별표 15` 표준약관
+- KB손해보험 공식 상품목록(약관) 공시 페이지
 
-## Workspace Auth Headers
+출처 URL, 시행일, 페이지 범위, SHA-256은 `data/policies/manifest.json`과
+결과 화면에 공개한다. `data/policies/`의 PDF는 개인 정보가 없는 공식 원문이며,
+서비스는 개인 보험증권·진료자료를 저장하거나 학습에 사용하지 않는다.
 
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
+## 제품 범위와 한계
 
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
+- 텍스트 레이어 PDF·TXT만 처리하며 이미지 스캔 PDF OCR은 지원하지 않는다.
+- 개인 문서는 합성 샘플 또는 사용자가 직접 넣은 세션 데이터다.
+- 보험사 내부 청구 이력·지급 심사·확정 금액은 조회하지 않는다.
+- PolicyOps 승인 버튼은 예선 시연 상태만 기록하고 운영 인덱스를 자동 변경하지
+  않는다. 실제 반영은 별도 검토·배포 절차가 필요하다.
+- 최종 지급 여부는 보험회사가 결정한다.
 
-Treat the full name as optional and fall back to email when it is absent:
+## 배포
 
-```tsx
-import { headers } from "next/headers";
+예선 제출용 배포 URL: `https://insurance-claim-guide-agent.turtlehwan.chatgpt.site`
 
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+배포 전에는 위 검증 명령과 브라우저에서 90초 검증 흐름을 다시 실행한다.
