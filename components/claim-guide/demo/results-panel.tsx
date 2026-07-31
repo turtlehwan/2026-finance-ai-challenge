@@ -29,6 +29,7 @@ import { RESULT_STATE_ORDER } from "@/lib/claim-guide/presentation"
 import type {
   ClaimResult,
   DemoPhase,
+  PolicySource,
   ResultTone,
 } from "@/lib/claim-guide/types"
 import { cn } from "@/lib/utils"
@@ -69,9 +70,11 @@ function ResultSummary({ results }: { results: ClaimResult[] }) {
 export function ResultsPanel({
   results,
   phase,
+  sources,
 }: {
   results: ClaimResult[]
   phase: DemoPhase
+  sources: PolicySource[]
 }) {
   if (phase === "idle") {
     return (
@@ -120,6 +123,47 @@ export function ResultsPanel({
   return (
     <>
       <ResultSummary results={results} />
+      {sources.length ? (
+        <div className="result-sources" aria-label="분석에 사용한 공식 출처">
+          <div className="result-sources-heading">
+            <div>
+              <strong>이번 분석에 사용한 공식 출처</strong>
+              <span>출처와 적용일을 공개합니다. 이것만으로 지급을 확정하지 않습니다.</span>
+            </div>
+            <Badge variant="outline">근거 공개</Badge>
+          </div>
+          <div className="result-source-list">
+            {sources.map((source) => (
+              <a
+                href={source.documentUrl ?? source.sourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                key={source.id}
+              >
+                <span className="result-source-kind">
+                  {source.sourceKind === "official-standard-terms"
+                    ? "표준약관"
+                    : source.sourceKind === "official-product-policy"
+                      ? "상품 약관"
+                      : "공식 목록"}
+                </span>
+                <span className="result-source-copy">
+                  <strong>{source.title}</strong>
+                  <span>
+                    {source.sourceOrganization}
+                    {source.effectiveDate
+                      ? ` · ${source.effectiveDate} 시행`
+                      : source.effectiveStart
+                        ? ` · ${source.effectiveStart}~${source.effectiveEnd}`
+                        : ""}
+                  </span>
+                </span>
+                <ExternalLinkIcon aria-hidden="true" />
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : null}
       <Accordion
         className="result-accordion"
         type="single"

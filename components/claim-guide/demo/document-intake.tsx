@@ -168,7 +168,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
                 />
                 <FieldDescription>
                   텍스트 레이어 PDF 또는 TXT · 파일당 5MB · 최대 2개 ·
-                  원본 저장 안 함
+                  스캔 이미지 PDF는 지원하지 않음 · 원본 저장 안 함
                 </FieldDescription>
               </Field>
             </FieldGroup>

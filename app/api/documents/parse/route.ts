@@ -35,6 +35,11 @@ async function extractFile(file: File) {
     }
 
     const result = await extractText(pdf, { mergePages: true })
+    if (!result.text.trim()) {
+      throw new Error(
+        `${file.name}: 이미지로만 된 스캔 PDF는 지원하지 않습니다. 텍스트 레이어 PDF 또는 TXT를 사용해 주세요.`,
+      )
+    }
     return extractDocumentFacts(result.text, {
       filename: file.name,
       mediaType,

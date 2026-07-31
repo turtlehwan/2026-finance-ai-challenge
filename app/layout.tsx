@@ -25,6 +25,9 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: baseUrl,
     title,
     description,
+    icons: {
+      icon: "/favicon.svg",
+    },
     openGraph: {
       title,
       description,

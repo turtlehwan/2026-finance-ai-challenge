@@ -89,9 +89,9 @@ export const ANALYSIS_STEPS = [
 ] as const
 
 export const POLICY_OPS_STEPS = [
-  "신규 약관 감지",
-  "버전·조항 비교",
-  "근거 그래프 갱신",
-  "회귀 평가",
-  "사람 승인",
+  "공식 원문 확인",
+  "핵심 조항 추출",
+  "근거 그래프 연결",
+  "내부 회귀 테스트",
+  "사람 승인 상태",
 ] as const

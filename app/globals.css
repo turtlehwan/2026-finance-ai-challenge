@@ -1296,6 +1296,87 @@ button.evidence-node {
   margin-bottom: 0.75rem;
 }
 
+.result-sources {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  padding: 0.85rem;
+  border: 1px solid var(--success-border);
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--accent) 45%, var(--background));
+}
+
+.result-sources-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.result-sources-heading > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.result-sources-heading strong,
+.result-sources-heading span,
+.result-source-copy strong,
+.result-source-copy span,
+.result-source-kind {
+  font-size: var(--text-caption);
+}
+
+.result-sources-heading span,
+.result-source-copy span {
+  color: var(--muted-foreground);
+}
+
+.result-source-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.result-source-list a {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  background: var(--background);
+}
+
+.result-source-list a:hover,
+.result-source-list a:focus-visible {
+  border-color: var(--ring);
+}
+
+.result-source-kind {
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.35rem;
+  background: var(--accent);
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+.result-source-copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.result-source-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-source-list a > svg {
+  width: 1rem;
+  color: var(--primary);
+}
+
 .result-skeleton {
   display: grid;
   gap: 0.75rem;
@@ -1535,6 +1616,25 @@ button.evidence-node {
   display: block;
   padding: 0.25rem 1rem;
   background: var(--background);
+}
+
+.evaluation-honesty {
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 0.85rem;
+  padding: 0.75rem;
+  border: 1px solid var(--warning-border);
+  border-radius: 0.65rem;
+  background: var(--warning-soft);
+}
+
+.evaluation-honesty strong,
+.evaluation-honesty span {
+  font-size: var(--text-caption);
+}
+
+.evaluation-honesty span {
+  color: var(--muted-foreground);
 }
 
 .evaluation-card > [data-slot="card-footer"] [data-slot="accordion-item"] {

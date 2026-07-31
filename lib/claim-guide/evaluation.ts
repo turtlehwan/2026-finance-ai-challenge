@@ -12,6 +12,8 @@ type EvaluationFixture = {
 export type EvaluationSummary = {
   dataset: {
     name: string
+    evaluationType: "deterministic-regression"
+    independentHoldout: number
     total: number
     supported: number
     unsupported: number
@@ -195,6 +197,8 @@ export async function evaluateClaimGraph(): Promise<EvaluationSummary> {
   return {
     dataset: {
       name: "fracture-policy-v1",
+      evaluationType: "deterministic-regression",
+      independentHoldout: 0,
       total: fixtures.length,
       supported: approvedResults.length,
       unsupported: unsupportedResults.length,

@@ -48,15 +48,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { POLICY_OPS_STEPS } from "@/lib/claim-guide/presentation"
+import {
+  STANDARD_TERMS_DIFF_HASH,
+  STANDARD_TERMS_SOURCE,
+} from "@/lib/claim-guide/standard-terms"
 import { cn } from "@/lib/utils"
 
 type DiffMode = "payment" | "exclusion"
 
 type DiffRow = {
   clause: string
-  before: string
-  after: string
-  change: "added" | "changed" | "removed"
+  source: string
+  connected: string
 }
 
 const stepIcons: LucideIcon[] = [
@@ -70,51 +73,45 @@ const stepIcons: LucideIcon[] = [
 const diffRows: Record<DiffMode, DiffRow[]> = {
   payment: [
     {
-      clause: "제7조 · 입원의 정의",
-      before: "의사의 직접 치료를 목적으로 입원한 경우",
-      after: "의사의 입원 필요 소견에 따라 72시간 이상 입원한 경우",
-      change: "changed",
+      clause: "제2조 · 용어의 정의",
+      source: "상해·장해·보험기간의 공통 정의",
+      connected: "사건 사실과 진단코드의 기준 노드",
     },
     {
-      clause: "제12조 · 골절진단비",
-      before: "약관상 골절 진단 시 1회 지급",
-      after: "골절분류표 해당 및 진단 확정 시 사고당 1회 지급",
-      change: "changed",
+      clause: "제3조 · 보험금의 지급사유",
+      source: "사망·장해·입원·통원·요양·수술",
+      connected: "상품별 지급 조항과 대조하는 공통 기준",
     },
     {
-      clause: "제18조 · 제출 서류",
-      before: "진단서",
-      after: "진단서와 질병분류코드 확인 서류",
-      change: "added",
+      clause: "제4조 · 지급 세부규정",
+      source: "보장별 지급기준·기간·횟수 제한",
+      connected: "보험금 후보의 제한 조건 확인",
     },
   ],
   exclusion: [
     {
-      clause: "제14조 · 지급하지 않는 사유",
-      before: "정신질환으로 인한 후유장해는 보상하지 않음",
-      after: "상해장해분류표 기준을 충족한 정신질환 후유장해는 보상",
-      change: "changed",
+      clause: "제5조 · 보험금을 지급하지 않는 사유",
+      source: "고의·임신·출산·전쟁 등 공통 면책",
+      connected: "보상 조항과 함께 회수하는 안전 기준",
     },
     {
-      clause: "제15조 · 고의 사고",
-      before: "피보험자의 고의 사고",
-      after: "피보험자의 고의 사고. 단, 심신상실 상태는 별도 심사",
-      change: "added",
+      clause: "제7조 · 보험금의 청구",
+      source: "청구서·사고증명서·신분증·추가서류",
+      connected: "Action Pack의 서류 체크리스트",
     },
     {
-      clause: "별표 1 · 제외 목록",
-      before: "기존 12개 항목",
-      after: "개정 10개 항목",
-      change: "removed",
+      clause: "제8조 · 보험금의 지급절차",
+      source: "3영업일·지연 통지·가지급",
+      connected: "공식 청구 후 확인할 절차 안내",
     },
   ],
 }
 
 const reviewChecklist = [
-  "변경 요약과 영향 범위 확인",
+  "공식 원문 조항·페이지 확인",
   "근거 그래프 연결 일관성 확인",
-  "회귀 평가 24/24 통과",
-  "운영 검색 결과 자동 변경 없음",
+  "공식 표준약관 근거 검사 8/8 통과",
+  "운영 인덱스 자동 변경 없음",
 ]
 
 export function PolicyOpsSection() {
@@ -128,12 +125,18 @@ export function PolicyOpsSection() {
     try {
       const response = await fetch("/api/policyops/review", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "approve",
+          policyId: STANDARD_TERMS_SOURCE.id,
+          diffHash: STANDARD_TERMS_DIFF_HASH,
+        }),
       })
       if (!response.ok) {
         throw new Error("승인 실패")
       }
       setApproved(true)
-      toast.success("검토한 약관 버전을 운영 후보로 반영했습니다.")
+      toast.success("공식 원문 검토 상태를 시연용으로 승인했습니다.")
     } catch {
       toast.error("승인 결과를 저장하지 못했습니다.")
     } finally {
@@ -146,10 +149,10 @@ export function PolicyOpsSection() {
       <div className="section-heading policy-heading">
         <div>
           <Badge variant="outline">관리자 안전 장치</Badge>
-          <h2>새 약관도 검토와 승인 뒤에 반영합니다</h2>
+          <h2>공식 약관 원문을 확인하고 승인 범위를 통제합니다</h2>
           <p>
-            모델이 금융 판단을 스스로 바꾸지 않습니다. 변경 감지, 비교, 평가,
-            승인을 모두 통과한 지식만 반영합니다.
+            국가법령정보센터 원문을 실제로 연결했지만, 이 데모의 승인 버튼은 운영
+            인덱스를 바꾸지 않습니다. 금융 판단은 원문과 사람의 확인을 전제로 합니다.
           </p>
         </div>
       </div>
@@ -158,15 +161,15 @@ export function PolicyOpsSection() {
         <AccordionItem value="policyops-demo">
           <AccordionTrigger>
             <span className="policy-disclosure-trigger">
-              <strong>약관 갱신 데모</strong>
-              <span>버전 비교 · 회귀 평가 · 사람 승인 과정을 확인하세요</span>
+              <strong>공식 표준약관 연결 데모</strong>
+              <span>원문 확인 · 구조화 · 회귀 테스트 · 사람 승인 상태를 확인하세요</span>
             </span>
           </AccordionTrigger>
           <AccordionContent>
             <div
               className="policy-steps"
               role="list"
-              aria-label="PolicyOps 갱신 절차"
+              aria-label="공식 약관 검토 절차"
             >
               {POLICY_OPS_STEPS.map((step, index) => {
                 const Icon = stepIcons[index]
@@ -190,9 +193,12 @@ export function PolicyOpsSection() {
 
             <Card className="policy-workspace">
               <CardHeader>
-                <CardTitle>표준약관_상해후유장해 · v1.3 → v1.4</CardTitle>
-                <CardDescription>
-                  실제 운영 반영 전, 조항 단위 변경과 영향 범위를 검토합니다.
+              <CardTitle>
+                {STANDARD_TERMS_SOURCE.title} · 2026.07.15 시행
+              </CardTitle>
+              <CardDescription>
+                  국가법령정보센터의 실제 PDF를 질병·상해보험 핵심 조항 단위로
+                  추출해 서비스 근거 그래프와 연결했습니다.
                 </CardDescription>
                 <CardAction>
                   <ToggleGroup
@@ -204,11 +210,11 @@ export function PolicyOpsSection() {
                         setMode(value as DiffMode)
                       }
                     }}
-                    aria-label="약관 변경 유형"
+                    aria-label="표준약관 근거 유형"
                   >
-                    <ToggleGroupItem value="payment">지급 조건</ToggleGroupItem>
+                    <ToggleGroupItem value="payment">지급·정의</ToggleGroupItem>
                     <ToggleGroupItem value="exclusion">
-                      면책 조항
+                      면책·절차
                     </ToggleGroupItem>
                   </ToggleGroup>
                 </CardAction>
@@ -219,8 +225,8 @@ export function PolicyOpsSection() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>조항</TableHead>
-                        <TableHead>이전 버전 · 2024.04</TableHead>
-                        <TableHead>신규 버전 · 2025.05</TableHead>
+                        <TableHead>공식 원문에서 확인한 내용</TableHead>
+                        <TableHead>서비스 연결 방식</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -230,23 +236,13 @@ export function PolicyOpsSection() {
                             {row.clause}
                           </TableCell>
                           <TableCell>
-                            <span
-                              className={cn(
-                                "diff-copy",
-                                row.change !== "added" && "diff-before",
-                              )}
-                            >
-                              {row.before}
+                            <span className="diff-copy diff-after">
+                              {row.source}
                             </span>
                           </TableCell>
                           <TableCell>
-                            <span
-                              className={cn(
-                                "diff-copy",
-                                row.change !== "removed" && "diff-after",
-                              )}
-                            >
-                              {row.after}
+                            <span className="diff-copy diff-after">
+                              {row.connected}
                             </span>
                           </TableCell>
                         </TableRow>
@@ -255,10 +251,10 @@ export function PolicyOpsSection() {
                   </Table>
                   <Alert>
                     <InfoIcon />
-                    <AlertTitle>자동 적용하지 않습니다</AlertTitle>
+                    <AlertTitle>운영 인덱스에는 자동 적용하지 않습니다</AlertTitle>
                     <AlertDescription>
-                      이 변경은 영향 범위와 회귀 평가를 통과한 뒤 검토자가
-                      승인해야 운영 검색에 반영됩니다.
+                      위 내용은 실제 공식 원문에서 추출한 구조화 결과입니다. 승인 버튼은
+                      예선 데모의 검토 상태만 바꾸며, 운영 검색·지급 규칙을 변경하지 않습니다.
                     </AlertDescription>
                   </Alert>
                 </div>
@@ -272,7 +268,7 @@ export function PolicyOpsSection() {
                   <div className="approval-panel-heading">
                     <div>
                       <strong>사람 승인 체크리스트</strong>
-                      <span>위험한 자동 지식 갱신을 차단합니다.</span>
+                        <span>운영 지식의 자동 변경을 차단합니다.</span>
                     </div>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -285,7 +281,7 @@ export function PolicyOpsSection() {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        승인 전에는 운영 검색 결과가 바뀌지 않습니다
+                        이 데모에서 승인해도 운영 검색 결과는 바뀌지 않습니다
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -314,11 +310,11 @@ export function PolicyOpsSection() {
               <CardFooter>
                 <ShieldCheckIcon aria-hidden="true" />
                 <span>
-                  거버넌스 라인: 비교 → 평가 → 사람 승인 이후에만 운영 지식으로
-                  승격합니다.
+                  거버넌스 라인: 공식 원문 확인 → 내부 회귀 테스트 → 사람 승인 상태를
+                  기록합니다. 운영 인덱스 반영은 별도 배포 절차입니다.
                 </span>
                 <Badge variant={approved ? "success" : "outline"}>
-                  {approved ? "승인됨" : "승인 대기"}
+                  {approved ? "시연 승인 완료" : "시연 승인 대기"}
                 </Badge>
               </CardFooter>
             </Card>

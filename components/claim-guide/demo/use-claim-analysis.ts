@@ -13,6 +13,7 @@ import type {
   ClaimCase,
   ClaimResult,
   DemoPhase,
+  PolicySource,
 } from "@/lib/claim-guide/types"
 
 type GsapRuntime = typeof import("gsap").default
@@ -71,6 +72,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
   const [activeTraceIndex, setActiveTraceIndex] = useState(0)
   const [trace, setTrace] = useState<AgentTraceEvent[]>([])
   const [results, setResults] = useState<ClaimResult[]>([])
+  const [sources, setSources] = useState<PolicySource[]>([])
 
   const activeCase = useMemo(
     () => claimCases.find((item) => item.id === selectedId) ?? claimCases[0],
@@ -186,6 +188,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
     timelineRef.current?.kill()
     setAnswer(null)
     setResults([])
+    setSources([])
     setTrace([])
     setActiveTraceIndex(0)
     setActiveStep(0)
@@ -198,6 +201,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
       }
 
       setTrace(payload.trace)
+      setSources(payload.sources)
 
       const media = window.matchMedia("(prefers-reduced-motion: reduce)")
       if (media.matches) {
@@ -241,6 +245,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
       }
       setResults(payload.results)
       setTrace(payload.trace)
+      setSources(payload.sources)
       setActiveTraceIndex(payload.trace.length - 1)
       setActiveStep(ANALYSIS_STEPS.length - 1)
       setPhase("complete")
@@ -264,6 +269,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
     setSelectedId(nextCase.id)
     setAnswer(null)
     setResults([])
+    setSources([])
     setTrace([])
     setActiveTraceIndex(0)
     setActiveStep(0)
@@ -292,6 +298,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
     demoRef,
     phase,
     results,
+    sources,
     saveSession,
     selectedId,
     setActiveStep,

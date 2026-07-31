@@ -69,6 +69,7 @@ export function AgentDemo() {
     demoRef,
     phase,
     results,
+    sources,
     saveSession,
     selectedId,
     setActiveStep,
@@ -299,7 +300,11 @@ export function AgentDemo() {
                       기준으로 보여드립니다.
                     </p>
                   </div>
-                  <ResultsPanel results={results} phase={phase} />
+                  <ResultsPanel
+                    results={results}
+                    phase={phase}
+                    sources={sources}
+                  />
                   <Accordion
                     className="evidence-disclosure"
                     type="single"

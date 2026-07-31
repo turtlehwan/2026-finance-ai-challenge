@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://insurance-claim-guide-agent.turtlehwan.chatgpt.site/sitemap.xml
