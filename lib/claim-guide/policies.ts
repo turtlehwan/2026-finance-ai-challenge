@@ -69,7 +69,7 @@ const EPOSTLIFE_2504_SOURCE: PolicySource = {
   sha256:
     "fc21574f8cc63a413ac0b45f8b08526a6d90fa760732cbf831579ab7eea1ab87",
   rightsNote:
-    "우체국보험 공식 약관 원문을 적용기간 확인과 근거 인용에 사용합니다. 상품별 이용조건을 준수하며 원문 전체를 재배포하지 않습니다.",
+    "우체국보험 공식 약관을 적용기간 확인과 필요한 근거 인용에 사용합니다. 공개 열람과 원문 전체의 복제·재배포 권한은 구분하며, 상품별 이용조건을 확인합니다.",
 }
 
 const EPOSTLIFE_2112_SOURCE: PolicySource = {
@@ -88,7 +88,7 @@ const EPOSTLIFE_2112_SOURCE: PolicySource = {
   sha256:
     "e55697e8a90b1bcea972aea216d096b012e0850df81283f6665904f2cd81cb1a",
   rightsNote:
-    "판매기간 확인용 공식 원문입니다. 버전별 특약을 추가 검증하기 전에는 보험금 근거로 사용하지 않습니다.",
+    "판매기간 확인용 공식 원문입니다. 공개 열람과 원문 전체의 복제·재배포 권한은 구분하며, 버전별 특약을 추가 검증하기 전에는 보험금 근거로 사용하지 않습니다.",
 }
 
 const policy2504Base = {

@@ -55,14 +55,6 @@
       "sha256": "3b9ee9ba6c72788b1d8e3bb85e2e81fbf578786a20a99a659d0c5504c06486be",
       "localFile": "fss-standard-terms-20250611.pdf",
       "sourceKind": "official-standard-terms"
-    },
-    {
-      "id": "kb-insurance-policy-catalog",
-      "organization": "KB손해보험",
-      "title": "KB손해보험 상품목록(약관)",
-      "sourceUrl": "https://www.kbinsure.co.kr/CG802030001.ecs",
-      "retrievedAt": "2026-07-31",
-      "sourceKind": "official-catalog"
     }
   ]
 }

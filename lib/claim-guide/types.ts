@@ -55,7 +55,6 @@ export type PolicySource = {
   sourceKind:
     | "official-product-policy"
     | "official-standard-terms"
-    | "official-catalog"
   sourceUrl: string
   documentUrl?: string
   effectiveDate?: string

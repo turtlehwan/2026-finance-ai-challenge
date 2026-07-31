@@ -22,7 +22,7 @@ export const STANDARD_TERMS_SOURCE: PolicySource = {
   sha256:
     "3ca9d2cdb152770d43d3301e37d528a57df859d44bad7c47adcc6092dde80c35",
   rightsNote:
-    "국가법령정보센터 공개 원문을 출처·시행일과 함께 참조하며, 원문 전체를 모델 학습·재배포하지 않습니다.",
+    "국가법령정보센터 공개 원문에서 필요한 조항만 출처·시행일·페이지와 함께 참조합니다. 원문 전체를 서비스 화면이나 모델 학습용으로 재배포하지 않습니다.",
 }
 
 export const STANDARD_TERMS_PREVIOUS_SOURCE: PolicySource = {
@@ -41,18 +41,7 @@ export const STANDARD_TERMS_PREVIOUS_SOURCE: PolicySource = {
   sha256:
     "3b9ee9ba6c72788b1d8e3bb85e2e81fbf578786a20a99a659d0c5504c06486be",
   rightsNote:
-    "버전 비교용 보관 원문입니다. 현행성은 국가법령정보센터의 최신 시행본을 우선합니다.",
-}
-
-export const KB_POLICY_CATALOG_SOURCE: PolicySource = {
-  id: "kb-insurance-policy-catalog",
-  title: "KB손해보험 상품목록(약관)",
-  sourceOrganization: "KB손해보험",
-  sourceKind: "official-catalog",
-  sourceUrl: "https://www.kbinsure.co.kr/CG802030001.ecs",
-  retrievedAt: "2026-07-31",
-  rightsNote:
-    "상품코드·판매중지 여부·약관 연결을 확인하는 공식 공시 목록으로만 사용하며, 개별 PDF의 이용조건을 별도 확인합니다.",
+    "버전 비교용으로 필요한 조항만 참조합니다. 현행성은 국가법령정보센터의 최신 시행본을 우선하며, 원문 전체를 서비스 화면이나 모델 학습용으로 재배포하지 않습니다.",
 }
 
 const STANDARD_TERMS_PDF_URL = STANDARD_TERMS_SOURCE.documentUrl!
@@ -176,7 +165,6 @@ export function getStandardTermsEvidence() {
 
 export function getPolicySourceManifest() {
   return {
-    productCatalog: KB_POLICY_CATALOG_SOURCE,
     currentStandardTerms: STANDARD_TERMS_SOURCE,
     previousStandardTerms: STANDARD_TERMS_PREVIOUS_SOURCE,
   }

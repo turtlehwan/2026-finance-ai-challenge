@@ -143,9 +143,7 @@ export function ResultsPanel({
                 <span className="result-source-kind">
                   {source.sourceKind === "official-standard-terms"
                     ? "표준약관"
-                    : source.sourceKind === "official-product-policy"
-                      ? "상품 약관"
-                      : "공식 목록"}
+                    : "상품 약관"}
                 </span>
                 <span className="result-source-copy">
                   <strong>{source.title}</strong>
