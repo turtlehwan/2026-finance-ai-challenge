@@ -61,7 +61,7 @@ test("server-renders the insurance claim guide MVP", async () => {
   assert.match(html, /태블릿의 약관 문서와 보험 서류/);
   assert.match(html, /AI는 근거를 찾고, 가족이 함께 확인합니다/);
   assert.match(html, /근거 경로/);
-  assert.match(html, /새 약관도 검토와 승인 뒤에 반영합니다/);
+  assert.match(html, /공식 약관 원문을 확인하고 승인 범위를 통제합니다/);
   assert.match(html, /한 번에 한 단계씩 확인해보세요/);
   assert.match(html, /사례 선택/);
   assert.match(html, /근거 분석/);
@@ -190,6 +190,9 @@ test("analysis API asks for missing facts and updates the result", async () => {
   assert.equal(answered.trace.at(-2).nodeId, "evidence_auditor");
   assert.equal(answered.trace.at(-1).nodeId, "action_planner");
   assert.equal(answered.audit.approved, true);
+  assert.equal(answered.audit.standardTermsIncluded, true);
+  assert.equal(answered.sources.length, 2);
+  assert.match(answered.sources[1].title, /질병·상해보험 표준약관/);
   assert.equal(answered.dataMode, "official-sample");
 });
 
@@ -322,6 +325,8 @@ test("evaluation endpoint runs all 50 fixtures through the graph", async () => {
   assert.equal(result.dataset.total, 50);
   assert.equal(result.dataset.supported, 30);
   assert.equal(result.dataset.unsupported, 20);
+  assert.equal(result.dataset.evaluationType, "deterministic-regression");
+  assert.equal(result.dataset.independentHoldout, 0);
   assert.equal(result.metrics.versionSelection, 100);
   assert.equal(result.metrics.evidenceCompleteness, 100);
   assert.equal(result.metrics.safeAbstention, 100);
@@ -332,12 +337,39 @@ test("evaluation endpoint runs all 50 fixtures through the graph", async () => {
 test("PolicyOps approval endpoint stays human-gated", async () => {
   const response = await fetchWorker("/api/policyops/review", {
     method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      action: "approve",
+      policyId: "fss-standard-terms-20260715",
+      diffHash: "fss-standard-terms-20260715:3ca9d2cdb152:di-2-3-4-5-7-8",
+    }),
   });
   assert.equal(response.status, 200);
   const result = await response.json();
   assert.equal(result.approved, true);
-  assert.equal(result.regression.passed, 24);
-  assert.equal(result.regression.total, 24);
+  assert.equal(result.simulation, true);
+  assert.equal(result.regression.passed, 8);
+  assert.equal(result.regression.total, 8);
+});
+
+test("PolicyOps rejects an unverified approval payload", async () => {
+  const response = await fetchWorker("/api/policyops/review", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ action: "approve" }),
+  });
+  assert.equal(response.status, 400);
+});
+
+test("standard terms endpoint exposes official source provenance", async () => {
+  const response = await fetchWorker("/api/policies/standard-terms");
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.dataMode, "official-source-extract");
+  assert.equal(result.clauses.length, 6);
+  assert.match(result.source.currentStandardTerms.sourceUrl, /law\.go\.kr/);
+  assert.equal(result.source.currentStandardTerms.effectiveDate, "2026-07-15");
+  assert.match(result.diffHash, /fss-standard-terms-20260715/);
 });
 
 test("design system keeps one icon library and a global 14px text floor", async () => {
