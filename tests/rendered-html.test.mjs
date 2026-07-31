@@ -372,6 +372,21 @@ test("standard terms endpoint exposes official source provenance", async () => {
   assert.match(result.diffHash, /fss-standard-terms-20260715/);
 });
 
+test("keeps the provenance surface limited to approved official sources", async () => {
+  const [manifest, rightsDoc] = await Promise.all([
+    readFile(new URL("../data/policies/manifest.json", import.meta.url), "utf8"),
+    readFile(
+      new URL("../docs/source-rights-and-official-sources.md", import.meta.url),
+      "utf8",
+    ),
+  ]);
+
+  assert.doesNotMatch(manifest, /kbinsure|KB손해보험/i);
+  assert.doesNotMatch(rightsDoc, /kbinsure|KB손해보험/i);
+  assert.match(rightsDoc, /공공누리 이용조건/);
+  assert.match(rightsDoc, /금융소비자보호법/);
+});
+
 test("design system keeps one icon library and a global 14px text floor", async () => {
   const [styles, badge, button, tooltip] = await Promise.all([
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
