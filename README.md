@@ -47,7 +47,7 @@ API, PolicyOps의 승인 payload 검증까지 실행한다. 회귀 지표의 100
 
 ## 배포
 
-예선 제출용 배포 URL: `https://claim.turtlehwan.dev`
+예선 제출용 배포 URL: `https://finai26.turtlehwan.dev`
 
 운영 배포는 Cloudflare Workers와 사용자 도메인을 사용한다. 기존 OpenAI Sites
 주소는 전환 안정화 기간의 장애 대비용으로만 유지하며 제출 문서의 정본 URL로
