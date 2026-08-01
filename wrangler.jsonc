@@ -14,7 +14,7 @@
   },
   "routes": [
     {
-      "pattern": "claim.turtlehwan.dev",
+      "pattern": "finai26.turtlehwan.dev",
       "custom_domain": true
     }
   ],
