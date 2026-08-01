@@ -55,7 +55,7 @@ const POLICY_2504_URL =
 
 const PUBLIC_DATA_URL = "https://www.data.go.kr/data/15111699/openapi.do"
 
-const EPOSTLIFE_2504_SOURCE: PolicySource = {
+export const EPOSTLIFE_2504_SOURCE: PolicySource = {
   id: "epostlife-wide-health-2504",
   title: "무배당 우체국와이드건강보험 2504 약관",
   sourceOrganization: "우정사업본부 · 우체국보험",
@@ -72,7 +72,7 @@ const EPOSTLIFE_2504_SOURCE: PolicySource = {
     "우체국보험 공식 약관을 적용기간 확인과 필요한 근거 인용에 사용합니다. 공개 열람과 원문 전체의 복제·재배포 권한은 구분하며, 상품별 이용조건을 확인합니다.",
 }
 
-const EPOSTLIFE_2112_SOURCE: PolicySource = {
+export const EPOSTLIFE_2112_SOURCE: PolicySource = {
   id: "epostlife-wide-health-2112",
   title: "무배당 우체국와이드건강보험 2112 약관",
   sourceOrganization: "우정사업본부 · 우체국보험",

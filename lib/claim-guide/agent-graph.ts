@@ -91,7 +91,7 @@ function caseAnalystAgent(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "case_analyst",
-          label: "Case Analyst",
+          label: "사건 분석",
           role: "Agent",
           status: "completed",
           inputSummary: "사용자 목표·사고·진단 맥락",
@@ -133,7 +133,7 @@ function documentNormalizerTool(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "document_tool",
-          label: "Document Tool",
+          label: "문서 판독",
           role: "Tool",
           status: "completed",
           inputSummary: state.documentBundle
@@ -166,7 +166,7 @@ function versionResolverTool(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "version_resolver",
-          label: "Version Resolver",
+          label: "약관 버전 확인",
           role: "Tool",
           status:
             resolution.status === "resolved" ? "completed" : "attention",
@@ -196,7 +196,7 @@ function coverageMatcherAgent(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "coverage_matcher",
-          label: "Coverage Matcher",
+          label: "담보 대조",
           role: "Agent",
           status:
             state.caseId !== "fracture" || (hasRider && hasFractureCode)
@@ -232,7 +232,7 @@ function graphRetrievalTool(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "graph_retriever",
-          label: "Domain GraphRAG",
+          label: "근거 그래프 검색",
           role: "Tool",
           status:
             state.caseId !== "fracture" || evidence.length
@@ -262,7 +262,7 @@ function informationGate(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "information_gate",
-          label: "Information Gate",
+          label: "정보 충분성 판단",
           role: "Gate",
           status: needsAnswer ? "waiting" : "completed",
           inputSummary: "수술·면책·기존 처리 사실",
@@ -285,7 +285,7 @@ function humanReviewNode(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "human_review",
-          label: "Human-in-the-loop",
+          label: "사람 확인",
           role: "Human",
           status: "waiting",
           inputSummary: "Agent가 식별한 누락 정보",
@@ -363,7 +363,7 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "evidence_auditor",
-          label: "Evidence Auditor",
+          label: "근거 감사",
           role: "Agent",
           status: approved ? "completed" : "blocked",
           inputSummary: `${state.evidence.length}개 근거 · 사용자 답변 ${getAnswerLabel(state.answer)}`,
@@ -398,12 +398,12 @@ function actionPlannerAgent(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "action_planner",
-          label: "Action Planner",
+          label: "다음 행동 정리",
           role: "Agent",
           status: state.audit?.approved ? "completed" : "blocked",
           inputSummary: `${baseResults.length}개 후보 · Evidence Audit`,
           outputSummary: state.audit?.approved
-            ? `${results.length}개 상태와 Action Pack 생성`
+            ? `${results.length}개 상태와 준비물 목록 생성`
             : "확인 불가 상태로 안전 종료",
         },
         startedAt,

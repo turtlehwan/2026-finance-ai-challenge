@@ -97,7 +97,7 @@ const diffRows: Record<DiffMode, DiffRow[]> = {
     {
       clause: "제7조 · 보험금의 청구",
       source: "청구서·사고증명서·신분증·추가서류",
-      connected: "Action Pack의 서류 체크리스트",
+      connected: "준비물 목록의 서류 항목",
     },
     {
       clause: "제8조 · 보험금의 지급절차",
@@ -148,11 +148,10 @@ export function PolicyOpsSection() {
     <section className="section-shell policy-section" id="policyops">
       <div className="section-heading policy-heading">
         <div>
-          <Badge variant="outline">관리자 안전 장치</Badge>
-          <h2>공식 약관 원문을 확인하고 승인 범위를 통제합니다</h2>
+          <h2>약관이 바뀌면 사람이 먼저 봅니다</h2>
           <p>
-            국가법령정보센터 원문을 실제로 연결했지만, 이 데모의 승인 버튼은 운영
-            인덱스를 바꾸지 않습니다. 금융 판단은 원문과 사람의 확인을 전제로 합니다.
+            운영자용 화면입니다. 국가법령정보센터 원문을 실제로 연결해 두었지만,
+            여기서 승인해도 운영 중인 검색·판정 규칙은 바뀌지 않습니다.
           </p>
         </div>
       </div>
@@ -161,8 +160,8 @@ export function PolicyOpsSection() {
         <AccordionItem value="policyops-demo">
           <AccordionTrigger>
             <span className="policy-disclosure-trigger">
-              <strong>공식 표준약관 연결 데모</strong>
-              <span>원문 확인 · 구조화 · 회귀 테스트 · 사람 승인 상태를 확인하세요</span>
+              <strong>표준약관 검토 화면 열기</strong>
+              <span>원문 확인부터 사람 승인까지 다섯 단계</span>
             </span>
           </AccordionTrigger>
           <AccordionContent>

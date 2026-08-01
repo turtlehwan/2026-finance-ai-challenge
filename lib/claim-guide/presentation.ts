@@ -57,25 +57,29 @@ export const JOURNEY_STEPS = [
     id: "case",
     label: "사례 선택",
     meta: "사실 확인",
-    detail: "보험사건과 증권·치료 사실을 확인",
+    detail:
+      "증권과 진단 기록에서 사고일, 진단명, 가입한 특약을 읽어 냅니다.",
   },
   {
     id: "evidence",
     label: "근거 분석",
     meta: "약관 대조",
-    detail: "가입 시점 약관과 면책을 함께 검토",
+    detail:
+      "계약일에 맞는 약관 버전을 고른 뒤, 지급 조항만이 아니라 면책 조항까지 같이 봅니다.",
   },
   {
     id: "question",
     label: "정보 확인",
     meta: "추가 질문",
-    detail: "빠진 사실을 한 가지씩 질문",
+    detail:
+      "빠진 사실이 있으면 넘겨짚지 않고 멈춥니다. 한 번에 한 가지만 되묻습니다.",
   },
   {
     id: "action",
     label: "다음 행동",
     meta: "확인 목록",
-    detail: "서류·질문·공식 경로를 준비",
+    detail:
+      "낼 서류와 보험사에 물어볼 것을 정리합니다. 청구는 공식 창구에서 직접 하십니다.",
   },
 ] as const
 

@@ -2,83 +2,56 @@
 
 import { useEffect, useRef } from "react"
 import {
-  ArrowRightIcon,
-  BanknoteXIcon,
-  BookOpenCheckIcon,
-  BotIcon,
-  CalendarSearchIcon,
   CheckCircle2Icon,
-  DatabaseZapIcon,
   ExternalLinkIcon,
-  FileStackIcon,
-  LandmarkIcon,
-  ListChecksIcon,
-  ShieldCheckIcon,
-  StethoscopeIcon,
-  UserCheckIcon,
-  UserRoundIcon,
-  WalletCardsIcon,
+  XCircleIcon,
 } from "lucide-react"
 
 import { journeyPresentation } from "@/components/claim-guide/journey-presentation"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 
 const confirmable = [
   {
-    title: "증권상 담보·특약",
-    detail: "증권과 가입내역에 기재된 사실",
-    icon: FileStackIcon,
+    title: "증권에 적힌 담보와 특약",
+    detail: "증권·가입내역 문서에 그대로 쓰여 있는 사실",
   },
   {
-    title: "치료 상황 대응 담보 후보",
-    detail: "진단·치료 사실과 약관 조건의 연결",
-    icon: StethoscopeIcon,
+    title: "이번 치료에 해당될 만한 담보",
+    detail: "진단·치료 사실을 약관의 지급 조건과 맞춰 본 결과",
   },
   {
-    title: "중도·만기보험금 발생 추정 시점",
-    detail: "계약일과 약관 경과기간의 역산",
-    icon: CalendarSearchIcon,
+    title: "중도·만기보험금이 생겼을 시점",
+    detail: "계약일에 약관의 경과기간을 더해 계산한 날짜",
   },
 ]
 
 const notConfirmable = [
   {
-    title: "이미 청구했는지",
-    detail: "보험사 내부 청구 이력이 필요",
-    icon: DatabaseZapIcon,
+    title: "이미 청구한 건인지",
+    detail: "보험사 전산의 청구 이력을 봐야 알 수 있습니다",
   },
   {
-    title: "확정된 숨은 보험금 금액",
-    detail: "보험사의 지급 심사 전에는 확정 불가",
-    icon: BanknoteXIcon,
+    title: "받게 될 금액",
+    detail: "보험사 지급 심사를 거쳐야 정해집니다",
   },
   {
-    title: "최종 지급 여부",
-    detail: "최종 결정 권한은 보험회사에 있음",
-    icon: UserCheckIcon,
+    title: "지급이 될지 안 될지",
+    detail: "판단 권한이 보험회사에 있습니다",
   },
 ]
 
 const agentTasks = [
-  "증권·치료 사실 구조화",
-  "가입 시점 약관 선택",
-  "정의·지급·면책 근거 연결",
-  "필요 서류와 질문 준비",
+  "증권과 진단 기록에서 사실 뽑아내기",
+  "가입일에 맞는 약관 버전 찾기",
+  "정의·지급·면책 조항 이어 붙이기",
+  "물어볼 것과 낼 서류 정리",
 ]
 
 const humanTasks = [
-  "빠진 사실 확인",
-  "Agent 근거 검토",
-  "보험사 공식 채널 조회",
-  "최종 청구 실행",
+  "빠진 사실 채우기",
+  "근거로 든 조항이 맞는지 확인",
+  "보험사에 청구 이력 조회",
+  "청구서 제출",
 ]
 
 export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
@@ -143,167 +116,122 @@ export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
       <section className="section-shell workflow-section" id="workflow">
         <div className="section-heading scroll-reveal">
           <div>
-            <h2>Agent는 조사하고, 사람은 결정합니다</h2>
-            <p>화면에서 본 네 단계를 그대로 따라 사실과 근거를 완성합니다.</p>
+            <h2>조사는 Agent, 결정은 사람</h2>
+            <p>
+              화면에서 보신 네 단계가 실제 순서입니다. 각 단계가 무엇을 확인하는지
+              적어 두었습니다.
+            </p>
           </div>
         </div>
-        <div className="workflow-line">
-          {journeyPresentation.map((step, index) => {
-            const Icon = step.icon
-            return (
-              <div className="workflow-step scroll-reveal" key={step.label}>
-                <span aria-hidden="true">
-                  <Icon />
-                </span>
+        <ol className="workflow-line">
+          {journeyPresentation.map((step, index) => (
+            <li className="workflow-step scroll-reveal" key={step.label}>
+              <span className="workflow-index" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div>
                 <strong>{step.label}</strong>
                 <p>{step.detail}</p>
-                <Badge variant="outline">{index + 1}</Badge>
               </div>
-            )
-          })}
-        </div>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <section className="section-shell trust-section" id="trust">
         <div className="section-heading scroll-reveal">
           <div>
-            <h2>알 수 있는 것과 없는 것</h2>
+            <h2>알 수 있는 것, 알 수 없는 것</h2>
             <p>
-              금융 서비스의 신뢰는 답변의 범위보다 한계를 분명히 밝히는 데서
-              시작합니다.
+              보험사 전산에 들어가지 않고는 알 수 없는 것이 있습니다. 그 경계를
+              화면 어디서나 같게 지킵니다.
             </p>
           </div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon-lg"
-                aria-label="투명성 원칙 설명"
-              >
-                <BookOpenCheckIcon />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              화면 전반에서 동일한 역할 경계를 유지합니다
-            </TooltipContent>
-          </Tooltip>
         </div>
 
         <div className="trust-ledger scroll-reveal">
           <div className="ledger-column is-confirmable">
             <div className="ledger-heading">
               <CheckCircle2Icon aria-hidden="true" />
-              <strong>확인 가능</strong>
+              <strong>여기서 확인됩니다</strong>
             </div>
-            {confirmable.map((item) => {
-              const Icon = item.icon
-              return (
-                <div className="ledger-row" key={item.title}>
-                  <Icon aria-hidden="true" />
-                  <div>
-                    <strong>{item.title}</strong>
-                    <span>{item.detail}</span>
-                  </div>
-                </div>
-              )
-            })}
+            {confirmable.map((item) => (
+              <div className="ledger-row" key={item.title}>
+                <strong>{item.title}</strong>
+                <span>{item.detail}</span>
+              </div>
+            ))}
           </div>
 
           <Separator orientation="vertical" className="ledger-separator" />
 
           <div className="ledger-column is-blocked">
             <div className="ledger-heading">
-              <WalletCardsIcon aria-hidden="true" />
-              <strong>확정 불가</strong>
+              <XCircleIcon aria-hidden="true" />
+              <strong>여기서는 알 수 없습니다</strong>
             </div>
-            {notConfirmable.map((item) => {
-              const Icon = item.icon
-              return (
-                <div className="ledger-row" key={item.title}>
-                  <Icon aria-hidden="true" />
-                  <div>
-                    <strong>{item.title}</strong>
-                    <span>{item.detail}</span>
-                  </div>
-                </div>
-              )
-            })}
+            {notConfirmable.map((item) => (
+              <div className="ledger-row" key={item.title}>
+                <strong>{item.title}</strong>
+                <span>{item.detail}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <Alert className="scroll-reveal trust-alert">
-          <ShieldCheckIcon />
-          <AlertTitle>역할 경계</AlertTitle>
-          <AlertDescription>
-            보험금 액수 확정·청구 대행·손해사정·상품 권유를 하지 않습니다. 최종
-            지급 여부는 보험회사가 결정합니다.
-          </AlertDescription>
-        </Alert>
+        <p className="trust-boundary scroll-reveal">
+          보험금 액수를 확정하거나, 청구를 대신하거나, 손해사정을 하거나, 상품을
+          권하지 않습니다. 최종 지급 여부는 보험회사가 정합니다.
+        </p>
       </section>
 
-      <section className="handoff-section scroll-reveal">
+      <section className="section-shell handoff-section scroll-reveal">
         <div className="handoff-copy">
-          <h2>실제 실행은 공식 채널에서</h2>
+          <h2>청구는 공식 채널에서</h2>
           <p>
-            Agent가 조사·비교·검증·준비하고, 사람은 공식 채널에서 확인하고
-            실행합니다.
+            여기서 정리한 내용을 들고 아래로 가시면 됩니다. 조회와 청구는 원래
+            무료이고, 저희를 거치지 않아도 됩니다.
           </p>
+          <div className="official-links">
+            <span className="official-links-label">공식 조회 창구</span>
+            <a
+              href="https://cont.insure.or.kr/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <strong>내보험찾아줌</strong>
+              <span>생명·손해보험협회 · 가입 내역 통합 조회</span>
+              <ExternalLinkIcon aria-hidden="true" />
+            </a>
+            <a
+              href="https://www.silson24.or.kr/claim/web/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <strong>실손24</strong>
+              <span>실손의료보험 청구</span>
+              <ExternalLinkIcon aria-hidden="true" />
+            </a>
+          </div>
         </div>
         <div className="handoff-grid">
           <div className="handoff-tasks">
             <div>
-              <span aria-hidden="true">
-                <BotIcon />
-              </span>
-              <strong>Agent가 하는 일</strong>
+              <strong>여기서 준비하는 것</strong>
               <ul>
                 {agentTasks.map((task) => (
-                  <li key={task}>
-                    <ListChecksIcon aria-hidden="true" />
-                    {task}
-                  </li>
+                  <li key={task}>{task}</li>
                 ))}
               </ul>
             </div>
-            <ArrowRightIcon className="handoff-arrow" aria-hidden="true" />
             <div>
-              <span aria-hidden="true">
-                <UserRoundIcon />
-              </span>
-              <strong>사람이 하는 일</strong>
+              <strong>직접 하셔야 하는 것</strong>
               <ul>
                 {humanTasks.map((task) => (
-                  <li key={task}>
-                    <CheckCircle2Icon aria-hidden="true" />
-                    {task}
-                  </li>
+                  <li key={task}>{task}</li>
                 ))}
               </ul>
             </div>
-          </div>
-          <div className="official-links">
-            <Button size="lg" variant="outline" asChild>
-              <a
-                href="https://cont.insure.or.kr/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <LandmarkIcon data-icon="inline-start" />
-                내보험찾아줌
-                <ExternalLinkIcon data-icon="inline-end" />
-              </a>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <a
-                href="https://www.silson24.or.kr/claim/web/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <ShieldCheckIcon data-icon="inline-start" />
-                실손24
-                <ExternalLinkIcon data-icon="inline-end" />
-              </a>
-            </Button>
           </div>
         </div>
       </section>

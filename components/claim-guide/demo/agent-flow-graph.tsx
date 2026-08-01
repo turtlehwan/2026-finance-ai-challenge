@@ -65,63 +65,63 @@ const graphDefinition: Array<{
 }> = [
   {
     id: "case_analyst",
-    label: "Case Analyst",
+    label: "사건 분석",
     role: "Agent",
     position: { x: 0, y: 0 },
     icon: BrainCircuitIcon,
   },
   {
     id: "document_tool",
-    label: "Document Tool",
+    label: "문서 판독",
     role: "Tool",
     position: { x: 250, y: 0 },
     icon: FileSearchIcon,
   },
   {
     id: "version_resolver",
-    label: "Version Resolver",
+    label: "약관 버전 확인",
     role: "Tool",
     position: { x: 500, y: 0 },
     icon: GitBranchIcon,
   },
   {
     id: "coverage_matcher",
-    label: "Coverage Matcher",
+    label: "담보 대조",
     role: "Agent",
     position: { x: 750, y: 0 },
     icon: NetworkIcon,
   },
   {
     id: "graph_retriever",
-    label: "Domain GraphRAG",
+    label: "근거 그래프 검색",
     role: "Tool",
     position: { x: 750, y: 260 },
     icon: RouteIcon,
   },
   {
     id: "information_gate",
-    label: "Information Gate",
+    label: "정보 충분성 판단",
     role: "Gate",
     position: { x: 500, y: 260 },
     icon: ScaleIcon,
   },
   {
     id: "human_review",
-    label: "Human-in-the-loop",
+    label: "사람 확인",
     role: "Human",
     position: { x: 500, y: 520 },
     icon: UserRoundCheckIcon,
   },
   {
     id: "evidence_auditor",
-    label: "Evidence Auditor",
+    label: "근거 감사",
     role: "Agent",
     position: { x: 250, y: 260 },
     icon: ShieldCheckIcon,
   },
   {
     id: "action_planner",
-    label: "Action Planner",
+    label: "다음 행동 정리",
     role: "Agent",
     position: { x: 0, y: 260 },
     icon: BotIcon,
@@ -458,12 +458,12 @@ export function AgentFlowGraph({
         <div>
           <Badge variant="outline">
             <NetworkIcon data-icon="inline-start" />
-            실제 LangGraph 실행
+            LangGraph 실행 기록
           </Badge>
-          <h3>Agent가 지금 어떤 근거를 넘기고 있는지 보세요</h3>
+          <h3>어떤 근거가 어디로 넘어갔는지</h3>
           <p>
-            각 노드는 서버가 반환한 실제 입력·출력 trace입니다. 드래그와
-            확대·축소로 경로를 살펴볼 수 있습니다.
+            방금 서버가 실제로 지나온 경로입니다. 칸마다 들어간 값과 나온 값이
+            그대로 적혀 있고, 끌거나 확대해서 보실 수 있습니다.
           </p>
         </div>
         <div
@@ -507,7 +507,10 @@ export function AgentFlowGraph({
       </div>
       <div className="agent-flow-footnote">
         <HandIcon aria-hidden="true" />
-        <span>Agent는 결과를 확정하지 않고 검증된 근거와 다음 행동만 전달합니다.</span>
+        <span>
+          여기서 나오는 것은 확인된 근거와 다음에 할 일뿐입니다. 지급 여부는
+          정하지 않습니다.
+        </span>
       </div>
     </section>
   )

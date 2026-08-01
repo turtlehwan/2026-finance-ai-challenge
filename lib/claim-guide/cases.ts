@@ -30,7 +30,7 @@ export const claimCases: ClaimCase[] = [
       { label: "면책·제한", meta: "특약 제4·8조" },
       { label: "다음 행동", meta: CLAIM_STATUS.recommended },
     ],
-    actionTitle: "재해골절보험금 확인 Action Pack",
+    actionTitle: "재해골절보험금, 이렇게 확인하세요",
     documents: [
       "진단명·질병분류코드가 있는 진단서",
       "보험증권 또는 가입내역",
@@ -65,7 +65,7 @@ export const claimCases: ClaimCase[] = [
       { label: "면책", meta: "지급 이력", warning: true },
       { label: "다음 행동", meta: "공식 조회" },
     ],
-    actionTitle: "중도보험금 발생 여부 확인 Action Pack",
+    actionTitle: "중도보험금이 생겼는지 확인하는 법",
     documents: [
       "보험증권의 계약일·만기일",
       "중도보험금 지급 조건이 있는 약관",
@@ -100,7 +100,7 @@ export const claimCases: ClaimCase[] = [
       { label: "면책", meta: "사고 조건", warning: true },
       { label: "다음 행동", meta: CLAIM_STATUS.unavailable },
     ],
-    actionTitle: "면책 조건 확인 Action Pack",
+    actionTitle: "면책에 걸리는지 먼저 확인하세요",
     documents: [
       "사고사실확인원",
       "경찰·교통사고 관련 확인 자료",

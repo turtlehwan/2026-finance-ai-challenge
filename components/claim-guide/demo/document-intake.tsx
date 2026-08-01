@@ -132,12 +132,12 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
         <div>
           <Badge variant="success">
             <DatabaseIcon data-icon="inline-start" />
-            실제 약관 데이터 연결
+            실제 약관에 연결됨
           </Badge>
-          <CardTitle>내 문서로 바로 확인해보세요</CardTitle>
+          <CardTitle>가지고 계신 문서로 해보기</CardTitle>
           <CardDescription>
-            증권과 진료자료의 텍스트를 구조화한 뒤 실제 우체국보험 약관
-            버전과 연결합니다.
+            증권과 진료자료에서 사실을 뽑아낸 뒤, 우체국보험 실제 약관 가운데
+            계약일에 맞는 판본을 찾아 연결합니다.
           </CardDescription>
         </div>
       </CardHeader>
@@ -212,14 +212,37 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
 
           <div className="document-result-panel" aria-live="polite">
             {phase === "idle" ? (
-              <Alert>
-                <ShieldCheckIcon />
-                <AlertTitle>문서 원본은 저장하지 않습니다</AlertTitle>
-                <AlertDescription>
-                  파싱 응답에는 마스킹한 미리보기와 분석에 필요한 구조화
-                  사실만 포함합니다.
-                </AlertDescription>
-              </Alert>
+              <div className="document-result-empty">
+                <div className="document-result-heading">
+                  <div>
+                    <strong>여기에 이런 것이 뽑혀 나옵니다</strong>
+                    <p>문서를 넣으면 아래 네 칸이 채워집니다.</p>
+                  </div>
+                </div>
+                <dl className="document-facts is-placeholder" aria-hidden="true">
+                  <div>
+                    <dt>상품코드</dt>
+                    <dd>P400073</dd>
+                  </div>
+                  <div>
+                    <dt>계약일</dt>
+                    <dd>2025-05-10</dd>
+                  </div>
+                  <div>
+                    <dt>가입특약</dt>
+                    <dd>생활재해보장특약Ⅱ 2504</dd>
+                  </div>
+                  <div>
+                    <dt>진단코드</dt>
+                    <dd>S52.5</dd>
+                  </div>
+                </dl>
+                <p className="document-privacy-note">
+                  <ShieldCheckIcon aria-hidden="true" />
+                  원본은 저장하지 않습니다. 개인정보를 가린 뒤 위 네 가지 사실만
+                  꺼내 쓰고, 모델 학습에는 쓰지 않습니다.
+                </p>
+              </div>
             ) : null}
 
             {phase === "running" ? (

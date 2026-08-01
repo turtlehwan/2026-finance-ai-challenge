@@ -29,8 +29,8 @@ export default function ClaimGuideApp() {
           <span>보험금 길잡이 Agent</span>
         </a>
         <p>
-          2026 금융 AI Challenge 출품용 합성데이터 MVP · 최종 지급 여부는
-          보험회사가 결정합니다.
+          2026 금융 AI Challenge 출품작입니다. 화면의 개인 사례는 모두 합성
+          데이터이며, 최종 지급 여부는 보험회사가 정합니다.
         </p>
         <a
           href="https://daker.ai/public/hackathons/2026-finance-ai-challenge"

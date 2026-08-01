@@ -118,6 +118,10 @@ body {
   line-height: var(--leading-body);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  /* 한국어 조판 기본값: 어절 중간에서 줄을 끊지 않되,
+     해시·URL 같은 긴 토큰은 넘치지 않게 쪼갠다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 button,
@@ -305,10 +309,12 @@ svg {
 
 .hero-copy h1 {
   margin: 0;
-  font-size: clamp(2.25rem, 4.2vw, var(--text-display));
+  font-size: clamp(2.25rem, 3.7vw, 3.25rem);
   font-weight: 790;
-  line-height: var(--leading-tight);
+  line-height: 1.22;
   letter-spacing: -0.055em;
+  /* 한국어는 단어 중간에서 끊기면 안 된다. 줄은 카피가 정한 자리에서만 갈린다. */
+  word-break: keep-all;
 }
 
 .hero-title-line {
@@ -322,12 +328,14 @@ svg {
 }
 
 .hero-support {
-  max-width: 35rem;
+  max-width: 33rem;
   margin: 1.75rem 0 0;
   color: var(--muted-foreground);
   font-size: var(--text-lead);
   line-height: var(--leading-relaxed);
   letter-spacing: -0.015em;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .hero-actions {
@@ -542,7 +550,17 @@ button.evidence-node {
 .section-shell {
   width: min(100% - 3rem, 78rem);
   margin: 0 auto;
-  padding: 6rem 0;
+  /* 아래 여백을 조금 더 준다. 광학적으로는 그래야 대칭으로 보인다. */
+  padding: 4.5rem 0 5.5rem;
+}
+
+/* 절차 설명은 앞뒤 구간보다 짧다. 같은 6rem을 주면 빈 판이 된다. */
+.workflow-section {
+  padding-bottom: 3.5rem;
+}
+
+.trust-section {
+  padding-top: 3.5rem;
 }
 
 .section-heading {
@@ -550,27 +568,31 @@ button.evidence-node {
   align-items: flex-end;
   justify-content: space-between;
   gap: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .section-heading h2,
 .handoff-copy h2 {
-  max-width: 50rem;
+  max-width: 46rem;
   margin: 0;
   color: var(--foreground);
   font-size: clamp(var(--text-title), 3vw, var(--text-section));
   font-weight: 770;
-  line-height: var(--leading-tight);
+  line-height: 1.28;
   letter-spacing: -0.045em;
+  text-wrap: balance;
+  word-break: keep-all;
 }
 
 .section-heading p,
 .handoff-copy p {
-  max-width: 46rem;
-  margin: 0.75rem 0 0;
+  max-width: 42rem;
+  margin: 0.85rem 0 0;
   color: var(--muted-foreground);
   font-size: var(--text-body);
   line-height: var(--leading-relaxed);
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .section-heading [data-slot="badge"] {
@@ -724,6 +746,41 @@ button.evidence-node {
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 빈 상태도 화면의 일부다. 무엇이 채워질지 미리 보여 준다. */
+.document-result-empty {
+  display: grid;
+  gap: 1rem;
+}
+
+.document-facts.is-placeholder > div {
+  border: 1px dashed var(--border);
+  background: transparent;
+}
+
+.document-facts.is-placeholder dd {
+  color: var(--muted-foreground);
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.document-privacy-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  line-height: var(--leading-body);
+}
+
+.document-privacy-note svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  margin-top: 0.22rem;
+  color: var(--success);
 }
 
 .demo-divider {
@@ -1588,118 +1645,208 @@ button.evidence-node {
   margin-top: 1rem;
 }
 
-.evaluation-card {
-  margin-top: 1rem;
-  border-color: var(--success-border);
-  box-shadow: var(--shadow-card);
-}
-
-.evaluation-card > [data-slot="card-header"] {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-}
-
-.evaluation-card > [data-slot="card-header"] > div {
+/* 검증 블록 — 카드로 감싸지 않고 규칙선과 여백으로만 구획한다.
+   숫자를 크게 키우지 않는 것이 의도다. 세어 볼 수 있는 값으로 읽혀야 한다. */
+.verification-block {
   display: grid;
-  gap: 0.45rem;
+  gap: 2.75rem;
+  margin-top: 4.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
 }
 
-.evaluation-card [data-slot="card-title"] {
-  margin-top: 0.2rem;
+.verification-intro {
+  max-width: 44rem;
 }
 
-.evaluation-card [data-slot="badge"] {
-  width: fit-content;
+.verification-intro h3 {
+  margin: 0;
+  font-size: var(--text-title);
+  font-weight: 750;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
-.evaluation-card > [data-slot="card-footer"] {
-  display: block;
-  padding: 0.25rem 1rem;
-  background: var(--background);
+.verification-intro p {
+  margin: 0.6rem 0 0;
+  color: var(--muted-foreground);
+  line-height: var(--leading-relaxed);
+  text-wrap: pretty;
 }
 
-.evaluation-honesty {
+.source-ledger h4,
+.regression-block h4 {
+  margin: 0;
+  font-size: var(--text-lead);
+  font-weight: 720;
+  letter-spacing: -0.03em;
+}
+
+.source-ledger > p,
+.regression-block > p {
+  max-width: 44rem;
+  margin: 0.4rem 0 1.25rem;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  line-height: var(--leading-body);
+  text-wrap: pretty;
+}
+
+.source-ledger ul {
   display: grid;
-  gap: 0.25rem;
-  margin-bottom: 0.85rem;
-  padding: 0.75rem;
-  border: 1px solid var(--warning-border);
-  border-radius: 0.65rem;
-  background: var(--warning-soft);
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+  list-style: none;
 }
 
-.evaluation-honesty strong,
-.evaluation-honesty span {
+.source-ledger li {
+  display: grid;
+  grid-template-columns: 5.25rem minmax(0, 2.2fr) minmax(0, 1fr) auto auto auto;
+  align-items: baseline;
+  gap: 0.5rem 1.25rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--border);
   font-size: var(--text-caption);
 }
 
-.evaluation-honesty span {
+.source-ledger li:hover {
+  background: rgb(11 35 72 / 2%);
+}
+
+.ledger-kind {
+  align-self: center;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.35rem;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  font-weight: 680;
+  text-align: center;
+}
+
+.ledger-title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  min-width: 0;
+  color: var(--foreground);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 160ms ease;
+  word-break: keep-all;
+}
+
+.ledger-title:hover,
+.ledger-title:focus-visible {
+  text-decoration-color: var(--primary);
+}
+
+.ledger-title svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
   color: var(--muted-foreground);
 }
 
-.evaluation-card > [data-slot="card-footer"] [data-slot="accordion-item"] {
+.ledger-org,
+.ledger-period,
+.ledger-pages {
+  color: var(--muted-foreground);
+  word-break: keep-all;
+}
+
+.ledger-period,
+.ledger-pages {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ledger-hash {
+  color: var(--muted-foreground);
+  font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, monospace;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.regression-list {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+
+.regression-list > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.regression-list dt {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  font-size: var(--text-caption);
+  font-weight: 640;
+  word-break: keep-all;
+}
+
+.regression-list dt span {
+  color: var(--muted-foreground);
+  font-weight: 400;
+}
+
+.regression-list dd {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.regression-list dd strong {
+  color: var(--success);
+  font-size: var(--text-body);
+  font-weight: 720;
+}
+
+.regression-method {
+  margin-top: 0.5rem;
+}
+
+.regression-method [data-slot="accordion-item"] {
   border-bottom: 0;
 }
 
-.evaluation-card
-  > [data-slot="card-footer"]
-  [data-slot="accordion-trigger"] {
+.regression-method [data-slot="accordion-trigger"] {
   padding-right: 0;
   padding-left: 0;
   border: 0;
   border-radius: 0;
-}
-
-.evaluation-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-.evaluation-metrics > div {
-  display: grid;
-  justify-items: start;
-  gap: 0.35rem;
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 0.8rem;
-  background: var(--muted);
-}
-
-.evaluation-metrics > div > span {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  border-radius: 0.55rem;
-  background: var(--accent);
-  color: var(--success);
-}
-
-.evaluation-metrics svg {
-  width: 1rem;
-}
-
-.evaluation-metrics strong {
-  font-size: var(--text-title);
-  font-variant-numeric: tabular-nums;
-  line-height: var(--leading-tight);
-}
-
-.evaluation-metrics p,
-.evaluation-method p,
-.evaluation-method li {
-  margin: 0;
-  color: var(--muted-foreground);
   font-size: var(--text-caption);
 }
 
 .evaluation-method {
   display: grid;
   gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 0.65rem;
-  background: var(--muted);
+  max-width: 46rem;
+}
+
+.evaluation-method p,
+.evaluation-method li {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  line-height: var(--leading-body);
+  text-wrap: pretty;
 }
 
 .evaluation-method ul {
@@ -1914,90 +2061,97 @@ button.evidence-node {
   color: var(--success);
 }
 
+/* 절차는 카드 4장이 아니라 번호 매긴 목록으로 읽힌다.
+   왼쪽 규칙선이 순서를, 큰 숫자가 단계를 짚어 준다. */
 .workflow-line {
-  position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-}
-
-.workflow-line::before {
-  position: absolute;
-  top: 1.45rem;
-  right: 8%;
-  left: 8%;
-  height: 1px;
-  background: var(--border);
-  content: "";
+  max-width: 52rem;
+  margin: 0;
+  padding: 0;
+  padding-left: 0.25rem;
+  border-left: 1px solid var(--border);
+  list-style: none;
 }
 
 .workflow-step {
   position: relative;
   display: grid;
-  justify-items: center;
-  gap: 0.55rem;
-  background: var(--background);
-  text-align: center;
+  grid-template-columns: 3.75rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 1.5rem;
+  padding: 1.35rem 0 1.35rem 1.75rem;
 }
 
-.workflow-step > span {
-  z-index: 1;
-  display: grid;
-  width: 3rem;
-  height: 3rem;
-  place-items: center;
-  border: 1px solid var(--border);
+.workflow-step + .workflow-step {
+  border-top: 1px solid var(--border);
+}
+
+.workflow-step::before {
+  position: absolute;
+  top: 1.85rem;
+  left: -0.3rem;
+  width: 0.45rem;
+  height: 0.45rem;
   border-radius: 999px;
-  background: var(--background);
-  color: var(--primary);
+  background: var(--border);
+  content: "";
 }
 
-.workflow-step > span svg {
-  width: 1.2rem;
+.workflow-step:first-child::before {
+  background: var(--success);
+}
+
+.workflow-index {
+  color: var(--muted-foreground);
+  font-size: var(--text-title);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  opacity: 0.4;
 }
 
 .workflow-step strong {
-  font-size: var(--text-caption);
+  display: block;
+  font-size: var(--text-lead);
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
 .workflow-step p {
-  margin: 0;
+  max-width: 34rem;
+  margin: 0.25rem 0 0;
   color: var(--muted-foreground);
   font-size: var(--text-caption);
-  line-height: 1.5;
+  line-height: var(--leading-body);
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
-.workflow-step [data-slot="badge"] {
-  position: absolute;
-  top: -0.45rem;
-  left: calc(50% + 0.85rem);
-}
-
+/* 확인 가능/불가 대조표 — 상자에 담지 않고 규칙선으로만 나눈다. */
 .trust-ledger {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 2rem;
-  padding: 2rem;
-  border: 1px solid var(--border);
-  border-radius: 1.25rem;
-  box-shadow: var(--shadow-card);
+  gap: 0 3rem;
 }
 
 .ledger-column {
   display: grid;
-  gap: 0.75rem;
+  align-content: start;
+  gap: 0;
 }
 
 .ledger-heading {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border);
+  gap: 0.55rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 2px solid currentcolor;
+  font-size: var(--text-caption);
 }
 
 .ledger-heading svg {
-  width: 1.2rem;
+  width: 1.05rem;
+  height: 1.05rem;
 }
 
 .is-confirmable .ledger-heading {
@@ -2010,133 +2164,157 @@ button.evidence-node {
 
 .ledger-row {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.75rem;
-  padding: 0.875rem 0;
+  gap: 0.2rem;
+  padding: 1.1rem 0;
   border-bottom: 1px solid var(--border);
 }
 
-.ledger-column .ledger-row:last-child {
-  border-bottom: 0;
-}
-
-.ledger-row > svg {
-  width: 1.1rem;
-  margin-top: 0.2rem;
-  color: var(--muted-foreground);
-}
-
-.ledger-row > div {
-  display: grid;
-  gap: 0.15rem;
-}
-
 .ledger-row strong {
-  font-size: var(--text-caption);
+  font-size: var(--text-body);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
 }
 
 .ledger-row span {
   color: var(--muted-foreground);
   font-size: var(--text-caption);
+  line-height: var(--leading-body);
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .ledger-separator {
   height: 100%;
 }
 
-.trust-alert {
-  margin-top: 1rem;
+.trust-boundary {
+  max-width: 48rem;
+  margin: 2rem 0 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  line-height: var(--leading-relaxed);
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
+/* 인계 구간 — 페이지 한가운데 검은 슬래브를 넣지 않는다.
+   같은 팔레트 안의 옅은 면과 규칙선으로만 강조한다. */
 .handoff-section {
   display: grid;
-  grid-template-columns: minmax(16rem, 0.6fr) minmax(0, 1.4fr);
+  grid-template-columns: minmax(18rem, 1fr) minmax(0, 1fr);
   gap: 4rem;
-  width: min(100% - 3rem, 78rem);
-  margin: 0 auto 7rem;
-  padding: 3rem;
-  border-radius: 1.5rem;
-  background: var(--foreground);
-  color: var(--inverse-foreground);
+  padding: 3.5rem 0 5.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.official-links {
+  margin-top: 2.5rem;
 }
 
 .handoff-copy h2 {
-  color: var(--inverse-foreground);
+  color: var(--foreground);
 }
 
 .handoff-copy p {
-  color: var(--inverse-muted);
+  color: var(--muted-foreground);
 }
 
 .handoff-grid {
   display: grid;
-  gap: 1.5rem;
+  gap: 2.5rem;
 }
 
 .handoff-tasks {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem;
 }
 
 .handoff-tasks > div {
   min-width: 0;
 }
 
-.handoff-tasks > div > span {
-  display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  margin-bottom: 0.75rem;
-  place-items: center;
-  border: 1px solid var(--inverse-border);
-  border-radius: 0.75rem;
-  color: var(--inverse-accent);
+.handoff-tasks > div > strong {
+  display: block;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-caption);
+  font-weight: 700;
 }
 
 .handoff-tasks ul {
   display: grid;
-  gap: 0.45rem;
-  margin: 0.75rem 0 0;
+  gap: 0;
+  margin: 0;
   padding: 0;
-  color: var(--inverse-muted);
   list-style: none;
 }
 
 .handoff-tasks li {
-  display: flex;
-  gap: 0.45rem;
+  padding: 0.6rem 0;
+  color: var(--muted-foreground);
   font-size: var(--text-caption);
+  line-height: var(--leading-body);
+  word-break: keep-all;
 }
 
-.handoff-tasks li svg {
-  width: 1rem;
-  min-width: 1rem;
-  margin-top: 0.18rem;
-  color: var(--inverse-accent);
-}
-
-.handoff-arrow {
-  color: var(--inverse-accent);
+.handoff-tasks li + li {
+  border-top: 1px solid rgb(213 224 235 / 55%);
 }
 
 .official-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  display: grid;
+  align-content: start;
+  gap: 0;
 }
 
-.official-links [data-slot="button"] {
-  border-color: var(--inverse-border);
-  background: transparent;
-  color: var(--inverse-foreground);
+.official-links-label {
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
-.official-links [data-slot="button"]:hover {
-  border-color: var(--inverse-accent);
-  background: var(--inverse-surface);
-  color: var(--inverse-foreground);
+.official-links a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.15rem 1rem;
+  padding: 1rem 0.75rem 1rem 0;
+  border-bottom: 1px solid var(--border);
+  transition: padding-left 180ms ease, background 180ms ease;
+}
+
+.official-links a:hover,
+.official-links a:focus-visible {
+  padding-left: 0.6rem;
+  background: var(--muted);
+}
+
+.official-links a strong {
+  font-size: var(--text-body);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.official-links a > span {
+  grid-column: 1;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  word-break: keep-all;
+}
+
+.official-links a svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  grid-row: 1 / -1;
+  grid-column: 2;
+  color: var(--muted-foreground);
 }
 
 .site-footer {
@@ -2215,18 +2393,15 @@ button.evidence-node {
     grid-template-columns: 1fr;
   }
 
-  .workflow-line {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem 1rem;
-  }
-
-  .workflow-line::before {
-    display: none;
+  .trust-ledger {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
   }
 
   .handoff-section {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
+    padding-bottom: 4rem;
   }
 }
 
@@ -2469,12 +2644,49 @@ button.evidence-node {
     grid-template-columns: 1fr;
   }
 
-  .evaluation-card > [data-slot="card-header"] {
-    grid-template-columns: 1fr;
+  .source-ledger li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.3rem 0.75rem;
   }
 
-  .evaluation-metrics {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .ledger-kind {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .ledger-hash {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .ledger-title {
+    grid-column: 1 / -1;
+  }
+
+  .ledger-org {
+    grid-column: 1 / -1;
+  }
+
+  .ledger-period,
+  .ledger-pages {
+    grid-row: 4;
+  }
+
+  .ledger-period {
+    grid-column: 1;
+  }
+
+  .ledger-pages {
+    grid-column: 2;
+    justify-self: end;
+  }
+
+  .regression-list > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.3rem;
   }
 
   .action-pack-actions {
@@ -2514,32 +2726,27 @@ button.evidence-node {
     overflow-x: auto;
   }
 
-  .workflow-line {
-    grid-template-columns: repeat(2, 1fr);
+  .workflow-step {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-left: 1.25rem;
+  }
+
+  .workflow-index {
+    font-size: var(--text-lead);
   }
 
   .trust-ledger {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-    padding: 1rem;
+    gap: 2rem;
   }
 
   .handoff-section {
-    margin-bottom: 4rem;
-    padding: 2rem 1.25rem;
+    padding-bottom: 3.5rem;
   }
 
   .handoff-tasks {
     grid-template-columns: 1fr;
-  }
-
-  .handoff-arrow {
-    transform: rotate(90deg);
-  }
-
-  .official-links,
-  .official-links [data-slot="button"] {
-    width: 100%;
+    gap: 2rem;
   }
 
   .site-footer {

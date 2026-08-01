@@ -2,11 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import {
-  ArrowDownIcon,
-  PlayIcon,
-  ShieldCheckIcon,
-} from "lucide-react"
+import { ArrowDownIcon, PlayIcon } from "lucide-react"
 
 import { journeyPresentation } from "@/components/claim-guide/journey-presentation"
 import { Button } from "@/components/ui/button"
@@ -41,6 +37,7 @@ export function HeroSection() {
                   ".hero-actions",
                   ".hero-visual",
                   ".hero-photo",
+                  ".hero-rail",
                 ],
                 { clearProps: "all" },
               )
@@ -119,23 +116,25 @@ export function HeroSection() {
     <section className="hero-section" id="top" ref={sectionRef}>
       <div className="hero-copy">
         <h1>
-          <span className="hero-title-line">부모님의 보험,</span>
-          <span className="hero-title-line">놓친 항목이 없도록</span>
+          <span className="hero-title-line">부모님 증권에서</span>
+          <span className="hero-title-line">빠뜨린 담보가 있는지,</span>
           <span className="hero-title-line">
-            <em>Agent</em>가 함께 확인합니다
+            <em>가입 시점 약관</em>으로
           </span>
+          <span className="hero-title-line">확인하세요</span>
         </h1>
         <p className="hero-support">
-          증권과 치료 정보를 연결해 확인할 담보, 약관 근거, 다음 행동을 한
-          흐름으로 정리합니다.
+          증권과 진단 기록을 넣으면 해당될 만한 담보를 찾고, 그 판단의 근거가 된
+          약관 조항과 쪽수를 함께 보여 드립니다. 지급 여부를 정하는 것은
+          보험회사입니다.
         </p>
         <div className="hero-actions">
           <Button size="lg" onClick={scrollToDemo}>
             <PlayIcon data-icon="inline-start" />
-            합성 사례로 시작하기
+            샘플 사례로 먼저 보기
           </Button>
           <Button variant="ghost" size="lg" onClick={scrollToWorkflow}>
-            Agent 작동 방식
+            작동 방식 보기
             <ArrowDownIcon data-icon="inline-end" />
           </Button>
         </div>
@@ -151,14 +150,10 @@ export function HeroSection() {
           fetchPriority="high"
           unoptimized
         />
-        <div className="hero-photo-note">
-          <ShieldCheckIcon aria-hidden="true" />
-          <span>AI는 근거를 찾고, 가족이 함께 확인합니다</span>
-        </div>
         <div className="hero-rail">
           <div className="hero-rail-header">
-            <strong>4단계 확인 여정</strong>
-            <span>한 번에 한 단계씩</span>
+            <strong>확인 순서</strong>
+            <span>네 단계</span>
           </div>
           <EvidenceRail items={journeyPresentation} activeStep={activeStep} />
           <div className="hero-status" aria-live="polite">

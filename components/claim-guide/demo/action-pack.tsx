@@ -37,7 +37,7 @@ function buildActionPackText(
     .join("\n")
 
   return [
-    "보험금 길잡이 Agent · 합성 사례 Action Pack",
+    "보험금 길잡이 · 사례 정리본",
     "",
     activeCase.title,
     "",
@@ -77,10 +77,10 @@ export function ActionPack({
     const href = URL.createObjectURL(blob)
     const anchor = document.createElement("a")
     anchor.href = href
-    anchor.download = `보험금-길잡이-${activeCase.shortTitle}-Action-Pack.txt`
+    anchor.download = `보험금-길잡이-${activeCase.shortTitle}-정리본.txt`
     anchor.click()
     URL.revokeObjectURL(href)
-    toast.success("Action Pack을 내려받았습니다.")
+    toast.success("정리본을 내려받았습니다.")
   }
 
   const sharePack = async () => {
@@ -108,7 +108,7 @@ export function ActionPack({
       <CardHeader>
         <CardTitle>{activeCase.actionTitle}</CardTitle>
         <CardDescription>
-          Agent가 준비하고, 사용자가 공식 채널에서 확인할 항목입니다.
+          보험사에 가기 전에 챙길 것들입니다. 내려받아 그대로 쓰셔도 됩니다.
         </CardDescription>
         <CardAction>
           <FolderCheckIcon aria-hidden="true" />

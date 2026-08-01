@@ -83,11 +83,10 @@ export function AgentDemo() {
     <section className="section-shell demo-section" id="demo" ref={demoRef}>
       <div className="section-heading">
         <div>
-          <Badge variant="outline">Interactive demo</Badge>
-          <h2>한 번에 한 단계씩 확인해보세요</h2>
+          <h2>사례 하나로 네 단계를 따라가 보세요</h2>
           <p>
-            사례 선택부터 근거 검토, 추가 정보 확인, 다음 행동까지 같은 순서로
-            안내합니다.
+            문서를 직접 넣어도 되고, 아래 준비된 사례를 눌러도 됩니다. 실제
+            약관을 읽고 답하므로 결과가 나오기까지 몇 초 걸립니다.
           </p>
         </div>
       </div>
@@ -95,7 +94,7 @@ export function AgentDemo() {
       <DocumentIntake onBundle={setDocumentBundle} />
 
       <div className="demo-divider" aria-hidden="true">
-        <span>또는 준비된 사례로 빠르게 확인</span>
+        <span>또는 준비된 사례로</span>
       </div>
 
       <ToggleGroup
@@ -361,10 +360,10 @@ export function AgentDemo() {
 
       <Alert className="demo-boundary">
         <ShieldCheckIcon />
-        <AlertTitle>이 데모의 역할 경계</AlertTitle>
+        <AlertTitle>이 화면에서 실제로 일어나는 일</AlertTitle>
         <AlertDescription>
-          합성 사례를 서버에서 판정 규칙과 대조하고, 답변에 따라 결과·근거·
-          Action Pack을 갱신합니다. 실제 보험금 지급 여부는 판단하지 않습니다.
+          서버가 합성 사례를 판정 규칙과 대조하고, 답변에 따라 결과와 근거,
+          준비물 목록을 다시 계산합니다. 지급 여부는 판단하지 않습니다.
         </AlertDescription>
       </Alert>
 
