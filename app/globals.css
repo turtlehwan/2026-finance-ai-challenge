@@ -46,12 +46,15 @@
     Pretendard, "Pretendard Variable", "Noto Sans KR", "Apple SD Gothic Neo",
     Inter, ui-sans-serif, system-ui, sans-serif;
   --text-min: 0.875rem;
-  --text-caption: var(--text-min);
-  --text-body: 1rem;
-  --text-lead: 1.125rem;
-  --text-title: 1.5rem;
-  --text-section: 2.25rem;
+  --text-caption: 0.9375rem;
+  --text-body: 1.0625rem;
+  --text-lead: 1.25rem;
+  --text-title: 1.75rem;
+  --text-section: 2.5rem;
   --text-display: 3.5rem;
+  --content-wide: 74rem;
+  --section-space: 6.75rem;
+  --section-space-mobile: 5rem;
   --leading-tight: 1.35;
   --leading-body: 1.65;
   --leading-relaxed: 1.8;
@@ -88,8 +91,8 @@
   --font-sans: var(--font-sans);
   --text-xs: var(--text-min);
   --text-xs--line-height: 1.5;
-  --text-sm: var(--text-min);
-  --text-sm--line-height: 1.5;
+  --text-sm: var(--text-caption);
+  --text-sm--line-height: 1.6;
   --radius-sm: calc(var(--radius) - 0.25rem);
   --radius-md: calc(var(--radius) - 0.125rem);
   --radius-lg: var(--radius);
@@ -174,7 +177,7 @@ svg {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  width: min(100% - 3rem, 78rem);
+  width: min(100% - 4rem, var(--content-wide));
   min-height: 4.75rem;
   margin: 0 auto;
 }
@@ -296,11 +299,11 @@ svg {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(32rem, 1.05fr);
   align-items: center;
-  gap: clamp(3rem, 4.5vw, 4.5rem);
-  width: min(100% - 3rem, 78rem);
+  gap: clamp(3.5rem, 5vw, 5rem);
+  width: min(100% - 4rem, var(--content-wide));
   min-height: calc(100svh - 4.75rem);
   margin: 0 auto;
-  padding: 5rem 0;
+  padding: 5.5rem 0 6.5rem;
 }
 
 .hero-copy {
@@ -309,7 +312,7 @@ svg {
 
 .hero-copy h1 {
   margin: 0;
-  font-size: clamp(2.25rem, 3.7vw, 3.25rem);
+  font-size: clamp(2.5rem, 3.9vw, 3.5rem);
   font-weight: 790;
   line-height: 1.22;
   letter-spacing: -0.055em;
@@ -548,19 +551,17 @@ button.evidence-node {
 }
 
 .section-shell {
-  width: min(100% - 3rem, 78rem);
+  width: min(100% - 4rem, var(--content-wide));
   margin: 0 auto;
-  /* 아래 여백을 조금 더 준다. 광학적으로는 그래야 대칭으로 보인다. */
-  padding: 3.75rem 0 4.5rem;
+  padding: var(--section-space) 0;
 }
 
-/* 절차 설명은 앞뒤 구간보다 짧다. 같은 6rem을 주면 빈 판이 된다. */
 .workflow-section {
-  padding-bottom: 3rem;
+  padding-bottom: var(--section-space);
 }
 
 .trust-section {
-  padding-top: 3rem;
+  padding-top: var(--section-space);
 }
 
 .section-heading {
@@ -568,7 +569,7 @@ button.evidence-node {
   align-items: flex-end;
   justify-content: space-between;
   gap: 2rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 3.5rem;
 }
 
 .section-heading h2,
@@ -586,8 +587,8 @@ button.evidence-node {
 
 .section-heading p,
 .handoff-copy p {
-  max-width: 42rem;
-  margin: 0.85rem 0 0;
+  max-width: 40rem;
+  margin: 1rem 0 0;
   color: var(--muted-foreground);
   font-size: var(--text-body);
   line-height: var(--leading-relaxed);
@@ -927,8 +928,8 @@ button.evidence-node {
 }
 
 .agent-flow-node {
-  width: 12.5rem;
-  min-height: 7.75rem;
+  width: 13.25rem;
+  min-height: 8.25rem;
   border-color: var(--border);
   border-radius: 0.85rem;
   background: var(--background);
@@ -1082,9 +1083,9 @@ button.evidence-node {
 .demo-runbook {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem 1.5rem;
-  margin: 0 0 3rem;
-  padding: 1.25rem 0 1.5rem;
+  gap: 1.5rem 2rem;
+  margin: 0 0 4.5rem;
+  padding: 2rem 0 2.25rem;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   list-style: none;
@@ -1130,9 +1131,9 @@ button.evidence-node {
 
 .document-followup {
   display: grid;
-  gap: 1.25rem;
-  margin-top: 5rem;
-  padding-top: 3rem;
+  gap: 2rem;
+  margin-top: 8rem;
+  padding-top: 5rem;
   border-top: 1px solid var(--border);
 }
 
@@ -1151,22 +1152,22 @@ button.evidence-node {
 .document-followup-heading h3 {
   margin: 0;
   color: var(--foreground);
-  font-size: var(--text-lead);
+  font-size: var(--text-title);
   letter-spacing: -0.025em;
 }
 
 .document-followup-heading p {
   margin: 0;
   color: var(--muted-foreground);
-  font-size: var(--text-caption);
+  font-size: var(--text-body);
   line-height: var(--leading-body);
 }
 
 .case-selection {
   display: grid;
   gap: 0.8rem;
-  margin-top: 3rem;
-  margin-bottom: 1.5rem;
+  margin-top: 4rem;
+  margin-bottom: 2rem;
   scroll-margin-top: 6rem;
 }
 
@@ -1213,7 +1214,7 @@ button.evidence-node {
 
 .journey-card-content {
   display: grid;
-  gap: 2.5rem;
+  gap: 3.5rem;
 }
 
 .journey-progress-wrap {
@@ -1303,7 +1304,7 @@ button.evidence-node {
   display: grid;
   grid-template-columns: minmax(16rem, 20rem) minmax(0, 1fr);
   align-items: start;
-  gap: 2rem;
+  gap: 3rem;
 }
 
 .case-facts {
@@ -1333,7 +1334,7 @@ button.evidence-node {
   min-width: 0;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.25rem;
+  gap: 1.75rem;
   padding: 0.25rem 0;
 }
 
@@ -1774,7 +1775,7 @@ button.evidence-node {
   display: grid;
   justify-items: end;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 2.5rem;
   will-change: transform, opacity;
 }
 
@@ -1826,7 +1827,7 @@ button.evidence-node {
 }
 
 .demo-boundary {
-  margin-top: 1rem;
+  margin-top: 2.5rem;
 }
 
 /* 검증 블록 — 카드로 감싸지 않고 규칙선과 여백으로만 구획한다.
@@ -1835,9 +1836,9 @@ button.evidence-node {
   display: grid;
   grid-template-columns: minmax(15rem, 0.72fr) minmax(0, 1.28fr);
   align-items: start;
-  gap: 3rem;
-  margin-top: 5rem;
-  padding-top: 3rem;
+  gap: 4rem;
+  margin-top: 8rem;
+  padding-top: 5rem;
   border-top: 1px solid var(--border);
 }
 
@@ -1910,8 +1911,8 @@ button.evidence-node {
 
 .verification-details {
   display: grid;
-  gap: 3.5rem;
-  padding: 1.25rem 0 2.5rem;
+  gap: 5rem;
+  padding: 2rem 0 3.5rem;
 }
 
 .source-ledger h4,
@@ -2096,7 +2097,7 @@ button.evidence-node {
 }
 
 .policy-section {
-  padding-top: 5rem;
+  padding-top: var(--section-space);
   border-top: 1px solid var(--border);
 }
 
@@ -2318,7 +2319,7 @@ button.evidence-node {
   grid-template-columns: 3.75rem minmax(0, 1fr);
   align-items: baseline;
   gap: 1.5rem;
-  padding: 1.35rem 0 1.35rem 1.75rem;
+  padding: 1.75rem 0 1.75rem 1.75rem;
 }
 
 .workflow-step + .workflow-step {
@@ -2404,7 +2405,7 @@ button.evidence-node {
 .ledger-row {
   display: grid;
   gap: 0.2rem;
-  padding: 1.1rem 0;
+  padding: 1.4rem 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -2429,7 +2430,7 @@ button.evidence-node {
 
 .trust-boundary {
   max-width: 48rem;
-  margin: 2rem 0 0;
+  margin: 3rem 0 0;
   padding-left: 1rem;
   border-left: 2px solid var(--border);
   color: var(--muted-foreground);
@@ -2444,13 +2445,13 @@ button.evidence-node {
 .handoff-section {
   display: grid;
   grid-template-columns: minmax(18rem, 1fr) minmax(0, 1fr);
-  gap: 4rem;
-  padding: 3.75rem 0 4.5rem;
+  gap: 5rem;
+  padding: var(--section-space) 0;
   border-top: 1px solid var(--border);
 }
 
 .official-links {
-  margin-top: 2.5rem;
+  margin-top: 3rem;
 }
 
 .handoff-copy h2 {
@@ -2493,7 +2494,7 @@ button.evidence-node {
 }
 
 .handoff-tasks li {
-  padding: 0.6rem 0;
+  padding: 0.9rem 0;
   color: var(--muted-foreground);
   font-size: var(--text-caption);
   line-height: var(--leading-body);
@@ -2524,7 +2525,7 @@ button.evidence-node {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.15rem 1rem;
-  padding: 1rem 0.75rem 1rem 0;
+  padding: 1.25rem 0.75rem 1.25rem 0;
   border-bottom: 1px solid var(--border);
   transition: padding-left 180ms ease, background 180ms ease;
 }
@@ -2561,7 +2562,7 @@ button.evidence-node {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 2rem;
-  width: min(100% - 3rem, 78rem);
+  width: min(100% - 4rem, var(--content-wide));
   margin: 0 auto;
   padding: 2rem 0;
   border-top: 1px solid var(--border);
@@ -2616,7 +2617,71 @@ button.evidence-node {
   }
 
   .journey-body {
-    grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr);
+    grid-template-columns: 1fr;
+  }
+
+  .journey-stage {
+    order: 1;
+  }
+
+  .case-facts {
+    order: 2;
+  }
+
+  .demo-runbook {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .document-intake-grid,
+  .verification-block {
+    grid-template-columns: 1fr;
+  }
+
+  .document-result-panel {
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
+
+  .verification-block {
+    gap: 2.5rem;
+  }
+
+  .policy-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .source-ledger li {
+    grid-template-columns: 5.25rem minmax(0, 1fr) auto auto auto;
+  }
+
+  .ledger-kind {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+
+  .ledger-title {
+    grid-column: 2 / -1;
+    grid-row: 1;
+  }
+
+  .ledger-org {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .ledger-period {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .ledger-pages {
+    grid-column: 4;
+    grid-row: 2;
+  }
+
+  .ledger-hash {
+    grid-column: 5;
+    grid-row: 2;
   }
 
   .policy-grid {
@@ -2640,7 +2705,7 @@ button.evidence-node {
   .handoff-section {
     grid-template-columns: 1fr;
     gap: 2.5rem;
-    padding-bottom: 4rem;
+    padding-bottom: var(--section-space);
   }
 }
 
@@ -2676,12 +2741,12 @@ button.evidence-node {
   }
 
   .hero-section {
-    gap: 2.5rem;
-    padding: 4rem 0;
+    gap: 3.5rem;
+    padding: 4.5rem 0 5.5rem;
   }
 
   .hero-copy h1 {
-    font-size: var(--text-section);
+    font-size: clamp(2rem, 9.25vw, 2.375rem);
     line-height: var(--leading-tight);
   }
 
@@ -2705,7 +2770,7 @@ button.evidence-node {
   .hero-photo {
     position: relative;
     display: block;
-    height: clamp(20rem, 86vw, 24rem);
+    height: clamp(17rem, 74vw, 20rem);
     object-position: 63% center;
   }
 
@@ -2767,11 +2832,14 @@ button.evidence-node {
   }
 
   .section-shell {
-    padding: 3.25rem 0;
+    padding: var(--section-space-mobile) 0;
   }
 
   .section-heading {
+    display: grid;
     align-items: flex-start;
+    gap: 1.25rem;
+    margin-bottom: 3rem;
   }
 
   .section-heading h2,
@@ -2827,9 +2895,9 @@ button.evidence-node {
 
   .demo-runbook {
     grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
-    padding: 1.25rem 0;
+    gap: 1.25rem;
+    margin-bottom: 4rem;
+    padding: 1.75rem 0;
   }
 
   .demo-runbook li {
@@ -2848,7 +2916,7 @@ button.evidence-node {
 
   .case-selection {
     gap: 0.75rem;
-    margin-top: 2.5rem;
+    margin-top: 4rem;
   }
 
   .case-selection-heading {
@@ -2875,13 +2943,13 @@ button.evidence-node {
   }
 
   .journey-card-content {
-    gap: 1.5rem;
+    gap: 2.25rem;
   }
 
   .document-followup {
-    gap: 1rem;
-    margin-top: 3.5rem;
-    padding-top: 2.5rem;
+    gap: 1.5rem;
+    margin-top: 6rem;
+    padding-top: 4rem;
   }
 
   .journey-progress-wrap {
@@ -2889,7 +2957,8 @@ button.evidence-node {
   }
 
   .journey-progress {
-    gap: 0.4rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
   }
 
   .journey-progress li {
@@ -2913,6 +2982,10 @@ button.evidence-node {
   }
 
   .answer-options {
+    grid-template-columns: 1fr;
+  }
+
+  .case-tabs {
     grid-template-columns: 1fr;
   }
 
@@ -2944,7 +3017,8 @@ button.evidence-node {
   .verification-block {
     grid-template-columns: 1fr;
     gap: 1.5rem;
-    margin-top: 3rem;
+    margin-top: 6rem;
+    padding-top: 4rem;
   }
 
   .verification-summary {
@@ -2966,10 +3040,12 @@ button.evidence-node {
 
   .ledger-title {
     grid-column: 1 / -1;
+    grid-row: 2;
   }
 
   .ledger-org {
     grid-column: 1 / -1;
+    grid-row: 3;
   }
 
   .ledger-period,
@@ -3044,7 +3120,7 @@ button.evidence-node {
   }
 
   .handoff-section {
-    padding-bottom: 3.5rem;
+    padding: var(--section-space-mobile) 0;
   }
 
   .handoff-tasks {
@@ -3060,6 +3136,36 @@ button.evidence-node {
 
   .site-footer p {
     text-align: left;
+  }
+}
+
+@media (max-width: 30rem) {
+  .result-counts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .result-counts > div:nth-child(3) {
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
+
+  .result-counts > div:nth-child(4) {
+    border-top: 1px solid var(--border);
+  }
+
+  .result-accordion-item [data-slot="accordion-trigger"] {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .result-accordion-item [data-slot="badge"] {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .result-accordion-item [data-slot="accordion-trigger-icon"] {
+    grid-column: 3;
+    grid-row: 1 / 3;
   }
 }
 

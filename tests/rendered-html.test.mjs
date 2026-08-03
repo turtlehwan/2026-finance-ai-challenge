@@ -428,7 +428,7 @@ test("keeps the provenance surface limited to approved official sources", async 
   assert.match(rightsDoc, /금융소비자보호법/);
 });
 
-test("design system keeps one icon library and a global 14px text floor", async () => {
+test("design system keeps one icon library, a 14px floor, and 15px default UI text", async () => {
   const [styles, badge, button, tooltip] = await Promise.all([
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../components/ui/badge.tsx", import.meta.url), "utf8"),
@@ -437,9 +437,11 @@ test("design system keeps one icon library and a global 14px text floor", async 
   ]);
 
   assert.match(styles, /--text-min: 0\.875rem/);
-  assert.match(styles, /--text-caption: var\(--text-min\)/);
+  assert.match(styles, /--text-caption: 0\.9375rem/);
+  assert.match(styles, /--text-body: 1\.0625rem/);
   assert.match(styles, /--text-xs: var\(--text-min\)/);
-  assert.match(styles, /--text-sm: var\(--text-min\)/);
+  assert.match(styles, /--text-sm: var\(--text-caption\)/);
+  assert.match(styles, /--section-space: 6\.75rem/);
   assert.match(styles, /--leading-tight: 1\.35/);
   assert.match(styles, /--leading-body: 1\.65/);
   assert.doesNotMatch(styles, /linear-gradient|radial-gradient/);
