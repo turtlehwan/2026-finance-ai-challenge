@@ -67,10 +67,7 @@ export function HeroSection() {
                 "-=0.72",
               )
 
-            const rail = gsap.timeline({
-              repeat: -1,
-              repeatDelay: 0.5,
-            })
+            const rail = gsap.timeline()
             journeyPresentation.forEach((_, index) => {
               rail
                 .call(() => setActiveStep(index))
@@ -81,7 +78,7 @@ export function HeroSection() {
                   yoyo: true,
                   repeat: 1,
                 })
-                .to({}, { duration: 0.42 })
+                .to({}, { duration: 0.58 })
             })
           },
         )

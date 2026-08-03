@@ -4,9 +4,9 @@ import {
   AlertTriangleIcon,
   CheckCircle2Icon,
   ExternalLinkIcon,
+  FileSearchIcon,
   InfoIcon,
   ShieldAlertIcon,
-  SparklesIcon,
 } from "lucide-react"
 
 import {
@@ -57,13 +57,14 @@ function ResultSummary({ results }: { results: ClaimResult[] }) {
   }, [results])
 
   return (
-    <div className="result-counts" role="group" aria-label="분석 결과 요약">
+    <dl className="result-counts" aria-label="분석 결과 요약">
       {RESULT_STATE_ORDER.map((state) => (
-        <Badge variant={state.badgeVariant} key={state.tone}>
-          {state.status} {counts[state.tone]}
-        </Badge>
+        <div className={`tone-${state.tone}`} key={state.tone}>
+          <dt>{state.status}</dt>
+          <dd>{counts[state.tone]}</dd>
+        </div>
       ))}
-    </div>
+    </dl>
   )
 }
 
@@ -81,7 +82,7 @@ export function ResultsPanel({
       <Empty className="border">
         <EmptyHeader>
           <EmptyMedia variant="icon">
-            <SparklesIcon />
+            <FileSearchIcon />
           </EmptyMedia>
           <EmptyTitle>사례를 선택하면 분석을 시작할 수 있습니다</EmptyTitle>
           <EmptyDescription>
@@ -130,7 +131,6 @@ export function ResultsPanel({
               <strong>이번 분석에 사용한 공식 출처</strong>
               <span>출처와 적용일을 공개합니다. 이것만으로 지급을 확정하지 않습니다.</span>
             </div>
-            <Badge variant="outline">근거 공개</Badge>
           </div>
           <div className="result-source-list">
             {sources.map((source) => (

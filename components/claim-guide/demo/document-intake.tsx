@@ -132,9 +132,9 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
         <div>
           <Badge variant="success">
             <DatabaseIcon data-icon="inline-start" />
-            실제 약관에 연결됨
+            공식 약관 4건 연결
           </Badge>
-          <CardTitle>가지고 계신 문서로 해보기</CardTitle>
+          <CardTitle>내 문서로 확인</CardTitle>
           <CardDescription>
             증권과 진료자료에서 사실을 뽑아낸 뒤, 우체국보험 실제 약관 가운데
             계약일에 맞는 판본을 찾아 연결합니다.
@@ -215,8 +215,8 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
               <div className="document-result-empty">
                 <div className="document-result-heading">
                   <div>
-                    <strong>여기에 이런 것이 뽑혀 나옵니다</strong>
-                    <p>문서를 넣으면 아래 네 칸이 채워집니다.</p>
+                    <strong>구조화 결과 미리보기</strong>
+                    <p>분석에 사용할 네 가지 사실만 추립니다.</p>
                   </div>
                 </div>
                 <dl className="document-facts is-placeholder" aria-hidden="true">

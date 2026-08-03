@@ -48,6 +48,7 @@ import { ResultsPanel } from "@/components/claim-guide/demo/results-panel"
 import { useClaimAnalysis } from "@/components/claim-guide/demo/use-claim-analysis"
 import { EvidenceRail } from "@/components/claim-guide/evidence-rail"
 import { journeyPresentation } from "@/components/claim-guide/journey-presentation"
+import { SectionHeading } from "@/components/claim-guide/section-heading"
 import { answerOptions, claimCases } from "@/lib/claim-guide/cases"
 import { ANALYSIS_STEPS } from "@/lib/claim-guide/presentation"
 import type { Answer } from "@/lib/claim-guide/types"
@@ -81,15 +82,10 @@ export function AgentDemo() {
 
   return (
     <section className="section-shell demo-section" id="demo" ref={demoRef}>
-      <div className="section-heading">
-        <div>
-          <h2>사례 하나로 네 단계를 따라가 보세요</h2>
-          <p>
-            문서를 직접 넣어도 되고, 아래 준비된 사례를 눌러도 됩니다. 실제
-            약관을 읽고 답하므로 결과가 나오기까지 몇 초 걸립니다.
-          </p>
-        </div>
-      </div>
+      <SectionHeading
+        title="실제 흐름을 끝까지 확인하세요"
+        description="내 문서를 넣거나 준비된 사례를 선택하면, 가입 시점 약관을 찾고 부족한 정보를 되물은 뒤 공식 근거와 다음 행동을 정리합니다."
+      />
 
       <DocumentIntake onBundle={setDocumentBundle} />
 
@@ -127,7 +123,7 @@ export function AgentDemo() {
       <Card className="journey-card" id="case-workspace">
         <CardHeader>
           <div>
-            <Badge variant="outline">합성 데이터</Badge>
+            <Badge variant="outline">비식별 합성 사례</Badge>
             <CardTitle>{activeCase.title}</CardTitle>
             <CardDescription>{activeCase.description}</CardDescription>
           </div>
@@ -171,12 +167,12 @@ export function AgentDemo() {
               {phase === "idle" ? (
                 <>
                   <div className="journey-stage-heading">
-                    <Badge>
+                    <span className="journey-stage-label">
                       1단계 · {journeyPresentation[0].label}
-                    </Badge>
+                    </span>
                     <h3 id="journey-stage-title">이 사례를 분석할까요?</h3>
                     <p>
-                      Agent가 가입 시점의 약관을 찾고 정의·지급·면책 조항을 함께
+                      가입 시점의 약관을 찾고 정의·지급·면책 조항을 함께
                       확인합니다.
                     </p>
                   </div>
@@ -197,9 +193,9 @@ export function AgentDemo() {
               {phase === "running" ? (
                 <>
                   <div className="journey-stage-heading">
-                    <Badge variant="warning">
+                    <span className="journey-stage-label is-warning">
                       2단계 · {journeyPresentation[1].label}
-                    </Badge>
+                    </span>
                     <h3 id="journey-stage-title">
                       {ANALYSIS_STEPS[activeStep]} 정보를 확인하고 있습니다
                     </h3>
@@ -219,7 +215,7 @@ export function AgentDemo() {
                   />
                   <Alert>
                     <Spinner />
-                    <AlertTitle>Agent 분석 중</AlertTitle>
+                    <AlertTitle>근거를 대조하고 있습니다</AlertTitle>
                     <AlertDescription>
                       결과를 만들기 전 근거가 충분한지 먼저 확인합니다.
                     </AlertDescription>
@@ -230,9 +226,9 @@ export function AgentDemo() {
               {phase === "question" ? (
                 <>
                   <div className="journey-stage-heading">
-                    <Badge variant="warning">
+                    <span className="journey-stage-label is-warning">
                       3단계 · {journeyPresentation[2].label}
-                    </Badge>
+                    </span>
                     <h3 id="journey-stage-title">{activeCase.question}</h3>
                     <p>{activeCase.questionHint}</p>
                   </div>
@@ -273,7 +269,7 @@ export function AgentDemo() {
                   >
                     <AccordionItem value="evidence">
                       <AccordionTrigger>
-                        Agent가 확인한 근거 경로
+                        지금까지 확인한 근거 경로
                       </AccordionTrigger>
                       <AccordionContent>
                         <EvidenceRail
@@ -290,9 +286,9 @@ export function AgentDemo() {
               {isComplete ? (
                 <>
                   <div className="journey-stage-heading">
-                    <Badge variant="success">
+                    <span className="journey-stage-label is-success">
                       4단계 · {journeyPresentation[3].label}
-                    </Badge>
+                    </span>
                     <h3 id="journey-stage-title">확인할 항목을 정리했습니다</h3>
                     <p>
                       지급 확정이 아니라 우선순위, 근거, 다음 행동을 같은

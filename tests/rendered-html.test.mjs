@@ -62,15 +62,15 @@ test("server-renders the insurance claim guide MVP", async () => {
   assert.match(html, /태블릿의 약관 문서와 보험 서류/);
   assert.match(html, /지급 여부를 정하는 것은/);
   assert.match(html, /근거 경로/);
-  assert.match(html, /약관이 바뀌면 사람이 먼저 봅니다/);
-  assert.match(html, /사례 하나로 네 단계를 따라가 보세요/);
+  assert.match(html, /새 약관은 검토 후 반영합니다/);
+  assert.match(html, /실제 흐름을 끝까지 확인하세요/);
   assert.match(html, /사례 선택/);
   assert.match(html, /근거 분석/);
   assert.match(html, /정보 확인/);
   assert.match(html, /다음 행동/);
   assert.match(html, /알 수 있는 것, 알 수 없는 것/);
   // 근거는 주장이 아니라 대조 가능한 값으로 노출한다.
-  assert.match(html, /근거로 쓴 원문/);
+  assert.match(html, /공식 원문과 검증 결과/);
   assert.match(html, /3ca9d2cdb152/);
   assert.match(html, /https:\/\/cont\.insure\.or\.kr\//);
   assert.match(html, /https:\/\/www\.silson24\.or\.kr\/claim\/web\//);

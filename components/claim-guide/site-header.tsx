@@ -5,6 +5,7 @@ import { ArrowRightIcon, MenuIcon, ShieldCheckIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -14,9 +15,9 @@ import {
 import { Switch } from "@/components/ui/switch"
 
 const navItems = [
-  { href: "#demo", label: "사례 분석" },
-  { href: "#workflow", label: "Agent 작동" },
-  { href: "#trust", label: "신뢰와 한계" },
+  { href: "#demo", label: "직접 확인" },
+  { href: "#workflow", label: "작동 원리" },
+  { href: "#trust", label: "신뢰 기준" },
 ]
 
 function Brand() {
@@ -90,10 +91,12 @@ export function SiteHeader({
               </SheetHeader>
               <nav className="mobile-nav" aria-label="모바일 메뉴">
                 {navItems.map((item) => (
-                  <a href={item.href} key={item.href}>
-                    {item.label}
-                    <ArrowRightIcon aria-hidden="true" />
-                  </a>
+                  <SheetClose asChild key={item.href}>
+                    <a href={item.href}>
+                      {item.label}
+                      <ArrowRightIcon aria-hidden="true" />
+                    </a>
+                  </SheetClose>
                 ))}
               </nav>
               <div className="mobile-text-control">

@@ -23,6 +23,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { SectionHeading } from "@/components/claim-guide/section-heading"
 import {
   Card,
   CardAction,
@@ -146,15 +147,11 @@ export function PolicyOpsSection() {
 
   return (
     <section className="section-shell policy-section" id="policyops">
-      <div className="section-heading policy-heading">
-        <div>
-          <h2>약관이 바뀌면 사람이 먼저 봅니다</h2>
-          <p>
-            운영자용 화면입니다. 국가법령정보센터 원문을 실제로 연결해 두었지만,
-            여기서 승인해도 운영 중인 검색·판정 규칙은 바뀌지 않습니다.
-          </p>
-        </div>
-      </div>
+      <SectionHeading
+        className="policy-heading"
+        title="새 약관은 검토 후 반영합니다"
+        description="공식 원문을 구조화하고 변경 영향을 점검하되, 운영 지식은 사람 승인과 별도 배포 전에는 바뀌지 않습니다."
+      />
 
       <Accordion className="policy-disclosure" type="single" collapsible>
         <AccordionItem value="policyops-demo">

@@ -126,69 +126,90 @@ export function EvaluationPanel() {
   return (
     <section className="verification-block" aria-labelledby="verification-title">
       <div className="verification-intro">
-        <h3 id="verification-title">직접 확인해 보라고 다 열어 둡니다</h3>
+        <h3 id="verification-title">공식 원문과 검증 결과</h3>
         <p>
-          근거가 된 공식 원문과, 그 위에서 돌린 내부 점검 결과입니다. 좋게 보일
-          숫자 대신 세어 볼 수 있는 숫자를 적었습니다.
+          출처와 시행일, 문서 해시, 합성 사례 점검 결과를 공개합니다. 보험금 지급
+          정확도를 뜻하는 수치는 아닙니다.
         </p>
       </div>
 
-      <SourceLedger />
+      <Accordion type="single" collapsible className="verification-disclosure">
+        <AccordionItem value="evidence">
+          <AccordionTrigger>
+            <span className="verification-summary">
+              <span>
+                <strong>공식 원문 {SOURCE_LEDGER.length}건</strong>
+                <small>시행일과 SHA-256 공개</small>
+              </span>
+              <span>
+                <strong>합성 사례 {summary ? summary.dataset.total : 50}건</strong>
+                <small>버전·근거·중단·경로 점검</small>
+              </span>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent forceMount>
+            <div className="verification-details">
+              <SourceLedger />
 
-      <div className="regression-block">
-        <h4>
-          합성 사례 {summary ? summary.dataset.total : 50}건으로 돌린 내부 점검
-        </h4>
-        <p>
-          같은 그래프에 넣고 네 가지를 봤습니다. 전부 저희가 만든 합성 사례이며,
-          실제 보험금 지급 정확도가 아닙니다.
-        </p>
-        <dl className="regression-list">
-          {checkRows.map((row) => (
-            <div key={row.key}>
-              <dt>
-                {row.label}
-                <span>{row.scope}</span>
-              </dt>
-              <dd>
-                {summary ? (
-                  <>
-                    <strong>{summary.counts[row.key]}</strong>
-                    <span>/ {row.denominator(summary.dataset)}건</span>
-                  </>
-                ) : (
-                  <Skeleton className="h-5 w-20" />
-                )}
-              </dd>
+              <div className="regression-block">
+                <h4>
+                  합성 사례 {summary ? summary.dataset.total : 50}건으로 돌린 내부 점검
+                </h4>
+                <p>
+                  같은 그래프에 넣고 네 가지를 확인했습니다. 모두 합성 사례이며,
+                  실제 보험금 지급 정확도가 아닙니다.
+                </p>
+                <dl className="regression-list">
+                  {checkRows.map((row) => (
+                    <div key={row.key}>
+                      <dt>
+                        {row.label}
+                        <span>{row.scope}</span>
+                      </dt>
+                      <dd>
+                        {summary ? (
+                          <>
+                            <strong>{summary.counts[row.key]}</strong>
+                            <span>/ {row.denominator(summary.dataset)}건</span>
+                          </>
+                        ) : (
+                          <Skeleton className="h-5 w-20" />
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <Accordion type="single" collapsible className="regression-method">
+                  <AccordionItem value="methodology">
+                    <AccordionTrigger>점검 범위와 한계</AccordionTrigger>
+                    <AccordionContent>
+                      {summary ? (
+                        <div className="evaluation-method">
+                          <p>
+                            담보가 걸린 사례 {summary.dataset.supported}건,
+                            버전이 어긋나거나 사실이 빠진 사례{" "}
+                            {summary.dataset.unsupported}건을 같은 LangGraph에
+                            넣었습니다. 매번 같은 답이 나오는 결정론적 회귀이고,
+                            따로 떼어 둔 검증셋은 {summary.dataset.independentHoldout}
+                            건입니다.
+                          </p>
+                          <ul>
+                            {summary.limitations.map((limitation) => (
+                              <li key={limitation}>{limitation}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        <p>점검 결과를 계산하는 중입니다.</p>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
             </div>
-          ))}
-        </dl>
-        <Accordion type="single" collapsible className="regression-method">
-          <AccordionItem value="methodology">
-            <AccordionTrigger>점검 범위와 한계</AccordionTrigger>
-            <AccordionContent>
-              {summary ? (
-                <div className="evaluation-method">
-                  <p>
-                    담보가 걸린 사례 {summary.dataset.supported}건,
-                    버전이 어긋나거나 사실이 빠진 사례{" "}
-                    {summary.dataset.unsupported}건을 같은 LangGraph에
-                    넣었습니다. 매번 같은 답이 나오는 결정론적 회귀이고, 따로
-                    떼어 둔 검증셋은 {summary.dataset.independentHoldout}건입니다.
-                  </p>
-                  <ul>
-                    {summary.limitations.map((limitation) => (
-                      <li key={limitation}>{limitation}</li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <p>점검 결과를 계산하는 중입니다.</p>
-              )}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </section>
   )
 }

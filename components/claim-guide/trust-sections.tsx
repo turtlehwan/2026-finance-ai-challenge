@@ -8,6 +8,7 @@ import {
 } from "lucide-react"
 
 import { journeyPresentation } from "@/components/claim-guide/journey-presentation"
+import { SectionHeading } from "@/components/claim-guide/section-heading"
 import { Separator } from "@/components/ui/separator"
 
 const confirmable = [
@@ -113,87 +114,15 @@ export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
 
   return (
     <div ref={rootRef}>
-      <section className="section-shell workflow-section" id="workflow">
-        <div className="section-heading scroll-reveal">
-          <div>
-            <h2>조사는 Agent, 결정은 사람</h2>
-            <p>
-              화면에서 보신 네 단계가 실제 순서입니다. 각 단계가 무엇을 확인하는지
-              적어 두었습니다.
-            </p>
-          </div>
-        </div>
-        <ol className="workflow-line">
-          {journeyPresentation.map((step, index) => (
-            <li className="workflow-step scroll-reveal" key={step.label}>
-              <span className="workflow-index" aria-hidden="true">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <strong>{step.label}</strong>
-                <p>{step.detail}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="section-shell trust-section" id="trust">
-        <div className="section-heading scroll-reveal">
-          <div>
-            <h2>알 수 있는 것, 알 수 없는 것</h2>
-            <p>
-              보험사 전산에 들어가지 않고는 알 수 없는 것이 있습니다. 그 경계를
-              화면 어디서나 같게 지킵니다.
-            </p>
-          </div>
-        </div>
-
-        <div className="trust-ledger scroll-reveal">
-          <div className="ledger-column is-confirmable">
-            <div className="ledger-heading">
-              <CheckCircle2Icon aria-hidden="true" />
-              <strong>여기서 확인됩니다</strong>
-            </div>
-            {confirmable.map((item) => (
-              <div className="ledger-row" key={item.title}>
-                <strong>{item.title}</strong>
-                <span>{item.detail}</span>
-              </div>
-            ))}
-          </div>
-
-          <Separator orientation="vertical" className="ledger-separator" />
-
-          <div className="ledger-column is-blocked">
-            <div className="ledger-heading">
-              <XCircleIcon aria-hidden="true" />
-              <strong>여기서는 알 수 없습니다</strong>
-            </div>
-            {notConfirmable.map((item) => (
-              <div className="ledger-row" key={item.title}>
-                <strong>{item.title}</strong>
-                <span>{item.detail}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <p className="trust-boundary scroll-reveal">
-          보험금 액수를 확정하거나, 청구를 대신하거나, 손해사정을 하거나, 상품을
-          권하지 않습니다. 최종 지급 여부는 보험회사가 정합니다.
-        </p>
-      </section>
-
-      <section className="section-shell handoff-section scroll-reveal">
+      <section className="section-shell handoff-section scroll-reveal" id="official-channels">
         <div className="handoff-copy">
-          <h2>청구는 공식 채널에서</h2>
+          <h2>결과를 들고 공식 채널로 가세요</h2>
           <p>
-            여기서 정리한 내용을 들고 아래로 가시면 됩니다. 조회와 청구는 원래
-            무료이고, 저희를 거치지 않아도 됩니다.
+            조회와 청구는 원래 무료입니다. 여기서 정리한 근거와 질문을 챙긴 뒤
+            공식 창구에서 직접 확인하세요.
           </p>
           <div className="official-links">
-            <span className="official-links-label">공식 조회 창구</span>
+            <span className="official-links-label">공식 조회·청구 창구</span>
             <a
               href="https://cont.insure.or.kr/"
               target="_blank"
@@ -234,6 +163,70 @@ export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="section-shell workflow-section" id="workflow">
+        <SectionHeading
+          className="scroll-reveal"
+          title="조사는 Agent, 결정은 사람"
+          description="자동화는 사실을 모으고 근거를 연결하는 데 쓰고, 정보가 부족하거나 판단이 필요한 지점에서는 사람에게 넘깁니다."
+        />
+        <ol className="workflow-line">
+          {journeyPresentation.map((step, index) => (
+            <li className="workflow-step scroll-reveal" key={step.label}>
+              <span className="workflow-index" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <strong>{step.label}</strong>
+                <p>{step.detail}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="section-shell trust-section" id="trust">
+        <SectionHeading
+          className="scroll-reveal"
+          title="알 수 있는 것, 알 수 없는 것"
+          description="보험사 전산에 들어가지 않고는 알 수 없는 것이 있습니다. 화면 전체에서 같은 기준으로 선을 긋습니다."
+        />
+
+        <div className="trust-ledger scroll-reveal">
+          <div className="ledger-column is-confirmable">
+            <div className="ledger-heading">
+              <CheckCircle2Icon aria-hidden="true" />
+              <strong>여기서 확인됩니다</strong>
+            </div>
+            {confirmable.map((item) => (
+              <div className="ledger-row" key={item.title}>
+                <strong>{item.title}</strong>
+                <span>{item.detail}</span>
+              </div>
+            ))}
+          </div>
+
+          <Separator orientation="vertical" className="ledger-separator" />
+
+          <div className="ledger-column is-blocked">
+            <div className="ledger-heading">
+              <XCircleIcon aria-hidden="true" />
+              <strong>여기서는 알 수 없습니다</strong>
+            </div>
+            {notConfirmable.map((item) => (
+              <div className="ledger-row" key={item.title}>
+                <strong>{item.title}</strong>
+                <span>{item.detail}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="trust-boundary scroll-reveal">
+          보험금 액수를 확정하거나, 청구를 대신하거나, 손해사정을 하거나, 상품을
+          권하지 않습니다. 최종 지급 여부는 보험회사가 정합니다.
+        </p>
       </section>
 
       {policyOps}

@@ -74,56 +74,56 @@ const graphDefinition: Array<{
     id: "document_tool",
     label: "문서 판독",
     role: "Tool",
-    position: { x: 250, y: 0 },
+    position: { x: 225, y: 0 },
     icon: FileSearchIcon,
   },
   {
     id: "version_resolver",
     label: "약관 버전 확인",
     role: "Tool",
-    position: { x: 500, y: 0 },
+    position: { x: 450, y: 0 },
     icon: GitBranchIcon,
   },
   {
     id: "coverage_matcher",
     label: "담보 대조",
     role: "Agent",
-    position: { x: 750, y: 0 },
+    position: { x: 675, y: 0 },
     icon: NetworkIcon,
   },
   {
     id: "graph_retriever",
     label: "근거 그래프 검색",
     role: "Tool",
-    position: { x: 750, y: 260 },
+    position: { x: 675, y: 215 },
     icon: RouteIcon,
   },
   {
     id: "information_gate",
     label: "정보 충분성 판단",
     role: "Gate",
-    position: { x: 500, y: 260 },
+    position: { x: 450, y: 215 },
     icon: ScaleIcon,
   },
   {
     id: "human_review",
     label: "사람 확인",
     role: "Human",
-    position: { x: 500, y: 520 },
+    position: { x: 450, y: 430 },
     icon: UserRoundCheckIcon,
   },
   {
     id: "evidence_auditor",
     label: "근거 감사",
     role: "Agent",
-    position: { x: 250, y: 260 },
+    position: { x: 225, y: 215 },
     icon: ShieldCheckIcon,
   },
   {
     id: "action_planner",
     label: "다음 행동 정리",
     role: "Agent",
-    position: { x: 0, y: 260 },
+    position: { x: 0, y: 215 },
     icon: BotIcon,
   },
 ]
@@ -203,6 +203,13 @@ const answerLabels: Record<Answer, string> = {
   unknown: "잘 모르겠어요",
 }
 
+const roleLabels: Record<AgentTraceEvent["role"], string> = {
+  Agent: "Agent",
+  Tool: "도구",
+  Gate: "판단 기준",
+  Human: "사람",
+}
+
 function getAnswerLabel(answer: Answer | null) {
   return answer ? answerLabels[answer] : "미확인"
 }
@@ -256,7 +263,7 @@ function AgentFlowCard({ data }: NodeProps<AgentFlowNode>) {
           </span>
           <div>
             <strong>{data.label}</strong>
-            <small>{data.role}</small>
+            <small>{roleLabels[data.role]}</small>
           </div>
           <Badge variant={statusBadgeVariants[data.status]}>
             {statusLabels[data.status]}
@@ -264,11 +271,11 @@ function AgentFlowCard({ data }: NodeProps<AgentFlowNode>) {
         </CardHeader>
         <CardContent className="agent-flow-io">
           <p>
-            <span>IN</span>
+            <span>입력</span>
             {data.inputSummary}
           </p>
           <p>
-            <span>OUT</span>
+            <span>출력</span>
             {data.outputSummary}
           </p>
         </CardContent>
@@ -332,7 +339,7 @@ export function AgentFlowGraph({
           id: definition.id,
           type: "agentFlow",
           position: isCompact
-            ? { x: 0, y: index * 270 }
+            ? { x: 0, y: index * 220 }
             : definition.position,
           draggable: false,
           selectable: true,
@@ -456,25 +463,23 @@ export function AgentFlowGraph({
     <section className="agent-flow-shell" ref={scopeRef}>
       <div className="agent-flow-header">
         <div>
-          <Badge variant="outline">
+          <span className="agent-flow-kicker">
             <NetworkIcon data-icon="inline-start" />
-            LangGraph 실행 기록
-          </Badge>
-          <h3>어떤 근거가 어디로 넘어갔는지</h3>
+            실제 LangGraph 실행 기록
+          </span>
+          <h3>근거가 이동한 경로를 그대로 보여드립니다</h3>
           <p>
-            방금 서버가 실제로 지나온 경로입니다. 칸마다 들어간 값과 나온 값이
-            그대로 적혀 있고, 끌거나 확대해서 보실 수 있습니다.
+            서버가 방금 지나온 순서와 각 단계의 입력·출력을 확인할 수 있습니다.
           </p>
         </div>
-        <div
+        <ul
           className="agent-flow-legend"
-          role="group"
           aria-label="Agent 그래프 범례"
         >
-          <Badge variant="success">완료</Badge>
-          <Badge variant="warning">사람 확인</Badge>
-          <Badge variant="destructive">안전 중단</Badge>
-        </div>
+          <li className="is-complete">완료</li>
+          <li className="is-human">사람 확인</li>
+          <li className="is-stopped">안전 중단</li>
+        </ul>
       </div>
       <div className="agent-flow-canvas">
         <ReactFlow
@@ -497,7 +502,9 @@ export function AgentFlowGraph({
           maxZoom={1.35}
           nodesDraggable={false}
           nodesConnectable={false}
-          panOnScroll
+          panOnScroll={false}
+          zoomOnScroll={false}
+          preventScrolling={false}
           zoomOnDoubleClick={false}
           onInit={setFlowInstance}
           aria-label="보험금 확인 Agent 실행 그래프"
