@@ -1,0 +1,42 @@
+name: CI
+
+# 배포는 하지 않는다. main에 들어가기 전 게이트 역할만 한다.
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Lint, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # npm test가 내부에서 빌드를 돌린 뒤 워커를 Node로 띄워 검증한다.
+      - name: Build and test
+        run: npm test
+
+      # 실제 업로드 없이 번들과 바인딩이 성립하는지만 본다.
+      # 빌드가 dist/server/wrangler.json을 만들므로 그 디렉터리에서 실행한다.
+      - name: Verify deploy bundle
+        run: npx wrangler deploy --dry-run --config wrangler.json
+        working-directory: dist/server
