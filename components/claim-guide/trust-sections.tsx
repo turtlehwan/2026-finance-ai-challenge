@@ -13,12 +13,12 @@ import { Separator } from "@/components/ui/separator"
 
 const confirmable = [
   {
-    title: "증권에 적힌 담보와 특약",
-    detail: "증권·가입내역 문서에 그대로 쓰여 있는 사실",
+    title: "보험증권에 적힌 보장 내용과 특약",
+    detail: "보험증권에 기재된 계약·보장 사실",
   },
   {
-    title: "이번 치료에 해당될 만한 담보",
-    detail: "진단·치료 사실을 약관의 지급 조건과 맞춰 본 결과",
+    title: "이번 치료에 해당할 수 있는 보장 항목",
+    detail: "진단·치료 사실과 보험약관의 지급 조건을 대조한 결과",
   },
   {
     title: "중도·만기보험금이 생겼을 시점",
@@ -42,16 +42,16 @@ const notConfirmable = [
 ]
 
 const agentTasks = [
-  "증권과 진단 기록에서 사실 뽑아내기",
-  "가입일에 맞는 약관 버전 찾기",
-  "정의·지급·면책 조항 이어 붙이기",
-  "물어볼 것과 낼 서류 정리",
+  "보험증권과 진단 기록에서 사실 정리하기",
+  "계약일에 맞는 보험약관 버전 찾기",
+  "정의·지급·면책 조항 함께 확인하기",
+  "보험사에 물어볼 내용과 준비 서류 정리",
 ]
 
 const humanTasks = [
   "빠진 사실 채우기",
   "근거로 든 조항이 맞는지 확인",
-  "보험사에 청구 이력 조회",
+  "보험사에 청구 이력 확인",
   "청구서 제출",
 ]
 
@@ -116,10 +116,10 @@ export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
     <div ref={rootRef}>
       <section className="section-shell handoff-section scroll-reveal" id="official-channels">
         <div className="handoff-copy">
-          <h2>결과를 들고 공식 채널로 가세요</h2>
+          <h2>정리한 내용을 공식 채널에서 확인하세요</h2>
           <p>
-            조회와 청구는 원래 무료입니다. 여기서 정리한 근거와 질문을 챙긴 뒤
-            공식 창구에서 직접 확인하세요.
+            공식 조회와 청구는 무료입니다. 여기서 정리한 근거와 질문을 챙긴 뒤
+            공식 창구에서 직접 확인하거나 청구하세요.
           </p>
           <div className="official-links">
             <span className="official-links-label">공식 조회·청구 창구</span>
@@ -146,7 +146,7 @@ export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
         <div className="handoff-grid">
           <div className="handoff-tasks">
             <div>
-              <strong>여기서 준비하는 것</strong>
+              <strong>서비스가 정리하는 것</strong>
               <ul>
                 {agentTasks.map((task) => (
                   <li key={task}>{task}</li>

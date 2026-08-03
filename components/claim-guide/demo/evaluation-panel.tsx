@@ -27,14 +27,14 @@ type CheckRow = {
 const checkRows: CheckRow[] = [
   {
     key: "versionSelectionPassed",
-    label: "가입 시점의 약관 버전을 골랐는가",
+    label: "가입 당시 적용된 보험약관 버전을 골랐는가",
     scope: "전체 사례",
     denominator: (dataset) => dataset.total,
   },
   {
     key: "evidenceCompletenessPassed",
     label: "정의·지급·면책·서류 근거를 모두 달았는가",
-    scope: "담보가 걸린 사례",
+    scope: "보장 항목이 있는 사례",
     denominator: (dataset) => dataset.supported,
   },
   {
@@ -196,7 +196,7 @@ export function EvaluationPanel() {
                       {summary ? (
                         <div className="evaluation-method">
                           <p>
-                            담보가 걸린 사례 {summary.dataset.supported}건,
+                            보장 항목이 있는 사례 {summary.dataset.supported}건,
                             버전이 어긋나거나 사실이 빠진 사례{" "}
                             {summary.dataset.unsupported}건을 같은 LangGraph에
                             넣었습니다. 매번 같은 답이 나오는 결정론적 회귀이고,

@@ -166,7 +166,7 @@ function versionResolverTool(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "version_resolver",
-          label: "약관 버전 확인",
+          label: "보험약관 버전 확인",
           role: "Tool",
           status:
             resolution.status === "resolved" ? "completed" : "attention",
@@ -196,7 +196,7 @@ function coverageMatcherAgent(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "coverage_matcher",
-          label: "담보 대조",
+          label: "보장 항목 대조",
           role: "Agent",
           status:
             state.caseId !== "fracture" || (hasRider && hasFractureCode)
@@ -241,7 +241,7 @@ function graphRetrievalTool(state: ClaimGraphStateValue) {
           inputSummary:
             state.resolution?.status === "resolved"
               ? `${state.resolution.policy.id} · S52`
-              : "검증된 약관 버전 없음",
+              : "검증된 보험약관 버전 없음",
           outputSummary: evidence.length
             ? `${evidence.length}개 근거 · ${clauseTypes.size}개 관계 유형 확장`
             : "관계 확장 근거 없음",
@@ -333,13 +333,13 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
     : true
   const findings = approved
     ? [
-        "계약일 기준 약관 버전 확인",
+        "계약일 기준 보험약관 버전 확인",
         "지급·정의·제한·면책 근거 동반",
         "공식 원문 URL·페이지 확인",
         "지급 확정 표현 없음",
       ]
     : [
-        !versionMatched ? "적용 약관 버전 미확인" : "",
+        !versionMatched ? "적용 보험약관 버전 미확인" : "",
         !coverageAndLimits ? "지급·면책 근거 경로 불완전" : "",
         !caseFactsMatched ? "가입특약 또는 S52 진단 근거 미확인" : "",
         !citationValidated ? "공식 원문 인용 검증 실패" : "",
@@ -386,7 +386,7 @@ function actionPlannerAgent(state: ClaimGraphStateValue) {
           ...result,
           status: CLAIM_STATUS.unavailable,
           tone: "blocked" as const,
-          reason: "검증된 적용 약관과 근거 경로가 완성되지 않았습니다.",
+          reason: "검증된 적용 보험약관과 근거 경로가 완성되지 않았습니다.",
           detail:
             "상품코드·계약일·가입특약·진단코드를 확인한 뒤 다시 분석해 주세요.",
         }))

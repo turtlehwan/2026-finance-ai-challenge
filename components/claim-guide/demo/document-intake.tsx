@@ -132,11 +132,11 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
         <div>
           <Badge variant="success">
             <DatabaseIcon data-icon="inline-start" />
-            공식 약관 4건 연결
+            공식 보험약관 4건 연결
           </Badge>
           <CardTitle>내 문서로 확인</CardTitle>
           <CardDescription>
-            증권과 진료자료에서 사실을 뽑아낸 뒤, 우체국보험 실제 약관 가운데
+            보험증권과 진료자료에서 정보를 읽어, 우체국보험 실제 보험약관 가운데
             계약일에 맞는 판본을 찾아 연결합니다.
           </CardDescription>
         </div>
@@ -168,7 +168,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
                 />
                 <FieldDescription>
                   텍스트 레이어 PDF 또는 TXT · 파일당 5MB · 최대 2개 ·
-                  스캔 이미지 PDF는 지원하지 않음 · 원본 저장 안 함
+                  스캔 이미지 PDF는 지원하지 않음 · 원본은 저장하지 않음
                 </FieldDescription>
               </Field>
             </FieldGroup>
@@ -197,7 +197,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
                 ) : (
                   <UploadIcon data-icon="inline-start" />
                 )}
-                선택한 문서 구조화
+                문서 정보 추출하기
               </Button>
               <Button
                 variant="outline"
@@ -205,7 +205,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
                 disabled={phase === "running"}
               >
                 <DatabaseIcon data-icon="inline-start" />
-                실데이터 연결 샘플 불러오기
+                공식 약관 연결 샘플 불러오기
               </Button>
             </div>
           </div>
@@ -215,8 +215,8 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
               <div className="document-result-empty">
                 <div className="document-result-heading">
                   <div>
-                    <strong>구조화 결과 미리보기</strong>
-                    <p>분석에 사용할 네 가지 사실만 추립니다.</p>
+                    <strong>정보 추출 결과 미리보기</strong>
+                    <p>분석에 필요한 네 가지 정보만 추립니다.</p>
                   </div>
                 </div>
                 <dl className="document-facts is-placeholder" aria-hidden="true">
@@ -248,7 +248,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
             {phase === "running" ? (
               <Alert>
                 <Spinner />
-                <AlertTitle>문서에서 사실을 구조화하고 있습니다</AlertTitle>
+                <AlertTitle>문서에서 정보를 읽고 있습니다</AlertTitle>
                 <AlertDescription>
                   개인정보 마스킹 후 상품코드·계약일·특약·진단코드를
                   찾습니다.
@@ -271,7 +271,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
                     <CheckCircle2Icon aria-hidden="true" />
                   </span>
                   <div>
-                    <strong>{bundle.documents.length}개 문서 구조화 완료</strong>
+                    <strong>{bundle.documents.length}개 문서 정보 추출 완료</strong>
                     <p>원본 저장 없음 · 모델 학습 사용 없음</p>
                   </div>
                 </div>

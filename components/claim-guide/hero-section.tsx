@@ -113,7 +113,7 @@ export function HeroSection() {
     <section className="hero-section" id="top" ref={sectionRef}>
       <div className="hero-copy">
         <h1>
-          <span className="hero-title-line">부모님 증권의 담보를</span>
+          <span className="hero-title-line">부모님 보험의 보장 내용을</span>
           <span className="hero-title-line">
             <em>가입 당시 약관</em> 기준으로
           </span>
@@ -121,9 +121,9 @@ export function HeroSection() {
           <span className="hero-title-line">정리해 드립니다</span>
         </h1>
         <p className="hero-support">
-          증권과 진단 기록을 바탕으로 확인해 볼 담보를 정리하고, 근거가 된 약관
-          조항과 쪽수를 함께 보여 드립니다. 최종 지급 여부는 보험회사가
-          판단합니다.
+          보험증권과 진단 기록을 바탕으로 확인해 볼 보장 항목을 정리하고, 가입
+          당시 적용된 보험약관의 근거 조항과 쪽수를 함께 보여 드립니다. 최종 지급
+          여부는 보험회사가 판단합니다.
         </p>
         <div className="hero-actions">
           <Button size="lg" onClick={scrollToDemo}>
@@ -140,7 +140,7 @@ export function HeroSection() {
         <Image
           className="hero-photo"
           src="/family-policy-review-v4.webp"
-          alt="태블릿의 약관 문서와 보험 서류를 함께 확인하는 어머니와 청년 자녀"
+          alt="태블릿에서 보험약관과 보험증권을 함께 확인하는 어머니와 청년 자녀"
           width={1536}
           height={1024}
           loading="eager"

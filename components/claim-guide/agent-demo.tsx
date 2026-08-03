@@ -107,7 +107,7 @@ export function AgentDemo() {
     <section className="section-shell demo-section" id="demo" ref={demoRef}>
       <SectionHeading
         title="사례로 확인 절차를 따라가 보세요"
-        description="문서를 넣거나 준비된 사례를 선택하면, 계약일에 맞는 약관을 찾고 부족한 정보를 확인한 뒤 근거와 다음 행동을 정리합니다."
+        description="보험증권과 진료자료를 넣거나 준비된 사례를 선택하면, 계약일에 맞는 보험약관을 찾고 부족한 정보를 확인한 뒤 근거와 다음 행동을 정리합니다."
       />
 
       <ol className="demo-runbook" aria-label="권장 시연 순서">
@@ -213,7 +213,7 @@ export function AgentDemo() {
                     </span>
                     <h3 id="journey-stage-title">이 사례를 분석할까요?</h3>
                     <p>
-                      가입 시점의 약관을 찾고 정의·지급·면책 조항을 함께
+                      가입 당시 적용된 보험약관을 찾고 정의·지급·면책 조항을 함께
                       확인합니다.
                     </p>
                   </div>
@@ -241,7 +241,7 @@ export function AgentDemo() {
                       {ANALYSIS_STEPS[activeStep]} 정보를 확인하고 있습니다
                     </h3>
                     <p>
-                      적용 약관 버전과 연결된 정의·지급·면책 조항을 순서대로
+                      적용 보험약관 버전과 연결된 정의·지급·면책 조항을 순서대로
                       검토합니다.
                     </p>
                   </div>
@@ -413,8 +413,8 @@ export function AgentDemo() {
           <span>직접 실행해 보기</span>
           <h3>내 문서로 같은 흐름을 이어가세요</h3>
           <p>
-            증권과 진료자료를 구조화하면, 다음 분석부터 문서에서 확인한
-            계약일·담보·진단 정보를 같은 근거 흐름에 반영합니다.
+            보험증권과 진료자료에서 정보를 읽으면, 다음 분석부터 계약일·보장
+            항목·진단 정보를 같은 근거 흐름에 반영합니다.
           </p>
         </div>
         <DocumentIntake onBundle={setDocumentBundle} />

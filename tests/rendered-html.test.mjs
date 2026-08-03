@@ -55,12 +55,12 @@ test("server-renders the insurance claim guide MVP", async () => {
   const html = await response.text();
   assert.match(html, /<html lang="ko">/);
   assert.match(html, /<title>보험금 길잡이 Agent<\/title>/);
-  assert.match(html, /부모님 증권의 담보를/);
+  assert.match(html, /부모님 보험의 보장 내용을/);
   assert.match(html, /<em>가입 당시 약관<\/em> 기준으로/);
   assert.match(html, /확인할 항목부터/);
   assert.match(html, /정리해 드립니다/);
   assert.match(html, /\/family-policy-review-v4\.webp/);
-  assert.match(html, /태블릿의 약관 문서와 보험 서류/);
+  assert.match(html, /태블릿에서 보험약관과 보험증권을 함께 확인하는 어머니와 청년 자녀/);
   assert.match(html, /최종 지급 여부는 보험회사가 판단합니다/);
   assert.match(html, /근거 경로/);
   assert.match(html, /새 약관은 검토 후 반영합니다/);
@@ -152,10 +152,12 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(demo, /defaultValue="evidence"/);
   assert.match(demo, /이 사례 분석하기/);
   assert.match(demo, /답변 반영하고 결과 보기/);
+  assert.match(demo, /보험증권과 진료자료/);
   assert.match(analysisHook, /requestAnimationFrame/);
   assert.match(analysisHook, /\/api\/analyze/);
   assert.match(journeyPresentation, /JOURNEY_STEPS/);
   assert.match(journeyPresentation, /RESULT_STATE/);
+  assert.match(journeyPresentation, /보험증권과 진단 기록/);
   assert.match(resultsPanel, /type="multiple"/);
   assert.match(resultsPanel, /defaultValue=\{results\.map/);
   assert.match(evaluationPanel, /defaultValue="evidence"/);

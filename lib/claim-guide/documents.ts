@@ -187,7 +187,7 @@ export function buildDocumentBundle(
   const warnings: string[] = []
 
   if (!documents.some((document) => document.facts.productCode)) {
-    warnings.push("상품코드를 찾지 못했습니다. 증권에서 상품코드를 확인해 주세요.")
+    warnings.push("상품코드를 찾지 못했습니다. 보험증권에서 상품코드를 확인해 주세요.")
   }
   if (!documents.some((document) => document.facts.contractDate)) {
     warnings.push("계약일을 찾지 못했습니다. 가입 당시 약관 선택에 필요합니다.")

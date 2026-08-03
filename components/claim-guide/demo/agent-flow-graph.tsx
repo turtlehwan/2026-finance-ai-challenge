@@ -79,14 +79,14 @@ const graphDefinition: Array<{
   },
   {
     id: "version_resolver",
-    label: "약관 버전 확인",
+    label: "보험약관 버전 확인",
     role: "Tool",
     position: { x: 450, y: 0 },
     icon: GitBranchIcon,
   },
   {
     id: "coverage_matcher",
-    label: "담보 대조",
+    label: "보장 항목 대조",
     role: "Agent",
     position: { x: 675, y: 0 },
     icon: NetworkIcon,
