@@ -153,7 +153,12 @@ export function PolicyOpsSection() {
         description="공식 원문을 구조화하고 변경 영향을 점검하되, 운영 지식은 사람 승인과 별도 배포 전에는 바뀌지 않습니다."
       />
 
-      <Accordion className="policy-disclosure" type="single" collapsible>
+      <Accordion
+        className="policy-disclosure"
+        type="single"
+        collapsible
+        defaultValue="policyops-demo"
+      >
         <AccordionItem value="policyops-demo">
           <AccordionTrigger>
             <span className="policy-disclosure-trigger">

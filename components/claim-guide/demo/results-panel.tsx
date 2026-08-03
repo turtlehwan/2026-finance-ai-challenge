@@ -164,9 +164,8 @@ export function ResultsPanel({
       ) : null}
       <Accordion
         className="result-accordion"
-        type="single"
-        collapsible
-        defaultValue="result-0"
+        type="multiple"
+        defaultValue={results.map((_, index) => `result-${index}`)}
       >
         {results.map((result, index) => {
           const Icon = toneIcons[result.tone]

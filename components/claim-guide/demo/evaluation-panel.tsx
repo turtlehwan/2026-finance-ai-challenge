@@ -133,7 +133,12 @@ export function EvaluationPanel() {
         </p>
       </div>
 
-      <Accordion type="single" collapsible className="verification-disclosure">
+      <Accordion
+        type="single"
+        collapsible
+        defaultValue="evidence"
+        className="verification-disclosure"
+      >
         <AccordionItem value="evidence">
           <AccordionTrigger>
             <span className="verification-summary">
@@ -179,7 +184,12 @@ export function EvaluationPanel() {
                     </div>
                   ))}
                 </dl>
-                <Accordion type="single" collapsible className="regression-method">
+                <Accordion
+                  type="single"
+                  collapsible
+                  defaultValue="methodology"
+                  className="regression-method"
+                >
                   <AccordionItem value="methodology">
                     <AccordionTrigger>점검 범위와 한계</AccordionTrigger>
                     <AccordionContent>

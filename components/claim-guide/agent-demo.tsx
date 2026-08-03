@@ -56,6 +56,29 @@ import type { DocumentBundle } from "@/lib/claim-guide/documents"
 
 const caseIcons: LucideIcon[] = [BoneIcon, CalendarClockIcon, ShieldAlertIcon]
 
+const demoRunbook = [
+  {
+    step: "01",
+    title: "사례 고르기",
+    detail: "준비된 사례를 하나 선택합니다.",
+  },
+  {
+    step: "02",
+    title: "근거 분석 시작",
+    detail: "사례 카드에서 분석을 시작합니다.",
+  },
+  {
+    step: "03",
+    title: "추가 질문 답변",
+    detail: "모르는 사실은 추정하지 않고 남깁니다.",
+  },
+  {
+    step: "04",
+    title: "결과와 원문 확인",
+    detail: "근거·준비물·공식 채널을 차례로 봅니다.",
+  },
+]
+
 export function AgentDemo() {
   const [documentBundle, setDocumentBundle] = useState<DocumentBundle | null>(
     null,
@@ -87,38 +110,56 @@ export function AgentDemo() {
         description="문서를 넣거나 준비된 사례를 선택하면, 계약일에 맞는 약관을 찾고 부족한 정보를 확인한 뒤 근거와 다음 행동을 정리합니다."
       />
 
-      <DocumentIntake onBundle={setDocumentBundle} />
+      <ol className="demo-runbook" aria-label="권장 시연 순서">
+        {demoRunbook.map((item) => (
+          <li key={item.step}>
+            <span aria-hidden="true">{item.step}</span>
+            <div>
+              <strong>{item.title}</strong>
+              <p>{item.detail}</p>
+            </div>
+          </li>
+        ))}
+        <Button variant="outline" asChild>
+          <a href="#case-selection">
+            <PlayIcon data-icon="inline-start" />
+            준비된 사례로 바로 시작
+          </a>
+        </Button>
+      </ol>
 
-      <div className="demo-divider" aria-hidden="true">
-        <span>문서가 없다면 준비된 사례로</span>
+      <div className="case-selection" id="case-selection">
+        <div className="case-selection-heading">
+          <span>권장 시연 · 1단계</span>
+          <p>아래 사례를 고른 뒤 분석을 시작하세요.</p>
+        </div>
+        <ToggleGroup
+          className="case-tabs"
+          type="single"
+          variant="outline"
+          value={selectedId}
+          onValueChange={(value) => {
+            if (value) {
+              changeCase(value)
+            }
+          }}
+          aria-label="합성 사례 선택"
+        >
+          {claimCases.map((claimCase, index) => {
+            const Icon = caseIcons[index]
+            return (
+              <ToggleGroupItem
+                value={claimCase.id}
+                key={claimCase.id}
+                disabled={phase === "running"}
+              >
+                <Icon data-icon="inline-start" />
+                {claimCase.shortTitle}
+              </ToggleGroupItem>
+            )
+          })}
+        </ToggleGroup>
       </div>
-
-      <ToggleGroup
-        className="case-tabs"
-        type="single"
-        variant="outline"
-        value={selectedId}
-        onValueChange={(value) => {
-          if (value) {
-            changeCase(value)
-          }
-        }}
-        aria-label="합성 사례 선택"
-      >
-        {claimCases.map((claimCase, index) => {
-          const Icon = caseIcons[index]
-          return (
-            <ToggleGroupItem
-              value={claimCase.id}
-              key={claimCase.id}
-              disabled={phase === "running"}
-            >
-              <Icon data-icon="inline-start" />
-              {claimCase.shortTitle}
-            </ToggleGroupItem>
-          )
-        })}
-      </ToggleGroup>
 
       <Card className="journey-card" id="case-workspace">
         <CardHeader>
@@ -266,6 +307,7 @@ export function AgentDemo() {
                     className="evidence-disclosure"
                     type="single"
                     collapsible
+                    defaultValue="evidence"
                   >
                     <AccordionItem value="evidence">
                       <AccordionTrigger>
@@ -304,6 +346,7 @@ export function AgentDemo() {
                     className="evidence-disclosure"
                     type="single"
                     collapsible
+                    defaultValue="evidence"
                   >
                     <AccordionItem value="evidence">
                       <AccordionTrigger>전체 근거 경로 확인</AccordionTrigger>
@@ -364,6 +407,18 @@ export function AgentDemo() {
       </Alert>
 
       <EvaluationPanel />
+
+      <div className="document-followup" id="document-intake">
+        <div className="document-followup-heading">
+          <span>직접 실행해 보기</span>
+          <h3>내 문서로 같은 흐름을 이어가세요</h3>
+          <p>
+            증권과 진료자료를 구조화하면, 다음 분석부터 문서에서 확인한
+            계약일·담보·진단 정보를 같은 근거 흐름에 반영합니다.
+          </p>
+        </div>
+        <DocumentIntake onBundle={setDocumentBundle} />
+      </div>
     </section>
   )
 }

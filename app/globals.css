@@ -782,24 +782,6 @@ button.evidence-node {
   color: var(--success);
 }
 
-.demo-divider {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 1.5rem 0 0.75rem;
-  color: var(--muted-foreground);
-  font-size: var(--text-caption);
-  font-weight: 650;
-}
-
-.demo-divider::before,
-.demo-divider::after {
-  height: 1px;
-  flex: 1;
-  background: var(--border);
-  content: "";
-}
-
 .agent-flow-shell {
   overflow: hidden;
   border: 1px solid var(--border);
@@ -1088,13 +1070,124 @@ button.evidence-node {
   width: 100%;
   height: auto;
   grid-template-columns: repeat(3, 1fr);
-  margin-bottom: 1rem;
+  margin: 0;
   padding: 0.35rem;
 }
 
 .case-tabs [data-slot="toggle-group-item"] {
   min-height: 2.75rem;
   font-size: var(--text-caption);
+}
+
+.demo-runbook {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  margin: 0 0 3rem;
+  padding: 1.25rem 0 1.5rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  list-style: none;
+}
+
+.demo-runbook li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.7rem;
+}
+
+.demo-runbook li > span {
+  color: var(--primary);
+  font-size: var(--text-caption);
+  font-variant-numeric: tabular-nums;
+  font-weight: 760;
+}
+
+.demo-runbook li > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.demo-runbook strong {
+  color: var(--foreground);
+  font-size: var(--text-caption);
+}
+
+.demo-runbook p {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  line-height: var(--leading-body);
+  text-wrap: pretty;
+}
+
+.demo-runbook [data-slot="button"] {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-top: 0.25rem;
+}
+
+.document-followup {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 5rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--border);
+}
+
+.document-followup-heading {
+  display: grid;
+  max-width: 42rem;
+  gap: 0.45rem;
+}
+
+.document-followup-heading > span {
+  color: var(--primary);
+  font-size: var(--text-caption);
+  font-weight: 720;
+}
+
+.document-followup-heading h3 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: var(--text-lead);
+  letter-spacing: -0.025em;
+}
+
+.document-followup-heading p {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  line-height: var(--leading-body);
+}
+
+.case-selection {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  scroll-margin-top: 6rem;
+}
+
+.case-selection-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.case-selection-heading > span {
+  color: var(--primary);
+  font-size: var(--text-caption);
+  font-weight: 720;
+}
+
+.case-selection-heading > p {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-caption);
+  text-align: right;
 }
 
 .journey-card {
@@ -1120,7 +1213,7 @@ button.evidence-node {
 
 .journey-card-content {
   display: grid;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 .journey-progress-wrap {
@@ -1299,8 +1392,8 @@ button.evidence-node {
 }
 
 .evidence-disclosure {
-  margin-top: 0.25rem;
-  padding-top: 0.25rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--border);
 }
 
@@ -1544,11 +1637,11 @@ button.evidence-node {
 
 .result-accordion {
   display: grid;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .result-accordion-item {
-  padding: 0 0.75rem;
+  padding: 0.25rem 1rem 1rem;
   border: 1px solid var(--border) !important;
   border-radius: 0.75rem;
   background: var(--background);
@@ -1559,7 +1652,7 @@ button.evidence-node {
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: 0.65rem;
   min-height: 4.5rem;
-  padding: 0.65rem 0;
+  padding: 0.65rem 0 0.85rem;
   text-align: left;
 }
 
@@ -1743,8 +1836,8 @@ button.evidence-node {
   grid-template-columns: minmax(15rem, 0.72fr) minmax(0, 1.28fr);
   align-items: start;
   gap: 3rem;
-  margin-top: 3.5rem;
-  padding-top: 2.25rem;
+  margin-top: 5rem;
+  padding-top: 3rem;
   border-top: 1px solid var(--border);
 }
 
@@ -1817,8 +1910,8 @@ button.evidence-node {
 
 .verification-details {
   display: grid;
-  gap: 2.75rem;
-  padding: 0.5rem 0 1.5rem;
+  gap: 3.5rem;
+  padding: 1.25rem 0 2.5rem;
 }
 
 .source-ledger h4,
@@ -1965,7 +2058,7 @@ button.evidence-node {
 }
 
 .regression-method {
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
 }
 
 .regression-method [data-slot="accordion-item"] {
@@ -2003,7 +2096,7 @@ button.evidence-node {
 }
 
 .policy-section {
-  padding-top: 4rem;
+  padding-top: 5rem;
   border-top: 1px solid var(--border);
 }
 
@@ -2732,6 +2825,42 @@ button.evidence-node {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .demo-runbook {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    padding: 1.25rem 0;
+  }
+
+  .demo-runbook li {
+    grid-template-columns: 2.6rem minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+
+  .demo-runbook li > span {
+    padding-top: 0.05rem;
+  }
+
+  .demo-runbook [data-slot="button"] {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .case-selection {
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+  }
+
+  .case-selection-heading {
+    display: grid;
+    justify-content: initial;
+    gap: 0.25rem;
+  }
+
+  .case-selection-heading > p {
+    text-align: left;
+  }
+
   .case-tabs [data-slot="toggle-group-item"] {
     min-width: 0;
     padding-inline: 0.5rem;
@@ -2747,6 +2876,12 @@ button.evidence-node {
 
   .journey-card-content {
     gap: 1.5rem;
+  }
+
+  .document-followup {
+    gap: 1rem;
+    margin-top: 3.5rem;
+    padding-top: 2.5rem;
   }
 
   .journey-progress-wrap {
