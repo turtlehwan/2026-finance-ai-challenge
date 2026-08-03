@@ -88,6 +88,7 @@ test("keeps starter-only assets removed and production metadata wired", async ()
     layout,
     app,
     demo,
+    adaptiveAssistant,
     analysisHook,
     journeyPresentation,
     resultsPanel,
@@ -105,6 +106,13 @@ test("keeps starter-only assets removed and production metadata wired", async ()
       ),
       readFile(
         new URL("../components/claim-guide/agent-demo.tsx", import.meta.url),
+        "utf8",
+      ),
+      readFile(
+        new URL(
+          "../components/claim-guide/demo/adaptive-assistant.tsx",
+          import.meta.url,
+        ),
         "utf8",
       ),
       readFile(
@@ -154,22 +162,25 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(demo, /useClaimAnalysis/);
   assert.match(demo, /demoRunbook/);
   assert.match(demo, /권장 시연 순서/);
-  assert.match(demo, /defaultValue="evidence"/);
+  assert.match(demo, /AdaptiveAssistantWorkspace/);
   assert.match(demo, /이 사례 분석하기/);
   assert.match(demo, /답변 반영하고 결과 보기/);
   assert.match(demo, /보험증권과 진료자료/);
+  assert.match(adaptiveAssistant, /나만의 보험 확인 비서/);
+  assert.match(adaptiveAssistant, /SpeechRecognition/);
+  assert.match(adaptiveAssistant, /useGSAP/);
+  assert.match(adaptiveAssistant, /외부 인식 서비스로 전송/);
   assert.match(analysisHook, /requestAnimationFrame/);
   assert.match(analysisHook, /\/api\/analyze/);
   assert.match(journeyPresentation, /JOURNEY_STEPS/);
   assert.match(journeyPresentation, /RESULT_STATE/);
   assert.match(journeyPresentation, /보험증권과 진단 기록/);
-  assert.match(resultsPanel, /type="multiple"/);
-  assert.match(resultsPanel, /defaultValue=\{results\.map/);
-  assert.match(evaluationPanel, /defaultValue="evidence"/);
-  assert.match(evaluationPanel, /defaultValue="methodology"/);
+  assert.match(resultsPanel, /type="single"/);
+  assert.match(resultsPanel, /defaultValue="result-0"/);
+  assert.doesNotMatch(evaluationPanel, /defaultValue=/);
   assert.match(policyOps, /검토 후 반영/);
   assert.match(policyOps, /\/api\/policyops\/review/);
-  assert.match(policyOps, /defaultValue="policyops-demo"/);
+  assert.doesNotMatch(policyOps, /defaultValue="policyops-demo"/);
   assert.match(preferenceHook, /claim-guide-preferences:v1/);
   assert.match(packageJson, /"gsap"/);
   assert.match(analysisHook, /import\("gsap"\)/);

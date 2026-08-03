@@ -136,7 +136,6 @@ export function EvaluationPanel() {
       <Accordion
         type="single"
         collapsible
-        defaultValue="evidence"
         className="verification-disclosure"
       >
         <AccordionItem value="evidence">
@@ -187,7 +186,6 @@ export function EvaluationPanel() {
                 <Accordion
                   type="single"
                   collapsible
-                  defaultValue="methodology"
                   className="regression-method"
                 >
                   <AccordionItem value="methodology">

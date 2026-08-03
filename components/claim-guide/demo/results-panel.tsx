@@ -69,10 +69,12 @@ function ResultSummary({ results }: { results: ClaimResult[] }) {
 }
 
 export function ResultsPanel({
+  display = "summary",
   results,
   phase,
   sources,
 }: {
+  display?: "summary" | "evidence"
   results: ClaimResult[]
   phase: DemoPhase
   sources: PolicySource[]
@@ -123,13 +125,16 @@ export function ResultsPanel({
 
   return (
     <>
-      <ResultSummary results={results} />
-      {sources.length ? (
+      {display === "summary" ? <ResultSummary results={results} /> : null}
+      {display === "evidence" && sources.length ? (
         <div className="result-sources" aria-label="분석에 사용한 공식 출처">
           <div className="result-sources-heading">
             <div>
-              <strong>이번 분석에 사용한 공식 출처</strong>
-              <span>출처와 적용일을 공개합니다. 이것만으로 지급을 확정하지 않습니다.</span>
+              <strong>근거가 된 공식 원문부터 보여드릴게요</strong>
+              <span>
+                출처와 적용일을 공개합니다. 원문만으로 지급 여부를 확정하지
+                않습니다.
+              </span>
             </div>
           </div>
           <div className="result-source-list">
@@ -164,8 +169,9 @@ export function ResultsPanel({
       ) : null}
       <Accordion
         className="result-accordion"
-        type="multiple"
-        defaultValue={results.map((_, index) => `result-${index}`)}
+        type="single"
+        collapsible
+        defaultValue="result-0"
       >
         {results.map((result, index) => {
           const Icon = toneIcons[result.tone]
@@ -198,7 +204,7 @@ export function ResultsPanel({
                     <span>{result.clause}</span>
                   </div>
                   <p>{result.detail}</p>
-                  {result.citations?.length ? (
+                  {display === "evidence" && result.citations?.length ? (
                     <div className="result-citations">
                       <strong>공식 원문</strong>
                       {result.citations.map((citation) => (

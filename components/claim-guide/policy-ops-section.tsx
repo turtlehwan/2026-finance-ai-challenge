@@ -157,7 +157,6 @@ export function PolicyOpsSection() {
         className="policy-disclosure"
         type="single"
         collapsible
-        defaultValue="policyops-demo"
       >
         <AccordionItem value="policyops-demo">
           <AccordionTrigger>
