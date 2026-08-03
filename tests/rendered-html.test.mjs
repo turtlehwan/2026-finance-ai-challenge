@@ -176,9 +176,10 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(packageJson, /"lucide-react"/);
   assert.match(packageJson, /"radix-ui"/);
   assert.match(packageJson, /"shadcn"/);
-  assert.match(deployWorkflow, /run: npm run deploy:cf/);
-  assert.doesNotMatch(deployWorkflow, /prepare-cloudflare-deploy/);
-  assert.doesNotMatch(deployWorkflow, /working-directory: dist\/server/);
+  assert.match(deployWorkflow, /prepare-cloudflare-deploy/);
+  assert.match(deployWorkflow, /npx wrangler versions deploy/);
+  assert.match(deployWorkflow, /@100%/);
+  assert.match(deployWorkflow, /working-directory: dist\/server/);
 
   await access(new URL("../public/og-v2.png", import.meta.url));
   await access(

@@ -58,13 +58,21 @@ jobs:
       - name: Build worker
         run: npm run build
 
-      # vinext가 생성한 Wrangler 설정을 사용해 Worker 버전과 finai26 custom
-      # domain trigger를 같은 배포로 반영한다. `wrangler deploy`를 dist/server에서
-      # 직접 실행하면 route가 빠진 별도 설정을 사용할 수 있어 정본 도메인이
-      # 이전 Worker를 가리킬 위험이 있다.
-      # 인증값은 GitHub Environment Secret으로만 주입한다.
-      - name: Deploy
-        run: npm run deploy:cf
+      # 정본 도메인은 Cloudflare 인프라에서 이 Worker에 한 번 연결한다. CI는
+      # Zone route 권한 없이 새 Worker version을 업로드하고 100% 트래픽으로
+      # 승격한다. 따라서 public workflow에는 domain 변경 권한이 필요 없다.
+      - name: Prepare code-only deploy config
+        run: node .github/scripts/prepare-cloudflare-deploy.mjs
+
+      - name: Upload and promote Worker version
+        run: |
+          set -euo pipefail
+          deploy_log="$(mktemp)"
+          npx wrangler deploy --config wrangler.json 2>&1 | tee "$deploy_log"
+          version_id="$(sed -nE 's/.*Current Version ID: ([0-9a-f-]+).*/\1/p' "$deploy_log" | tail -n 1)"
+          test -n "$version_id"
+          npx wrangler versions deploy "${version_id}@100%" --name insurance-claim-guide-agent --yes
+        working-directory: dist/server
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
