@@ -178,6 +178,7 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(packageJson, /"shadcn"/);
   assert.match(deployWorkflow, /prepare-cloudflare-deploy/);
   assert.match(deployWorkflow, /npx wrangler versions deploy/);
+  assert.match(deployWorkflow, /--config wrangler\.json --yes/);
   assert.match(deployWorkflow, /@100%/);
   assert.match(deployWorkflow, /working-directory: dist\/server/);
 

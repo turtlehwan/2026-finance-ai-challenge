@@ -71,7 +71,7 @@ jobs:
           npx wrangler deploy --config wrangler.json 2>&1 | tee "$deploy_log"
           version_id="$(sed -nE 's/.*Current Version ID: ([0-9a-f-]+).*/\1/p' "$deploy_log" | tail -n 1)"
           test -n "$version_id"
-          npx wrangler versions deploy "${version_id}@100%" --name insurance-claim-guide-agent --yes
+          npx wrangler versions deploy "${version_id}@100%" --name insurance-claim-guide-agent --config wrangler.json --yes
         working-directory: dist/server
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
