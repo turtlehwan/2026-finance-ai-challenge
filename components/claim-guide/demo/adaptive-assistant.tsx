@@ -211,15 +211,11 @@ function requestIncludes(request: string, words: string[]) {
 }
 
 export function AdaptiveAssistant({
-  activeView,
-  answer,
   onAnswer,
   onStart,
   onViewChange,
   phase,
 }: {
-  activeView: AssistantView
-  answer: Answer | null
   onAnswer: (answer: Answer) => void
   onStart: () => void
   onViewChange: (view: AssistantView) => void
@@ -390,7 +386,9 @@ export function AdaptiveAssistant({
     recognition.maxAlternatives = 1
     recognition.onstart = () => {
       setIsListening(true)
-      setCurrentMessage("듣고 있어요. 평소 말하듯 말씀해 주세요.")
+      setCurrentMessage(
+        "마이크가 켜졌어요. 브라우저에 따라 음성이 외부 인식 서비스로 전달될 수 있습니다.",
+      )
     }
     recognition.onend = () => setIsListening(false)
     recognition.onerror = () => {
@@ -431,7 +429,7 @@ export function AdaptiveAssistant({
           id="assistant-request-input"
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder={quickRequests[0]}
+          placeholder="궁금한 것을 말하거나 적어 주세요"
           aria-label="보험 확인 비서에게 요청하기"
         />
         <Button
@@ -465,15 +463,12 @@ export function AdaptiveAssistant({
         ))}
       </div>
 
-      <p className="assistant-privacy-note">
-        {speechSupported
-          ? "마이크는 누를 때만 켜집니다. 브라우저에 따라 음성이 외부 인식 서비스로 전송될 수 있습니다."
-          : "현재 브라우저에서는 음성 입력을 지원하지 않아 글로 요청할 수 있습니다."}
-      </p>
-
-      <span className="sr-only">
-        현재 보기: {activeView}, 현재 답변: {answer ?? "선택 안 함"}
-      </span>
+      {isListening ? (
+        <p className="assistant-privacy-note" role="status">
+          음성은 서비스 서버에 저장하지 않습니다. 브라우저에 따라 외부 인식
+          서비스로 전달될 수 있습니다.
+        </p>
+      ) : null}
     </section>
   )
 }

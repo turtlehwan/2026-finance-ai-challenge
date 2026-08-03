@@ -10,7 +10,6 @@ import {
   PlayIcon,
   SaveIcon,
   ShieldAlertIcon,
-  ShieldCheckIcon,
 } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -54,29 +53,6 @@ import type { Answer, DemoPhase } from "@/lib/claim-guide/types"
 import type { DocumentBundle } from "@/lib/claim-guide/documents"
 
 const caseIcons: LucideIcon[] = [BoneIcon, CalendarClockIcon, ShieldAlertIcon]
-
-const demoRunbook = [
-  {
-    step: "01",
-    title: "사례 고르기",
-    detail: "준비된 사례를 하나 선택합니다.",
-  },
-  {
-    step: "02",
-    title: "근거 분석 시작",
-    detail: "사례 카드에서 분석을 시작합니다.",
-  },
-  {
-    step: "03",
-    title: "추가 질문 답변",
-    detail: "모르는 사실은 추정하지 않고 남깁니다.",
-  },
-  {
-    step: "04",
-    title: "결과와 원문 확인",
-    detail: "근거·준비물·공식 채널을 차례로 봅니다.",
-  },
-]
 
 export function AgentDemo() {
   const [documentBundle, setDocumentBundle] = useState<DocumentBundle | null>(
@@ -159,31 +135,13 @@ export function AgentDemo() {
     <section className="section-shell demo-section" id="demo" ref={demoRef}>
       <SectionHeading
         title="사례로 확인 절차를 따라가 보세요"
-        description="보험증권과 진료자료를 넣거나 준비된 사례를 선택하면, 계약일에 맞는 보험약관을 찾고 부족한 정보를 확인한 뒤 근거와 다음 행동을 정리합니다."
+        description="사례를 고르면 분석이 시작되고, 질문 하나에 답한 뒤 근거와 준비물을 받습니다."
       />
-
-      <ol className="demo-runbook" aria-label="권장 시연 순서">
-        {demoRunbook.map((item) => (
-          <li key={item.step}>
-            <span aria-hidden="true">{item.step}</span>
-            <div>
-              <strong>{item.title}</strong>
-              <p>{item.detail}</p>
-            </div>
-          </li>
-        ))}
-        <Button variant="outline" asChild>
-          <a href="#case-selection">
-            <PlayIcon data-icon="inline-start" />
-            준비된 사례로 바로 시작
-          </a>
-        </Button>
-      </ol>
 
       <div className="case-selection" id="case-selection">
         <div className="case-selection-heading">
-          <span>권장 시연 · 1단계</span>
-          <p>아래 사례를 고른 뒤 분석을 시작하세요.</p>
+          <span>1단계 · 사례 선택</span>
+          <p>아래에서 사례 하나를 고른 뒤 분석을 시작하세요.</p>
         </div>
         <ToggleGroup
           className="case-tabs"
@@ -242,8 +200,6 @@ export function AgentDemo() {
         <CardContent className="journey-card-content">
           <JourneyProgress phase={phase} />
           <AdaptiveAssistant
-            activeView={activeView}
-            answer={answer}
             onAnswer={setAnswer}
             onStart={startAnalysis}
             onViewChange={showAssistantView}
@@ -353,18 +309,10 @@ export function AgentDemo() {
                       </span>
                       <h3 id="journey-stage-title">이 사례를 같이 확인할까요?</h3>
                       <p>
-                        가입 당시 적용된 보험약관을 찾고 정의·지급·면책 조항을
+                        가입 당시 적용된 보험약관에서 보장 항목과 지급·면책 조건을
                         함께 확인합니다.
                       </p>
                     </div>
-                    <Alert>
-                      <ShieldCheckIcon />
-                      <AlertTitle>모르는 내용은 넘겨짚지 않을게요</AlertTitle>
-                      <AlertDescription>
-                        근거가 부족하면 멈추고 필요한 것만 한 번에 하나씩
-                        여쭙습니다.
-                      </AlertDescription>
-                    </Alert>
                     <Button size="lg" onClick={startAnalysis}>
                       <PlayIcon data-icon="inline-start" />이 사례 분석하기
                     </Button>
@@ -402,7 +350,11 @@ export function AgentDemo() {
                         3단계 · {journeyPresentation[2].label}
                       </span>
                       <h3 id="journey-stage-title">{activeCase.question}</h3>
-                      <p>{activeCase.questionHint}</p>
+                      <p>
+                        {activeCase.questionHint} 답을 모르셔도 됩니다. “잘
+                        모르겠어요”를 고르면 추정하지 않고 확인이 필요한 항목으로
+                        남깁니다.
+                      </p>
                     </div>
                     <ToggleGroup
                       className="answer-options"
@@ -447,8 +399,8 @@ export function AgentDemo() {
                         먼저 확인할 항목부터 정리했어요
                       </h3>
                       <p>
-                        지급 확정이 아니라 우선순위부터 보여드립니다. 한 번에 한
-                        항목만 펼쳐 읽을 수 있습니다.
+                        지급 여부는 보험회사가 정합니다. 여기서는 약관 근거로
+                        확인할 순서만 짚어드려요.
                       </p>
                     </div>
                     <ResultsPanel
@@ -481,17 +433,6 @@ export function AgentDemo() {
         </CardContent>
       </Card>
 
-      <Alert className="demo-boundary">
-        <ShieldCheckIcon />
-        <AlertTitle>이 화면에서 실제로 일어나는 일</AlertTitle>
-        <AlertDescription>
-          서버가 합성 사례를 판정 규칙과 대조하고, 답변에 따라 결과와 근거,
-          준비물 목록을 다시 계산합니다. 지급 여부는 판단하지 않습니다.
-        </AlertDescription>
-      </Alert>
-
-      <EvaluationPanel />
-
       <div className="document-followup" id="document-intake">
         <div className="document-followup-heading">
           <span>직접 실행해 보기</span>
@@ -503,6 +444,8 @@ export function AgentDemo() {
         </div>
         <DocumentIntake onBundle={setDocumentBundle} />
       </div>
+
+      <EvaluationPanel />
     </section>
   )
 }

@@ -59,7 +59,7 @@ const sourceKindLabel = {
 function SourceLedger() {
   return (
     <div className="source-ledger">
-      <h4>근거로 쓴 원문 {SOURCE_LEDGER.length}건</h4>
+      <h4>근거로 쓴 공식 원문</h4>
       <p>
         금융감독원 표준약관과 우체국보험 상품 약관입니다. 내려받은 원문의
         시행일·분량·해시를 그대로 적었으니 직접 대조해 보세요.
@@ -146,18 +146,28 @@ export function EvaluationPanel() {
                 <small>시행일과 SHA-256 공개</small>
               </span>
               <span>
-                <strong>합성 사례 {summary ? summary.dataset.total : 50}건</strong>
-                <small>버전·근거·중단·경로 점검</small>
+                {summary ? (
+                  <strong>합성 사례 {summary.dataset.total}건</strong>
+                ) : (
+                  <Skeleton className="h-5 w-28" />
+                )}
+                <small>
+                  {summary
+                    ? "버전·근거·중단·경로 점검"
+                    : "점검 결과를 불러오는 중"}
+                </small>
               </span>
             </span>
           </AccordionTrigger>
-          <AccordionContent forceMount>
+          <AccordionContent>
             <div className="verification-details">
               <SourceLedger />
 
               <div className="regression-block">
                 <h4>
-                  합성 사례 {summary ? summary.dataset.total : 50}건으로 돌린 내부 점검
+                  {summary
+                    ? `합성 사례 ${summary.dataset.total}건으로 돌린 내부 점검`
+                    : "합성 사례 점검 결과를 불러오는 중"}
                 </h4>
                 <p>
                   같은 그래프에 넣고 네 가지를 확인했습니다. 모두 합성 사례이며,

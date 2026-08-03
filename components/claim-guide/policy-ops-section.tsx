@@ -9,7 +9,6 @@ import {
   GitCompareArrowsIcon,
   InfoIcon,
   NetworkIcon,
-  ShieldCheckIcon,
   UserRoundCheckIcon,
 } from "lucide-react"
 import { toast } from "sonner"
@@ -21,7 +20,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { SectionHeading } from "@/components/claim-guide/section-heading"
 import {
@@ -29,7 +27,6 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -43,11 +40,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { POLICY_OPS_STEPS } from "@/lib/claim-guide/presentation"
 import {
   STANDARD_TERMS_DIFF_HASH,
@@ -177,7 +169,11 @@ export function PolicyOpsSection() {
                   <div
                     className={cn(
                       "policy-step",
-                      approved || index < 4 ? "is-complete" : "is-current",
+                      approved
+                        ? "is-complete"
+                        : index === POLICY_OPS_STEPS.length - 1
+                          ? "is-current"
+                          : "is-reviewed",
                     )}
                     role="listitem"
                     key={step}
@@ -268,22 +264,8 @@ export function PolicyOpsSection() {
                   <div className="approval-panel-heading">
                     <div>
                       <strong>사람 승인 체크리스트</strong>
-                        <span>운영 지식의 자동 변경을 차단합니다.</span>
+                      <span>운영 지식의 자동 변경을 차단합니다.</span>
                     </div>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label="승인 규칙 설명"
-                        >
-                          <InfoIcon />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        이 데모에서 승인해도 운영 검색 결과는 바뀌지 않습니다
-                      </TooltipContent>
-                    </Tooltip>
                   </div>
                   <ul>
                     {reviewChecklist.map((item) => (
@@ -307,16 +289,6 @@ export function PolicyOpsSection() {
                   </Button>
                 </div>
               </CardContent>
-              <CardFooter>
-                <ShieldCheckIcon aria-hidden="true" />
-                <span>
-                  거버넌스 라인: 공식 원문 확인 → 내부 회귀 테스트 → 사람 승인 상태를
-                  기록합니다. 운영 인덱스 반영은 별도 배포 절차입니다.
-                </span>
-                <Badge variant={approved ? "success" : "outline"}>
-                  {approved ? "시연 승인 완료" : "시연 승인 대기"}
-                </Badge>
-              </CardFooter>
             </Card>
           </AccordionContent>
         </AccordionItem>

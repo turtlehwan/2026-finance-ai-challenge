@@ -72,7 +72,6 @@ test("server-renders the insurance claim guide MVP", async () => {
   assert.match(html, /알 수 있는 것, 알 수 없는 것/);
   // 근거는 주장이 아니라 대조 가능한 값으로 노출한다.
   assert.match(html, /공식 원문과 검증 결과/);
-  assert.match(html, /3ca9d2cdb152/);
   assert.match(html, /https:\/\/cont\.insure\.or\.kr\//);
   assert.match(html, /https:\/\/www\.silson24\.or\.kr\/claim\/web\//);
   assert.match(
@@ -160,8 +159,8 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(layout, /summary_large_image/);
   assert.match(app, /<AgentDemo \/>/);
   assert.match(demo, /useClaimAnalysis/);
-  assert.match(demo, /demoRunbook/);
-  assert.match(demo, /권장 시연 순서/);
+  assert.match(demo, /사례를 고르면 분석이 시작되고/);
+  assert.doesNotMatch(demo, /demoRunbook|권장 시연 순서|이 화면에서 실제로 일어나는 일/);
   assert.match(demo, /AdaptiveAssistantWorkspace/);
   assert.match(demo, /이 사례 분석하기/);
   assert.match(demo, /답변 반영하고 결과 보기/);
@@ -169,7 +168,8 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(adaptiveAssistant, /나만의 보험 확인 비서/);
   assert.match(adaptiveAssistant, /SpeechRecognition/);
   assert.match(adaptiveAssistant, /useGSAP/);
-  assert.match(adaptiveAssistant, /외부 인식 서비스로 전송/);
+  assert.match(adaptiveAssistant, /외부 인식 서비스로 전달/);
+  assert.doesNotMatch(adaptiveAssistant, /현재 보기:/);
   assert.match(analysisHook, /requestAnimationFrame/);
   assert.match(analysisHook, /\/api\/analyze/);
   assert.match(journeyPresentation, /JOURNEY_STEPS/);
@@ -178,8 +178,12 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(resultsPanel, /type="single"/);
   assert.match(resultsPanel, /defaultValue="result-0"/);
   assert.doesNotMatch(evaluationPanel, /defaultValue=/);
+  assert.doesNotMatch(evaluationPanel, /forceMount|summary \? summary\.dataset\.total : 50/);
+  assert.match(evaluationPanel, /Skeleton className="h-5 w-28"/);
   assert.match(policyOps, /검토 후 반영/);
   assert.match(policyOps, /\/api\/policyops\/review/);
+  assert.match(policyOps, /is-reviewed/);
+  assert.doesNotMatch(policyOps, /CardFooter|승인 규칙 설명/);
   assert.doesNotMatch(policyOps, /defaultValue="policyops-demo"/);
   assert.match(preferenceHook, /claim-guide-preferences:v1/);
   assert.match(packageJson, /"gsap"/);

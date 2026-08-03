@@ -1080,55 +1080,6 @@ button.evidence-node {
   font-size: var(--text-caption);
 }
 
-.demo-runbook {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.5rem 2rem;
-  margin: 0 0 4.5rem;
-  padding: 2rem 0 2.25rem;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  list-style: none;
-}
-
-.demo-runbook li {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: 0.7rem;
-}
-
-.demo-runbook li > span {
-  color: var(--primary);
-  font-size: var(--text-caption);
-  font-variant-numeric: tabular-nums;
-  font-weight: 760;
-}
-
-.demo-runbook li > div {
-  display: grid;
-  gap: 0.15rem;
-}
-
-.demo-runbook strong {
-  color: var(--foreground);
-  font-size: var(--text-caption);
-}
-
-.demo-runbook p {
-  margin: 0;
-  color: var(--muted-foreground);
-  font-size: var(--text-caption);
-  line-height: var(--leading-body);
-  text-wrap: pretty;
-}
-
-.demo-runbook [data-slot="button"] {
-  grid-column: 1 / -1;
-  justify-self: start;
-  margin-top: 0.25rem;
-}
-
 .document-followup {
   display: grid;
   gap: 2rem;
@@ -2017,10 +1968,6 @@ button.evidence-node {
   flex-wrap: wrap;
 }
 
-.demo-boundary {
-  margin-top: 2.5rem;
-}
-
 /* 검증 블록 — 카드로 감싸지 않고 규칙선과 여백으로만 구획한다.
    숫자를 크게 키우지 않는 것이 의도다. 세어 볼 수 있는 값으로 읽혀야 한다. */
 .verification-block {
@@ -2374,6 +2321,10 @@ button.evidence-node {
   color: var(--success);
 }
 
+.policy-step.is-reviewed {
+  background: var(--secondary);
+}
+
 .policy-step.is-current {
   border-color: var(--warning-border);
   background: var(--warning-soft);
@@ -2476,19 +2427,6 @@ button.evidence-node {
   width: 1rem;
   min-width: 1rem;
   margin-top: 0.2rem;
-  color: var(--success);
-}
-
-.policy-workspace > [data-slot="card-footer"] {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  color: var(--muted-foreground);
-  font-size: var(--text-caption);
-}
-
-.policy-workspace > [data-slot="card-footer"] > svg {
-  width: 1rem;
   color: var(--success);
 }
 
@@ -2837,10 +2775,6 @@ button.evidence-node {
     order: 2;
   }
 
-  .demo-runbook {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .document-intake-grid,
   .verification-block {
     grid-template-columns: 1fr;
@@ -3102,27 +3036,6 @@ button.evidence-node {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .demo-runbook {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-    margin-bottom: 4rem;
-    padding: 1.75rem 0;
-  }
-
-  .demo-runbook li {
-    grid-template-columns: 2.6rem minmax(0, 1fr);
-    gap: 0.85rem;
-  }
-
-  .demo-runbook li > span {
-    padding-top: 0.05rem;
-  }
-
-  .demo-runbook [data-slot="button"] {
-    width: 100%;
-    margin-top: 0.5rem;
-  }
-
   .case-selection {
     gap: 0.75rem;
     margin-top: 4rem;
@@ -3353,14 +3266,6 @@ button.evidence-node {
     > [data-slot="card-header"]
     [data-slot="toggle-group-item"] {
     flex: 1;
-  }
-
-  .policy-workspace > [data-slot="card-footer"] {
-    grid-template-columns: auto 1fr;
-  }
-
-  .policy-workspace > [data-slot="card-footer"] [data-slot="badge"] {
-    grid-column: 1 / -1;
   }
 
   .diff-table-wrap {
