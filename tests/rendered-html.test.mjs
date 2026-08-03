@@ -95,6 +95,7 @@ test("keeps starter-only assets removed and production metadata wired", async ()
     policyOps,
     preferenceHook,
     packageJson,
+    deployWorkflow,
   ] = await Promise.all([
       readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
       readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
@@ -140,6 +141,10 @@ test("keeps starter-only assets removed and production metadata wired", async ()
       ),
       readFile(new URL("../hooks/use-large-text.ts", import.meta.url), "utf8"),
       readFile(new URL("../package.json", import.meta.url), "utf8"),
+      readFile(
+        new URL("../.github/workflows/deploy.yml", import.meta.url),
+        "utf8",
+      ),
     ]);
 
   assert.match(page, /<ClaimGuideApp \/>/);
@@ -171,6 +176,9 @@ test("keeps starter-only assets removed and production metadata wired", async ()
   assert.match(packageJson, /"lucide-react"/);
   assert.match(packageJson, /"radix-ui"/);
   assert.match(packageJson, /"shadcn"/);
+  assert.match(deployWorkflow, /run: npm run deploy:cf/);
+  assert.doesNotMatch(deployWorkflow, /prepare-cloudflare-deploy/);
+  assert.doesNotMatch(deployWorkflow, /working-directory: dist\/server/);
 
   await access(new URL("../public/og-v2.png", import.meta.url));
   await access(

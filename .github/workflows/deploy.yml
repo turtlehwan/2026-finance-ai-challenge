@@ -58,15 +58,13 @@ jobs:
       - name: Build worker
         run: npm run build
 
-      # 커스텀 도메인은 이미 Cloudflare에 연결되어 있다. 매 배포 때 라우트를
-      # 다시 쓰지 않아 배포 토큰을 Worker 코드 업로드 권한으로 제한한다.
-      - name: Prepare least-privilege deploy config
-        run: node .github/scripts/prepare-cloudflare-deploy.mjs
-
-      # wrangler가 두 값을 환경변수로 읽으므로 저장소에는 아무것도 남기지 않는다.
+      # vinext가 생성한 Wrangler 설정을 사용해 Worker 버전과 finai26 custom
+      # domain trigger를 같은 배포로 반영한다. `wrangler deploy`를 dist/server에서
+      # 직접 실행하면 route가 빠진 별도 설정을 사용할 수 있어 정본 도메인이
+      # 이전 Worker를 가리킬 위험이 있다.
+      # 인증값은 GitHub Environment Secret으로만 주입한다.
       - name: Deploy
-        run: npx wrangler deploy --config wrangler.json
-        working-directory: dist/server
+        run: npm run deploy:cf
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

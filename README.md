@@ -53,4 +53,8 @@ API, PolicyOps의 승인 payload 검증까지 실행한다. 회귀 지표의 100
 주소는 전환 안정화 기간의 장애 대비용으로만 유지하며 제출 문서의 정본 URL로
 사용하지 않는다.
 
+`main` 푸시는 GitHub Actions에서 lint·test·build를 통과한 뒤 `vinext deploy`로
+Worker 버전과 `finai26.turtlehwan.dev` custom domain trigger를 함께 반영한다.
+배포 토큰과 계정 식별자는 GitHub `production` Environment Secret에만 둔다.
+
 배포 전에는 위 검증 명령과 브라우저에서 90초 검증 흐름을 다시 실행한다.
