@@ -113,25 +113,25 @@ export function HeroSection() {
     <section className="hero-section" id="top" ref={sectionRef}>
       <div className="hero-copy">
         <h1>
-          <span className="hero-title-line">부모님 증권에서</span>
-          <span className="hero-title-line">빠뜨린 담보가 있는지,</span>
+          <span className="hero-title-line">부모님 증권의 담보를</span>
           <span className="hero-title-line">
-            <em>가입 시점 약관</em>으로
+            <em>가입 당시 약관</em> 기준으로
           </span>
-          <span className="hero-title-line">확인하세요</span>
+          <span className="hero-title-line">확인할 항목부터</span>
+          <span className="hero-title-line">정리해 드립니다</span>
         </h1>
         <p className="hero-support">
-          증권과 진단 기록을 넣으면 해당될 만한 담보를 찾고, 그 판단의 근거가 된
-          약관 조항과 쪽수를 함께 보여 드립니다. 지급 여부를 정하는 것은
-          보험회사입니다.
+          증권과 진단 기록을 바탕으로 확인해 볼 담보를 정리하고, 근거가 된 약관
+          조항과 쪽수를 함께 보여 드립니다. 최종 지급 여부는 보험회사가
+          판단합니다.
         </p>
         <div className="hero-actions">
           <Button size="lg" onClick={scrollToDemo}>
             <PlayIcon data-icon="inline-start" />
-            샘플 사례로 먼저 보기
+            준비된 사례로 확인하기
           </Button>
           <Button variant="ghost" size="lg" onClick={scrollToWorkflow}>
-            작동 방식 보기
+            확인 절차 보기
             <ArrowDownIcon data-icon="inline-end" />
           </Button>
         </div>

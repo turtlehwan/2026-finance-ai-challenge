@@ -83,14 +83,14 @@ export function AgentDemo() {
   return (
     <section className="section-shell demo-section" id="demo" ref={demoRef}>
       <SectionHeading
-        title="실제 흐름을 끝까지 확인하세요"
-        description="내 문서를 넣거나 준비된 사례를 선택하면, 가입 시점 약관을 찾고 부족한 정보를 되물은 뒤 공식 근거와 다음 행동을 정리합니다."
+        title="사례로 확인 절차를 따라가 보세요"
+        description="문서를 넣거나 준비된 사례를 선택하면, 계약일에 맞는 약관을 찾고 부족한 정보를 확인한 뒤 근거와 다음 행동을 정리합니다."
       />
 
       <DocumentIntake onBundle={setDocumentBundle} />
 
       <div className="demo-divider" aria-hidden="true">
-        <span>또는 준비된 사례로</span>
+        <span>문서가 없다면 준비된 사례로</span>
       </div>
 
       <ToggleGroup
