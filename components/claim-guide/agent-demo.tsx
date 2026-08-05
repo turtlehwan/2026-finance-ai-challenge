@@ -7,6 +7,7 @@ import {
   CalendarClockIcon,
   CheckCircle2Icon,
   ExternalLinkIcon,
+  HospitalIcon,
   PlayIcon,
   SaveIcon,
   ShieldAlertIcon,
@@ -52,7 +53,12 @@ import { ANALYSIS_STEPS } from "@/lib/claim-guide/presentation"
 import type { Answer, DemoPhase } from "@/lib/claim-guide/types"
 import type { DocumentBundle } from "@/lib/claim-guide/documents"
 
-const caseIcons: LucideIcon[] = [BoneIcon, CalendarClockIcon, ShieldAlertIcon]
+const caseIcons: LucideIcon[] = [
+  BoneIcon,
+  HospitalIcon,
+  CalendarClockIcon,
+  ShieldAlertIcon,
+]
 
 export function AgentDemo() {
   const [documentBundle, setDocumentBundle] = useState<DocumentBundle | null>(

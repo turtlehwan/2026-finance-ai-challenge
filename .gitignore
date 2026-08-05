@@ -41,10 +41,12 @@ yarn-error.log*
 
 # typescript
 next-env.d.ts
+*.tsbuildinfo
 /dist/
 /.wrangler/
 /outputs/
 /work/
+/tmp/
 
 # Local product intent and decision history. Move validated decisions into a PRD
 # if the project adds one; never commit the working conversation log itself.

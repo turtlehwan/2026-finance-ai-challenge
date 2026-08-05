@@ -147,7 +147,9 @@ export function EvaluationPanel() {
               </span>
               <span>
                 {summary ? (
-                  <strong>합성 사례 {summary.dataset.total}건</strong>
+                  <strong>
+                    회귀 {summary.dataset.total}건 · holdout {summary.holdout.dataset.total}건
+                  </strong>
                 ) : (
                   <Skeleton className="h-5 w-28" />
                 )}
@@ -223,6 +225,45 @@ export function EvaluationPanel() {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
+              </div>
+
+              <div className="regression-block regression-block-holdout">
+                <h4>
+                  {summary
+                    ? `수작업 라벨 holdout ${summary.holdout.dataset.total}건`
+                    : "수작업 라벨 holdout을 불러오는 중"}
+                </h4>
+                <p>
+                  회귀 fixture 생성 규칙과 분리해 공식 원문·적용기간·조항 유형을
+                  사람이 라벨링한 합성 사실관계입니다. 실제 지급 결과 표본은 아닙니다.
+                </p>
+                <dl className="regression-list">
+                  {checkRows.map((row) => (
+                    <div key={`holdout-${row.key}`}>
+                      <dt>
+                        {row.label}
+                        <span>{row.scope}</span>
+                      </dt>
+                      <dd>
+                        {summary ? (
+                          <>
+                            <strong>{summary.holdout.counts[row.key]}</strong>
+                            <span>
+                              / {row.denominator(summary.holdout.dataset)}건
+                            </span>
+                          </>
+                        ) : (
+                          <Skeleton className="h-5 w-20" />
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                {summary?.holdout.dataset.labelMethod ? (
+                  <p className="evaluation-label-method">
+                    라벨 방법: {summary.holdout.dataset.labelMethod}
+                  </p>
+                ) : null}
               </div>
             </div>
           </AccordionContent>

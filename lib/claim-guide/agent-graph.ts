@@ -3,15 +3,12 @@ import { Annotation, END, START, StateGraph } from "@langchain/langgraph"
 import { buildResults, getClaimCase } from "@/lib/claim-guide/cases"
 import type { DocumentBundle } from "@/lib/claim-guide/documents"
 import {
-  getFractureEvidence,
+  getPolicyEvidence,
+  getRequiredEvidenceTypes,
   resolvePolicyVersion,
   type PolicyClause,
   type PolicyResolution,
 } from "@/lib/claim-guide/policies"
-import {
-  getStandardTermsEvidence,
-  STANDARD_TERMS_SOURCE,
-} from "@/lib/claim-guide/standard-terms"
 import {
   CLAIM_STATUS,
   type AgentTraceEvent,
@@ -29,6 +26,7 @@ type GraphFacts = {
   diagnosisCodes: string[]
   accidentDate: string | null
   treatment: string | null
+  hospitalDays: number | null
 }
 
 const emptyFacts: GraphFacts = {
@@ -38,6 +36,7 @@ const emptyFacts: GraphFacts = {
   diagnosisCodes: [],
   accidentDate: null,
   treatment: null,
+  hospitalDays: null,
 }
 
 const answerLabels: Record<Answer, string> = {
@@ -107,6 +106,7 @@ function documentNormalizerTool(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
   const bundleFacts = state.documentBundle?.combinedFacts
   const isFracture = state.caseId === "fracture"
+  const isHospitalization = state.caseId === "hospitalization"
   const facts: GraphFacts = bundleFacts
     ? {
         productCode: bundleFacts.productCode,
@@ -115,6 +115,7 @@ function documentNormalizerTool(state: ClaimGraphStateValue) {
         diagnosisCodes: bundleFacts.diagnosisCodes,
         accidentDate: bundleFacts.accidentDate,
         treatment: bundleFacts.treatment,
+        hospitalDays: bundleFacts.hospitalDays,
       }
     : isFracture
       ? {
@@ -124,7 +125,18 @@ function documentNormalizerTool(state: ClaimGraphStateValue) {
           diagnosisCodes: ["S52.5"],
           accidentDate: "2025-05-22",
           treatment: "부목 고정 후 통원 치료",
+          hospitalDays: null,
         }
+      : isHospitalization
+        ? {
+            productCode: "P600107",
+            contractDate: "2024-03-20",
+            coverages: ["입원보험금", "수술보험금"],
+            diagnosisCodes: ["S52.5"],
+            accidentDate: "2024-05-10",
+            treatment: "골절 직접 치료를 위해 5일 입원",
+            hospitalDays: 5,
+          }
       : emptyFacts
 
   return {
@@ -184,12 +196,28 @@ function versionResolverTool(state: ClaimGraphStateValue) {
 
 function coverageMatcherAgent(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
+  const policy = state.resolution?.status === "resolved" ? state.resolution.policy : null
   const hasRider = state.facts.coverages.some((coverage) =>
     coverage.includes("생활재해보장특약"),
   )
   const hasFractureCode = state.facts.diagnosisCodes.some((code) =>
     code.startsWith("S52"),
   )
+  const hasAdmissionCoverage = state.facts.coverages.some((coverage) =>
+    coverage.includes("입원"),
+  )
+  const hasHospitalizationFact = (state.facts.hospitalDays ?? 0) >= 4
+  const hasSupportedPolicy = Boolean(
+    policy?.supportedCaseIds.includes(
+      state.caseId as "fracture" | "hospitalization",
+    ),
+  )
+  const caseMatched =
+    state.caseId === "fracture"
+      ? hasRider && hasFractureCode && hasSupportedPolicy
+      : state.caseId === "hospitalization"
+        ? hasAdmissionCoverage && hasHospitalizationFact && hasSupportedPolicy
+        : true
 
   return {
     trace: [
@@ -199,16 +227,18 @@ function coverageMatcherAgent(state: ClaimGraphStateValue) {
           label: "보장 항목 대조",
           role: "Agent",
           status:
-            state.caseId !== "fracture" || (hasRider && hasFractureCode)
-              ? "completed"
-              : "attention",
+            caseMatched ? "completed" : "attention",
           inputSummary: `${state.facts.coverages.length}개 특약 · ${state.facts.diagnosisCodes.join(", ") || "진단코드 없음"}`,
           outputSummary:
-            hasRider && hasFractureCode
+            state.caseId === "fracture" && caseMatched
               ? "생활재해 특약 ↔ S52 골절 후보 연결"
+              : state.caseId === "hospitalization" && caseMatched
+                ? `입원 보장 ↔ ${state.facts.hospitalDays}일 입원 후보 연결`
               : state.caseId === "fracture"
                 ? "특약 또는 S52 진단 근거 추가 필요"
-                : "합성 안전 시나리오 규칙 연결",
+                : state.caseId === "hospitalization"
+                  ? "입원 보장·4일 이상 입원 사실·검증 약관 확인 필요"
+                  : "합성 안전 시나리오 규칙 연결",
         },
         startedAt,
       ),
@@ -218,11 +248,15 @@ function coverageMatcherAgent(state: ClaimGraphStateValue) {
 
 function graphRetrievalTool(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
+  const policy = state.resolution?.status === "resolved" ? state.resolution.policy : null
+  const supportsCurrentCase = Boolean(
+    policy?.supportedCaseIds.includes(
+      state.caseId as "fracture" | "hospitalization",
+    ),
+  )
   const evidence =
-    state.caseId === "fracture" &&
-    state.resolution?.status === "resolved" &&
-    state.resolution.policy.evidenceReady
-      ? [...getFractureEvidence(), ...getStandardTermsEvidence()]
+    supportsCurrentCase && policy?.evidenceReady
+      ? getPolicyEvidence(policy.id)
       : []
   const clauseTypes = new Set(evidence.map((clause) => clause.type))
 
@@ -235,12 +269,12 @@ function graphRetrievalTool(state: ClaimGraphStateValue) {
           label: "근거 그래프 검색",
           role: "Tool",
           status:
-            state.caseId !== "fracture" || evidence.length
+            !["fracture", "hospitalization"].includes(state.caseId) || evidence.length
               ? "completed"
               : "attention",
           inputSummary:
             state.resolution?.status === "resolved"
-              ? `${state.resolution.policy.id} · S52`
+              ? `${state.resolution.policy.id} · ${state.caseId === "hospitalization" ? "입원·수술" : "S52"}`
               : "검증된 보험약관 버전 없음",
           outputSummary: evidence.length
             ? `${evidence.length}개 근거 · ${clauseTypes.size}개 관계 유형 확장`
@@ -300,6 +334,8 @@ function humanReviewNode(state: ClaimGraphStateValue) {
 function evidenceAuditorAgent(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
   const isFracture = state.caseId === "fracture"
+  const isHospitalization = state.caseId === "hospitalization"
+  const policy = state.resolution?.status === "resolved" ? state.resolution.policy : null
   const types = new Set(state.evidence.map((clause) => clause.type))
   const versionMatched = state.resolution?.status === "resolved"
   const citationValidated =
@@ -307,28 +343,33 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
     state.evidence.every(
       (clause) =>
         (clause.sourceUrl.startsWith("https://www.epostlife.go.kr/") ||
+          clause.sourceUrl.startsWith("https://epostlife.go.kr/") ||
           clause.sourceUrl.startsWith("https://www.law.go.kr/")) &&
         clause.page > 0 &&
         clause.article.length > 0,
     )
-  const coverageAndLimits =
-    types.has("coverage") &&
-    types.has("definition") &&
-    types.has("limitation") &&
-    types.has("exclusion") &&
-    types.has("classification")
+  const requiredTypes = getRequiredEvidenceTypes(policy)
+  const coverageAndLimits = requiredTypes.every((type) => types.has(type))
   const caseFactsMatched =
     !isFracture ||
     (state.facts.coverages.some((coverage) =>
       coverage.includes("생활재해보장특약"),
     ) &&
       state.facts.diagnosisCodes.some((code) => code.startsWith("S52")))
-  const approved = isFracture
+  const hospitalizationFactsMatched =
+    !isHospitalization ||
+    (state.facts.coverages.some((coverage) => coverage.includes("입원")) &&
+      (state.facts.hospitalDays ?? 0) >= 4)
+  const approved = isFracture || isHospitalization
     ? Boolean(
         versionMatched &&
           citationValidated &&
           coverageAndLimits &&
-          caseFactsMatched,
+          caseFactsMatched &&
+          hospitalizationFactsMatched &&
+          policy?.supportedCaseIds.includes(
+            state.caseId as "fracture" | "hospitalization",
+          ),
       )
     : true
   const findings = approved
@@ -342,18 +383,22 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
         !versionMatched ? "적용 보험약관 버전 미확인" : "",
         !coverageAndLimits ? "지급·면책 근거 경로 불완전" : "",
         !caseFactsMatched ? "가입특약 또는 S52 진단 근거 미확인" : "",
+        !hospitalizationFactsMatched
+          ? "입원 보장 또는 4일 이상 입원 사실 미확인"
+          : "",
+        !policy?.supportedCaseIds.includes(
+          state.caseId as "fracture" | "hospitalization",
+        )
+          ? "현재 상품 약관은 이 사례 유형의 검증 범위 밖입니다."
+          : "",
         !citationValidated ? "공식 원문 인용 검증 실패" : "",
       ].filter(Boolean)
   const audit: EvidenceAudit = {
     approved,
     versionMatched,
     citationValidated,
-    exclusionIncluded: types.has("exclusion") || !isFracture,
-    standardTermsIncluded:
-      !isFracture ||
-      state.evidence.some((clause) =>
-        clause.sourceUrl.startsWith("https://www.law.go.kr/"),
-      ),
+    exclusionIncluded:
+      types.has("exclusion") || (!isFracture && !isHospitalization),
     findings,
   }
 
@@ -379,9 +424,10 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
 
 function actionPlannerAgent(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
-  const baseResults = buildResults(state.caseId, state.answer)
+  const policy = state.resolution?.status === "resolved" ? state.resolution.policy : null
+  const baseResults = buildResults(state.caseId, state.answer, policy)
   const results =
-    state.caseId === "fracture" && !state.audit?.approved
+    ["fracture", "hospitalization"].includes(state.caseId) && !state.audit?.approved
       ? baseResults.map((result) => ({
           ...result,
           status: CLAIM_STATUS.unavailable,
@@ -443,6 +489,21 @@ export async function runClaimGraph(input: {
   answer: Answer | null
   documentBundle?: DocumentBundle | null
 }): Promise<AnalysisResponse> {
+  const aiProcessing = input.documentBundle?.processing.ai
+  const preGraphTrace: AgentTraceEvent[] =
+    aiProcessing?.interpretation === "workers-ai"
+      ? [
+          {
+            nodeId: "ai_case_interpreter",
+            label: "AI 문서 이해",
+            role: "Tool",
+            status: "completed",
+            inputSummary: "마스킹된 문서 미리보기",
+            outputSummary: `${aiProcessing.model ?? "Workers AI"}가 누락 사실 후보만 정리`,
+            durationMs: 1,
+          },
+        ]
+      : []
   const state = await claimGraph.invoke({
     caseId: input.caseId,
     answer: input.answer,
@@ -451,6 +512,7 @@ export async function runClaimGraph(input: {
     resolution: null,
     evidence: [],
     results: [],
+    trace: preGraphTrace,
     needsAnswer: input.answer === null,
     audit: null,
   })
@@ -464,13 +526,17 @@ export async function runClaimGraph(input: {
     audit: state.audit,
     policyResolution: state.resolution,
     sources:
-      state.caseId === "fracture" && state.resolution?.status === "resolved"
-        ? [state.resolution.policy.source, STANDARD_TERMS_SOURCE]
+      ["fracture", "hospitalization"].includes(state.caseId) &&
+      state.resolution?.status === "resolved" &&
+      state.resolution.policy.supportedCaseIds.includes(
+        state.caseId as "fracture" | "hospitalization",
+      )
+        ? [state.resolution.policy.source]
         : [],
     dataMode:
       state.documentBundle && state.documentBundle.documents.length
         ? "user-document"
-        : state.caseId === "fracture"
+        : ["fracture", "hospitalization"].includes(state.caseId)
           ? "official-sample"
           : "synthetic-safety-case",
     generatedAt: new Date().toISOString(),

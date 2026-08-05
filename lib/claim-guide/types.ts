@@ -22,6 +22,7 @@ export type AgentNodeStatus =
 
 export type AgentTraceEvent = {
   nodeId:
+    | "ai_case_interpreter"
     | "case_analyst"
     | "document_tool"
     | "version_resolver"
@@ -92,7 +93,7 @@ export type EvidenceCitation = {
 }
 
 export type ClaimCase = {
-  id: "fracture" | "maturity" | "exclusion"
+  id: "fracture" | "hospitalization" | "maturity" | "exclusion"
   title: string
   shortTitle: string
   description: string

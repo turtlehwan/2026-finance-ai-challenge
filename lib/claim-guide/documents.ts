@@ -13,6 +13,7 @@ export type ExtractedDocument = {
     diagnosisCodes: string[]
     accidentDate: string | null
     treatment: string | null
+    hospitalDays: number | null
   }
 }
 
@@ -25,6 +26,7 @@ export type DocumentBundle = {
     diagnosisCodes: string[]
     accidentDate: string | null
     treatment: string | null
+    hospitalDays: number | null
   }
   warnings: string[]
   processing: {
@@ -32,6 +34,11 @@ export type DocumentBundle = {
     trainingUse: false
     maxFiles: number
     maxFileSizeMb: number
+    ai: {
+      conversion: "text-parser" | "workers-ai-markdown"
+      interpretation: "not-requested" | "workers-ai" | "unavailable"
+      model: string | null
+    }
   }
 }
 
@@ -72,6 +79,14 @@ function captureDate(text: string, labels: string[]) {
 
 function uniqueMatches(text: string, pattern: RegExp) {
   return [...new Set(Array.from(text.matchAll(pattern), (match) => match[1]))]
+}
+
+function captureHospitalDays(text: string) {
+  const match = text.match(
+    /(?:입원(?:기간|일수)?|재원(?:기간|일수)?)\s*[:：]?\s*(\d{1,3})\s*일/i,
+  )
+  const value = Number(match?.[1])
+  return Number.isInteger(value) && value > 0 ? value : null
 }
 
 export function maskSensitiveText(text: string) {
@@ -142,6 +157,7 @@ export function extractDocumentFacts(
     normalizedText.match(
       /(?:치료|처치|수술명|진료내용)\s*[:：]?\s*([^\n\r]{2,100})/,
     )?.[1]?.trim() ?? null
+  const hospitalDays = captureHospitalDays(normalizedText)
 
   const hasInsuranceFacts = Boolean(productCode || contractDate || coverages.length)
   const hasMedicalFacts = Boolean(
@@ -173,6 +189,7 @@ export function extractDocumentFacts(
       diagnosisCodes,
       accidentDate,
       treatment,
+      hospitalDays,
     },
   }
 }
@@ -224,6 +241,9 @@ export function buildDocumentBundle(
       treatment: firstDefined(
         documents.map((document) => document.facts.treatment),
       ),
+      hospitalDays: firstDefined(
+        documents.map((document) => document.facts.hospitalDays),
+      ),
     },
     warnings,
     processing: {
@@ -231,6 +251,11 @@ export function buildDocumentBundle(
       trainingUse: false,
       maxFiles: 2,
       maxFileSizeMb: 5,
+      ai: {
+        conversion: "text-parser",
+        interpretation: "not-requested",
+        model: null,
+      },
     },
   }
 }

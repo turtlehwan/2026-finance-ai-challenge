@@ -1,6 +1,7 @@
 import {
   EPOSTLIFE_2112_SOURCE,
   EPOSTLIFE_2504_SOURCE,
+  EPOSTLIFE_ONLINE_ADMISSION_SURGERY_2112_SOURCE,
 } from "@/lib/claim-guide/policies"
 import {
   STANDARD_TERMS_PREVIOUS_SOURCE,
@@ -17,6 +18,7 @@ export const SOURCE_LEDGER: PolicySource[] = [
   STANDARD_TERMS_PREVIOUS_SOURCE,
   EPOSTLIFE_2504_SOURCE,
   EPOSTLIFE_2112_SOURCE,
+  EPOSTLIFE_ONLINE_ADMISSION_SURGERY_2112_SOURCE,
 ]
 
 export function formatEffectivePeriod(source: PolicySource) {

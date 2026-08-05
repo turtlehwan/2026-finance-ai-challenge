@@ -24,6 +24,7 @@ import {
   RouteIcon,
   ScaleIcon,
   ShieldCheckIcon,
+  SparklesIcon,
   UserRoundCheckIcon,
 } from "lucide-react"
 
@@ -52,6 +53,7 @@ type AgentFlowNodeData = {
   durationMs: number | null
   icon: LucideIcon
   isActive: boolean
+  isSelected: boolean
 }
 
 type AgentFlowNode = Node<AgentFlowNodeData, "agentFlow">
@@ -63,6 +65,13 @@ const graphDefinition: Array<{
   position: { x: number; y: number }
   icon: LucideIcon
 }> = [
+  {
+    id: "ai_case_interpreter",
+    label: "AI 문서 이해",
+    role: "Tool",
+    position: { x: 225, y: -215 },
+    icon: SparklesIcon,
+  },
   {
     id: "case_analyst",
     label: "사건 분석",
@@ -131,6 +140,13 @@ const graphDefinition: Array<{
 const edgeDefinitions: Array<
   Pick<Edge, "id" | "source" | "target" | "sourceHandle" | "targetHandle">
 > = [
+  {
+    id: "ai-document",
+    source: "ai_case_interpreter",
+    target: "document_tool",
+    sourceHandle: "source-bottom",
+    targetHandle: "target-top",
+  },
   {
     id: "analyst-document",
     source: "case_analyst",
@@ -254,6 +270,7 @@ function AgentFlowCard({ data }: NodeProps<AgentFlowNode>) {
           "agent-flow-node",
           `is-${data.status}`,
           data.isActive && "is-active",
+          data.isSelected && "is-selected",
         )}
         data-agent-pulse
       >
@@ -271,11 +288,7 @@ function AgentFlowCard({ data }: NodeProps<AgentFlowNode>) {
         </CardHeader>
         <CardContent className="agent-flow-io">
           <p>
-            <span>입력</span>
-            {data.inputSummary}
-          </p>
-          <p>
-            <span>출력</span>
+            <span>결과</span>
             {data.outputSummary}
           </p>
         </CardContent>
@@ -324,7 +337,11 @@ export function AgentFlowGraph({
   const [isCompact, setIsCompact] = useState(false)
   const [flowInstance, setFlowInstance] =
     useState<ReactFlowInstance<AgentFlowNode, Edge> | null>(null)
+  const [manualSelectedNodeId, setManualSelectedNodeId] = useState<GraphNodeId | null>(
+    null,
+  )
   const activeNodeId = trace[activeTraceIndex]?.nodeId ?? null
+  const selectedNodeId = manualSelectedNodeId ?? activeNodeId
   const traceByNode = useMemo(
     () => new Map(trace.map((event) => [event.nodeId, event])),
     [trace],
@@ -351,21 +368,26 @@ export function AgentFlowGraph({
               (isAnsweredHumanStep ? "completed" : "pending"),
             inputSummary:
               event?.inputSummary ??
-              (isAnsweredHumanStep
+              (definition.id === "ai_case_interpreter"
+                ? "사용자 동의 후 마스킹된 문서 미리보기"
+                : isAnsweredHumanStep
                 ? "사용자가 확인한 추가 정보"
                 : "이전 단계 결과 대기"),
             outputSummary:
               event?.outputSummary ??
-              (isAnsweredHumanStep
+              (definition.id === "ai_case_interpreter"
+                ? "선택 기능: 누락 사실 후보만 보조"
+                : isAnsweredHumanStep
                 ? `사용자 답변 반영: ${getAnswerLabel(humanAnswer)}`
                 : "아직 실행되지 않음"),
             durationMs: event?.durationMs ?? null,
             icon: definition.icon,
             isActive: definition.id === activeNodeId,
+            isSelected: definition.id === (selectedNodeId ?? activeNodeId),
           },
         }
       }),
-    [activeNodeId, humanAnswer, isCompact, traceByNode],
+    [activeNodeId, humanAnswer, isCompact, selectedNodeId, traceByNode],
   )
   const edges = useMemo<Edge[]>(
     () =>
@@ -420,6 +442,10 @@ export function AgentFlowGraph({
     })
   }, [activeNodeId, flowInstance, isCompact])
 
+  const inspectedNode = nodes.find(
+    (node) => node.id === (selectedNodeId ?? activeNodeId),
+  )
+
   useEffect(() => {
     let cancelled = false
     let cleanup = () => {}
@@ -465,11 +491,11 @@ export function AgentFlowGraph({
         <div>
           <span className="agent-flow-kicker">
             <NetworkIcon data-icon="inline-start" />
-            실제 LangGraph 실행 기록
+            Agent 실행 캔버스
           </span>
-          <h3>근거가 이동한 경로를 그대로 보여드립니다</h3>
+          <h3>근거가 이동한 경로를 캔버스에서 확인하세요</h3>
           <p>
-            서버가 방금 지나온 순서와 각 단계의 입력·출력을 확인할 수 있습니다.
+            LangFlow처럼 노드를 따라 읽되, 화면은 실제 LangGraph trace만 활성화합니다.
           </p>
         </div>
         <ul
@@ -481,36 +507,68 @@ export function AgentFlowGraph({
           <li className="is-stopped">안전 중단</li>
         </ul>
       </div>
-      <div className="agent-flow-canvas">
-        <ReactFlow
-          key={isCompact ? "compact" : "wide"}
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          fitView={!isCompact}
-          fitViewOptions={{ padding: 0.14, maxZoom: 1 }}
-          defaultViewport={
-            isCompact
-              ? {
-                  x: 72,
-                  y: 24,
-                  zoom: 0.9,
-                }
-              : undefined
-          }
-          minZoom={isCompact ? 0.7 : 0.55}
-          maxZoom={1.35}
-          nodesDraggable={false}
-          nodesConnectable={false}
-          panOnScroll={false}
-          zoomOnScroll={false}
-          preventScrolling={false}
-          zoomOnDoubleClick={false}
-          onInit={setFlowInstance}
-          aria-label="보험금 확인 Agent 실행 그래프"
-        >
-          <Background gap={24} size={1} />
-        </ReactFlow>
+      <div className="agent-flow-workspace">
+        <div className="agent-flow-canvas">
+          <ReactFlow
+            key={isCompact ? "compact" : "wide"}
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            fitView={!isCompact}
+            fitViewOptions={{ padding: 0.14, maxZoom: 1 }}
+            defaultViewport={
+              isCompact
+                ? {
+                    x: 72,
+                    y: 24,
+                    zoom: 0.9,
+                  }
+                : undefined
+            }
+            minZoom={isCompact ? 0.7 : 0.55}
+            maxZoom={1.35}
+            nodesDraggable={false}
+            nodesConnectable={false}
+            panOnScroll={false}
+            zoomOnScroll={false}
+            preventScrolling={false}
+            zoomOnDoubleClick={false}
+            onInit={setFlowInstance}
+            onNodeClick={(_, node) =>
+              setManualSelectedNodeId(node.id as GraphNodeId)
+            }
+            aria-label="보험금 확인 Agent 실행 그래프"
+          >
+            <Background gap={24} size={1} />
+          </ReactFlow>
+        </div>
+        {inspectedNode ? (
+          <aside className="agent-flow-inspector" aria-live="polite">
+            <Badge variant={statusBadgeVariants[inspectedNode.data.status]}>
+              {statusLabels[inspectedNode.data.status]}
+            </Badge>
+            <div>
+              <span>{roleLabels[inspectedNode.data.role]}</span>
+              <h4>{inspectedNode.data.label}</h4>
+              <p>노드를 누르면 이 단계가 실제로 받은 값과 남긴 값을 확인합니다.</p>
+            </div>
+            <dl>
+              <div>
+                <dt>입력</dt>
+                <dd>{inspectedNode.data.inputSummary}</dd>
+              </div>
+              <div>
+                <dt>출력</dt>
+                <dd>{inspectedNode.data.outputSummary}</dd>
+              </div>
+            </dl>
+            {inspectedNode.data.durationMs ? (
+              <small>{inspectedNode.data.durationMs}ms · 서버 trace 기준</small>
+            ) : (
+              <small>아직 실행되지 않은 선택 단계입니다.</small>
+            )}
+          </aside>
+        ) : null}
       </div>
       <div className="agent-flow-footnote">
         <HandIcon aria-hidden="true" />

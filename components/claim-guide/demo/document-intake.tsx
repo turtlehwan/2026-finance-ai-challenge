@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
+import { Switch } from "@/components/ui/switch"
 import type { DocumentBundle } from "@/lib/claim-guide/documents"
 
 type DocumentIntakeProps = {
@@ -73,10 +74,62 @@ async function parseFiles(files: File[]) {
   return payload
 }
 
+type AiInterpretation = {
+  intakeSummary: string
+  missingFacts: string[]
+  suggestedQuestion: string
+}
+
+async function convertWithAi(files: File[]) {
+  const formData = new FormData()
+  files.forEach((file) => formData.append("files", file))
+  const response = await fetch("/api/documents/ai-convert", {
+    method: "POST",
+    body: formData,
+  })
+  const payload = (await response.json()) as {
+    documents?: Array<{ filename: string; text: string }>
+    error?: string
+  }
+  if (!response.ok || !payload.documents?.length) {
+    throw new Error(payload.error ?? "AI 문서 변환을 완료하지 못했습니다.")
+  }
+
+  return payload.documents.map(
+    (document) =>
+      new File([document.text], `${document.filename}.txt`, {
+        type: "text/plain",
+      }),
+  )
+}
+
+async function interpretMaskedFacts(bundle: DocumentBundle) {
+  const response = await fetch("/api/ai/interpret", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      maskedPreviews: bundle.documents.map((document) => document.maskedPreview),
+    }),
+  })
+  const payload = (await response.json()) as {
+    mode?: "workers-ai" | "unavailable"
+    model?: string
+    result?: AiInterpretation
+    error?: string
+  }
+  if (!response.ok || payload.mode !== "workers-ai" || !payload.result) {
+    throw new Error(payload.error ?? "AI 문서 이해를 완료하지 못했습니다.")
+  }
+
+  return { model: payload.model ?? "Workers AI", result: payload.result }
+}
+
 export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [bundle, setBundle] = useState<DocumentBundle | null>(null)
+  const [aiInsight, setAiInsight] = useState<AiInterpretation | null>(null)
+  const [useAiAssistance, setUseAiAssistance] = useState(false)
   const [phase, setPhase] = useState<"idle" | "running" | "complete" | "error">(
     "idle",
   )
@@ -84,7 +137,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
 
   async function process(files: File[]) {
     if (!files.length) {
-      setError("PDF 또는 TXT 파일을 1~2개 선택해 주세요.")
+      setError("PDF, TXT 또는 이미지 파일을 1~2개 선택해 주세요.")
       setPhase("error")
       return
     }
@@ -93,8 +146,62 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
     setError("")
 
     try {
-      const nextBundle = await parseFiles(files)
+      const needsAiConversion = files.some((file) =>
+        ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+      )
+      if (needsAiConversion && !useAiAssistance) {
+        throw new Error(
+          "이미지 자료는 ‘AI 보조 문서 이해’를 켠 경우에만 변환합니다. 텍스트 레이어 PDF·TXT는 AI 보조 없이도 처리할 수 있습니다.",
+        )
+      }
+      const useAiConversion =
+        useAiAssistance &&
+        files.some((file) => file.type !== "text/plain" && file.type !== "text/markdown")
+      const parserFiles = useAiConversion ? await convertWithAi(files) : files
+      let nextBundle = await parseFiles(parserFiles)
+      let nextInsight: AiInterpretation | null = null
+
+      if (useAiAssistance) {
+        try {
+          const interpretation = await interpretMaskedFacts(nextBundle)
+          nextInsight = interpretation.result
+          nextBundle = {
+            ...nextBundle,
+            processing: {
+              ...nextBundle.processing,
+              ai: {
+                conversion: useAiConversion
+                  ? "workers-ai-markdown"
+                  : "text-parser",
+                interpretation: "workers-ai",
+                model: interpretation.model,
+              },
+            },
+          }
+        } catch (aiError) {
+          nextBundle = {
+            ...nextBundle,
+            warnings: [
+              ...nextBundle.warnings,
+              aiError instanceof Error
+                ? aiError.message
+                : "AI 보조를 실행하지 못했습니다. 결정론적 추출만 사용합니다.",
+            ],
+            processing: {
+              ...nextBundle.processing,
+              ai: {
+                conversion: useAiConversion
+                  ? "workers-ai-markdown"
+                  : "text-parser",
+                interpretation: "unavailable",
+                model: null,
+              },
+            },
+          }
+        }
+      }
       setBundle(nextBundle)
+      setAiInsight(nextInsight)
       setPhase("complete")
       onBundle(nextBundle)
     } catch (processingError) {
@@ -110,6 +217,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
   async function handleSampleDocuments() {
     setPhase("running")
     setError("")
+    setAiInsight(null)
     try {
       const files = await loadSampleFiles()
       setSelectedFiles(files)
@@ -132,7 +240,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
         <div>
           <Badge variant="success">
             <DatabaseIcon data-icon="inline-start" />
-            공식 보험약관 4건 연결
+            공식 원문 5건 연결
           </Badge>
           <CardTitle>내 문서로 확인</CardTitle>
           <CardDescription>
@@ -153,7 +261,7 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
                   ref={inputRef}
                   id="claim-documents"
                   type="file"
-                  accept=".pdf,.txt,application/pdf,text/plain"
+                  accept=".pdf,.txt,.png,.jpg,.jpeg,.webp,application/pdf,text/plain,image/png,image/jpeg,image/webp"
                   multiple
                   disabled={phase === "running"}
                   onChange={(event) => {
@@ -163,13 +271,33 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
                     )
                     setSelectedFiles(files)
                     setBundle(null)
+                    setAiInsight(null)
                     setPhase("idle")
                   }}
                 />
                 <FieldDescription>
-                  텍스트 레이어 PDF 또는 TXT · 파일당 5MB · 최대 2개 ·
-                  스캔 이미지 PDF는 지원하지 않음 · 원본은 저장하지 않음
+                  PDF·TXT는 기본 추출 · 이미지와 스캔 자료는 아래 AI 보조를
+                  켠 경우 변환 · 파일당 5MB · 최대 2개 · 원본은 저장하지 않음
                 </FieldDescription>
+              </Field>
+              <Field className="document-ai-opt-in">
+                <div>
+                  <FieldLabel htmlFor="ai-document-assistance">
+                    AI 보조 문서 이해
+                  </FieldLabel>
+                  <FieldDescription>
+                    스캔 이미지·PDF를 Workers AI로 텍스트화하고, 마스킹된
+                    미리보기에서 누락 사실 후보만 정리합니다. 보험금 결과와
+                    약관 인용은 이 AI가 결정하지 않습니다.
+                  </FieldDescription>
+                </div>
+                <Switch
+                  id="ai-document-assistance"
+                  checked={useAiAssistance}
+                  onCheckedChange={setUseAiAssistance}
+                  disabled={phase === "running"}
+                  aria-label="AI 보조 문서 이해 사용"
+                />
               </Field>
             </FieldGroup>
 
@@ -242,6 +370,11 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
                   원본은 저장하지 않습니다. 개인정보를 가린 뒤 위 네 가지 사실만
                   꺼내 쓰고, 모델 학습에는 쓰지 않습니다.
                 </p>
+                <p className="document-privacy-note">
+                  <ShieldCheckIcon aria-hidden="true" />
+                  AI 보조를 켠 경우에만 Cloudflare Workers AI에 문서를 전송하고,
+                  변환 결과는 이 요청 안에서만 사용합니다.
+                </p>
               </div>
             ) : null}
 
@@ -299,6 +432,18 @@ export function DocumentIntake({ onBundle }: DocumentIntakeProps) {
                     <AlertTitle>추가 확인 {bundle.warnings.length}건</AlertTitle>
                     <AlertDescription>
                       {bundle.warnings.join(" ")}
+                    </AlertDescription>
+                  </Alert>
+                ) : null}
+                {aiInsight ? (
+                  <Alert>
+                    <ShieldCheckIcon />
+                    <AlertTitle>AI 보조 문서 이해 완료</AlertTitle>
+                    <AlertDescription>
+                      {aiInsight.intakeSummary} {aiInsight.suggestedQuestion}
+                      {aiInsight.missingFacts.length
+                        ? ` 확인이 필요한 항목: ${aiInsight.missingFacts.join(", ")}`
+                        : ""}
                     </AlertDescription>
                   </Alert>
                 ) : null}

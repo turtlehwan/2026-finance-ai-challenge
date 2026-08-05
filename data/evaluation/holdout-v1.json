@@ -1,0 +1,174 @@
+{
+  "schemaVersion": "1.0",
+  "name": "official-policy-manual-holdout-v1",
+  "evaluationType": "manual-labelled-holdout",
+  "reviewedAt": "2026-08-05",
+  "labelMethod": "공식 약관 원문·적용기간·조항 유형을 보고 수작업으로 기대 결과를 라벨링했습니다. 내부 회귀 fixture 생성 규칙과 분리된 명시 사례입니다.",
+  "cases": [
+    {
+      "id": "holdout-fracture-2112-01",
+      "caseId": "fracture",
+      "productCode": "P400051",
+      "contractDate": "2021-12-01",
+      "coverage": "무배당 생활재해보장특약Ⅱ 2112",
+      "diagnosisCode": "S52.5",
+      "hospitalDays": null,
+      "expectedVersionResolved": true,
+      "expectedApproved": true
+    },
+    {
+      "id": "holdout-fracture-2112-02",
+      "caseId": "fracture",
+      "productCode": "P400054",
+      "contractDate": "2025-04-02",
+      "coverage": "무배당 생활재해보장특약Ⅱ 2112",
+      "diagnosisCode": "S52.9",
+      "hospitalDays": null,
+      "expectedVersionResolved": true,
+      "expectedApproved": true
+    },
+    {
+      "id": "holdout-fracture-2504-01",
+      "caseId": "fracture",
+      "productCode": "P400073",
+      "contractDate": "2025-04-03",
+      "coverage": "무배당 생활재해보장특약Ⅱ 2504",
+      "diagnosisCode": "S52.5",
+      "hospitalDays": null,
+      "expectedVersionResolved": true,
+      "expectedApproved": true
+    },
+    {
+      "id": "holdout-fracture-2504-02",
+      "caseId": "fracture",
+      "productCode": "P400076",
+      "contractDate": "2025-06-04",
+      "coverage": "무배당 생활재해보장특약Ⅱ 2504",
+      "diagnosisCode": "S52.1",
+      "hospitalDays": null,
+      "expectedVersionResolved": true,
+      "expectedApproved": true
+    },
+    {
+      "id": "holdout-hospital-01",
+      "caseId": "hospitalization",
+      "productCode": "P600107",
+      "contractDate": "2021-12-01",
+      "coverage": "입원보험금",
+      "diagnosisCode": "S52.5",
+      "hospitalDays": 4,
+      "expectedVersionResolved": true,
+      "expectedApproved": true
+    },
+    {
+      "id": "holdout-hospital-02",
+      "caseId": "hospitalization",
+      "productCode": "P600107",
+      "contractDate": "2023-06-11",
+      "coverage": "입원보험금",
+      "diagnosisCode": "S52.5",
+      "hospitalDays": 5,
+      "expectedVersionResolved": true,
+      "expectedApproved": true
+    },
+    {
+      "id": "holdout-hospital-03",
+      "caseId": "hospitalization",
+      "productCode": "P600107",
+      "contractDate": "2024-03-20",
+      "coverage": "입원보험금 · 수술보험금",
+      "diagnosisCode": "S52.5",
+      "hospitalDays": 8,
+      "expectedVersionResolved": true,
+      "expectedApproved": true
+    },
+    {
+      "id": "holdout-hospital-04",
+      "caseId": "hospitalization",
+      "productCode": "P600107",
+      "contractDate": "2025-04-02",
+      "coverage": "입원보험금",
+      "diagnosisCode": "S72.0",
+      "hospitalDays": 12,
+      "expectedVersionResolved": true,
+      "expectedApproved": true
+    },
+    {
+      "id": "holdout-version-after-2504",
+      "caseId": "fracture",
+      "productCode": "P400073",
+      "contractDate": "2025-06-05",
+      "coverage": "무배당 생활재해보장특약Ⅱ 2504",
+      "diagnosisCode": "S52.5",
+      "hospitalDays": null,
+      "expectedVersionResolved": false,
+      "expectedApproved": false
+    },
+    {
+      "id": "holdout-version-before-online",
+      "caseId": "hospitalization",
+      "productCode": "P600107",
+      "contractDate": "2021-11-30",
+      "coverage": "입원보험금",
+      "diagnosisCode": "S52.5",
+      "hospitalDays": 5,
+      "expectedVersionResolved": false,
+      "expectedApproved": false
+    },
+    {
+      "id": "holdout-fracture-missing-rider",
+      "caseId": "fracture",
+      "productCode": "P400051",
+      "contractDate": "2024-02-14",
+      "coverage": null,
+      "diagnosisCode": "S52.5",
+      "hospitalDays": null,
+      "expectedVersionResolved": true,
+      "expectedApproved": false
+    },
+    {
+      "id": "holdout-fracture-non-s52",
+      "caseId": "fracture",
+      "productCode": "P400073",
+      "contractDate": "2025-05-10",
+      "coverage": "무배당 생활재해보장특약Ⅱ 2504",
+      "diagnosisCode": "M25.5",
+      "hospitalDays": null,
+      "expectedVersionResolved": true,
+      "expectedApproved": false
+    },
+    {
+      "id": "holdout-hospital-three-days",
+      "caseId": "hospitalization",
+      "productCode": "P600107",
+      "contractDate": "2024-03-20",
+      "coverage": "입원보험금",
+      "diagnosisCode": "S52.5",
+      "hospitalDays": 3,
+      "expectedVersionResolved": true,
+      "expectedApproved": false
+    },
+    {
+      "id": "holdout-hospital-no-coverage",
+      "caseId": "hospitalization",
+      "productCode": "P600107",
+      "contractDate": "2024-03-20",
+      "coverage": null,
+      "diagnosisCode": "S52.5",
+      "hospitalDays": 5,
+      "expectedVersionResolved": true,
+      "expectedApproved": false
+    },
+    {
+      "id": "holdout-unknown-product",
+      "caseId": "fracture",
+      "productCode": "P999999",
+      "contractDate": "2025-05-10",
+      "coverage": "무배당 생활재해보장특약Ⅱ 2504",
+      "diagnosisCode": "S52.5",
+      "hospitalDays": null,
+      "expectedVersionResolved": false,
+      "expectedApproved": false
+    }
+  ]
+}

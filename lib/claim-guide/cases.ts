@@ -1,5 +1,9 @@
 import type { Answer, ClaimCase, ClaimResult } from "@/lib/claim-guide/types"
-import { getFractureEvidence } from "@/lib/claim-guide/policies"
+import {
+  getFractureEvidence,
+  getPolicyEvidence,
+  type PolicyVersion,
+} from "@/lib/claim-guide/policies"
 import {
   CLAIM_STATUS,
   RESULT_STATE,
@@ -38,6 +42,41 @@ export const claimCases: ClaimCase[] = [
     questions: [
       "이 사고로 골절진단비를 이미 청구했나요?",
       "가입 당시 적용된 보험약관의 골절 정의에 해당하나요?",
+    ],
+  },
+  {
+    id: "hospitalization",
+    title: "5일 입원 — 입원보험금과 수술보험금 구분",
+    shortTitle: "5일 입원",
+    description:
+      "골절 치료로 5일 입원했지만 수술 여부와 약관상 수술 정의는 아직 확인하지 않은 합성 사례입니다. 우체국보험 실제 주계약 원문을 연결합니다.",
+    category: "입원·수술 조건을 함께 확인하는 사례",
+    question: "이번 치료에서 약관상 수술에 해당할 수 있는 수술을 받으셨나요?",
+    questionHint:
+      "수술 여부만으로 수술보험금을 확정하지 않습니다. 수술기록과 약관의 수술 분류표가 더 필요합니다.",
+    facts: [
+      { label: "입원", value: "2024. 05. 10~05. 14 · 5일" },
+      { label: "진단명", value: "좌측 요골 원위부 골절 (S52.5)" },
+      { label: "가입 보장", value: "입원보험금 · 수술보험금" },
+      { label: "계약", value: "P600107 · 2024. 03. 20" },
+    ],
+    evidence: [
+      { label: "사건", meta: "골절 치료 입원 5일" },
+      { label: "약관 버전", meta: "P600107 · 2112" },
+      { label: "지급사유", meta: "주계약 제3조" },
+      { label: "정의·제한", meta: "주계약 제4·5조" },
+      { label: "면책", meta: "주계약 제6조" },
+      { label: "다음 행동", meta: CLAIM_STATUS.recommended },
+    ],
+    actionTitle: "입원보험금과 수술보험금을 나누어 확인하세요",
+    documents: [
+      "입·퇴원 날짜와 직접 치료 목적이 적힌 입원확인서",
+      "수술을 했다면 수술명·수술일이 적힌 수술증명서",
+      "보험가입증서 또는 보험가입내역",
+    ],
+    questions: [
+      "입원확인서에 입원일과 퇴원일, 직접 치료 목적이 적혀 있나요?",
+      "수술을 했다면 수술명과 수술일이 적힌 수술증명서가 있나요?",
     ],
   },
   {
@@ -125,7 +164,53 @@ export function getClaimCase(caseId: string): ClaimCase {
 export function buildResults(
   caseId: ClaimCase["id"],
   answer: Answer | null,
+  policy?: PolicyVersion | null,
 ): ClaimResult[] {
+  if (caseId === "hospitalization") {
+    const evidence = getPolicyEvidence(policy?.id)
+    const findEvidence = (...types: string[]) =>
+      evidence.filter((clause) => types.includes(clause.type))
+
+    return [
+      {
+        ...RESULT_STATE.recommended,
+        title: "입원보험금",
+        reason:
+          "입력한 5일 입원 사실과 P600107 주계약의 ‘직접 치료 목적 4일 이상 입원’ 조건을 대조했습니다.",
+        detail:
+          "확인 권장 상태이며 지급 확정이 아닙니다. 직접 치료 목적, 같은 질병·재해의 입원 연결 조건, 면책 사유와 보험사의 최종 심사를 함께 확인해야 합니다.",
+        clause: "무배당 우체국온라인입원수술보험 2112 주계약 제3조·제4조·제5조·제6조",
+        citations: findEvidence("coverage", "definition", "limitation", "exclusion", "procedure"),
+      },
+      {
+        ...(answer === "yes"
+          ? RESULT_STATE.informationRequired
+          : answer === "no"
+            ? RESULT_STATE.lowLikelihood
+            : RESULT_STATE.informationRequired),
+        title: "수술보험금",
+        reason:
+          answer === "yes"
+            ? "수술 사실은 확인됐지만, 약관의 수술 분류표 해당 여부와 수술증명서가 아직 없습니다."
+            : answer === "no"
+              ? "사용자 답변에서 수술을 받지 않은 것으로 확인했습니다."
+              : "수술 여부와 약관상 수술 정의를 대조할 자료가 없습니다.",
+        detail:
+          "수술 여부만으로는 확인할 수 없습니다. 수술명·수술일이 적힌 수술증명서와 해당 약관의 수술 분류표를 보험사에 함께 확인해야 합니다.",
+        clause: "무배당 우체국온라인입원수술보험 2112 주계약 제3조 제2호 · 제5조",
+        citations: findEvidence("coverage", "definition", "procedure"),
+      },
+      {
+        ...RESULT_STATE.unavailable,
+        title: "최종 지급 여부",
+        reason: "보험사의 계약·사고 조사와 지급 심사가 필요한 항목입니다.",
+        detail:
+          "Agent는 확인할 조건·근거·서류를 정리하며, 최종 지급 여부나 금액을 대신 결정하지 않습니다.",
+        clause: "보험회사 최종 심사 영역",
+      },
+    ]
+  }
+
   if (caseId === "maturity") {
     return [
       {
@@ -200,7 +285,9 @@ export function buildResults(
     ]
   }
 
-  const fractureEvidence = getFractureEvidence()
+  const fractureEvidence = policy
+    ? getPolicyEvidence(policy.id)
+    : getFractureEvidence()
   const findEvidence = (...types: string[]) =>
     fractureEvidence.filter((clause) => types.includes(clause.type))
 
@@ -209,11 +296,11 @@ export function buildResults(
       ...RESULT_STATE.recommended,
       title: "재해골절(치아파절제외)보험금",
       reason:
-        "보험증권에서 확인한 상품코드 P400073의 생활재해보장특약Ⅱ와 S52.5 진단을 2504 보험약관 근거로 대조했습니다.",
+        `보험가입증서에서 확인한 상품코드 ${policy?.productCodes[0] ?? "P400073"}의 생활재해보장특약Ⅱ와 S52.5 진단을 ${policy?.versionLabel ?? "2504"} 보험약관 근거로 대조했습니다.`,
       detail:
         "확인 권장 상태이며 지급 확정이 아닙니다. 재해 여부, 보장개시일, 기존 청구 여부와 공통 면책은 보험사 공식 채널에서 함께 확인해야 합니다.",
       clause:
-        "무배당 생활재해보장특약Ⅱ 2504 제3조·제4조·제6조·제8조·별표1·별표5",
+        `무배당 생활재해보장특약Ⅱ ${policy?.versionLabel ?? "2504"} 제3조·제4조·제6조·제8조·별표1·별표5`,
       citations: findEvidence(
         "coverage",
         "definition",

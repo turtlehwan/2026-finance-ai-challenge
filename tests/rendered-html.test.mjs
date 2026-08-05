@@ -246,9 +246,8 @@ test("analysis API asks for missing facts and updates the result", async () => {
   assert.equal(answered.trace.at(-2).nodeId, "evidence_auditor");
   assert.equal(answered.trace.at(-1).nodeId, "action_planner");
   assert.equal(answered.audit.approved, true);
-  assert.equal(answered.audit.standardTermsIncluded, true);
-  assert.equal(answered.sources.length, 2);
-  assert.match(answered.sources[1].title, /질병·상해보험 표준약관/);
+  assert.equal(answered.sources.length, 1);
+  assert.match(answered.sources[0].title, /우체국와이드건강보험 2504/);
   assert.equal(answered.dataMode, "official-sample");
 });
 
@@ -311,10 +310,43 @@ test("document parser masks PII and structures uploaded facts", async () => {
   assert.deepEqual(result.combinedFacts.diagnosisCodes, ["S52.5"]);
   assert.equal(result.processing.originalStored, false);
   assert.equal(result.processing.trainingUse, false);
+  assert.equal(result.processing.ai.interpretation, "not-requested");
   assert.doesNotMatch(
     result.documents.map((document) => document.maskedPreview).join(" "),
     /550312-1234567|김가상/,
   );
+});
+
+test("official policy graph covers prior wide-health and admission-surgery versions", async () => {
+  const [priorVersionResponse, admissionVersionResponse, admissionAnalysisResponse] =
+    await Promise.all([
+      fetchWorker(
+        "/api/policies/resolve?productCode=P400051&contractDate=2024-02-14",
+      ),
+      fetchWorker(
+        "/api/policies/resolve?productCode=P600107&contractDate=2024-03-20",
+      ),
+      fetchWorker("/api/analyze", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ caseId: "hospitalization", answer: "no" }),
+      }),
+    ]);
+
+  const [priorVersion, admissionVersion, admissionAnalysis] = await Promise.all([
+    priorVersionResponse.json(),
+    admissionVersionResponse.json(),
+    admissionAnalysisResponse.json(),
+  ]);
+  assert.equal(priorVersion.status, "resolved");
+  assert.equal(priorVersion.policy.versionLabel, "2112");
+  assert.equal(priorVersion.policy.clauses.length, 7);
+  assert.equal(admissionVersion.status, "resolved");
+  assert.equal(admissionVersion.policy.productCodes[0], "P600107");
+  assert.equal(admissionVersion.policy.clauses.length, 6);
+  assert.equal(admissionAnalysis.audit.approved, true);
+  assert.equal(admissionAnalysis.results[0].status, "확인 권장");
+  assert.equal(admissionAnalysis.sources[0].id, "epostlife-online-admission-surgery-2112");
 });
 
 test("user document facts run through the graph and block unsupported versions", async () => {
@@ -341,6 +373,7 @@ test("user document facts run through the graph and block unsupported versions",
               diagnosisCodes: ["S52.5"],
               accidentDate: "2025-05-22",
               treatment: "부목 고정",
+              hospitalDays: null,
             },
           },
         ],
@@ -351,6 +384,7 @@ test("user document facts run through the graph and block unsupported versions",
           diagnosisCodes: ["S52.5"],
           accidentDate: "2025-05-22",
           treatment: "부목 고정",
+          hospitalDays: null,
         },
         warnings: [],
         processing: {
@@ -358,6 +392,11 @@ test("user document facts run through the graph and block unsupported versions",
           trainingUse: false,
           maxFiles: 2,
           maxFileSizeMb: 5,
+          ai: {
+            conversion: "text-parser",
+            interpretation: "not-requested",
+            model: null,
+          },
         },
       },
     }),
@@ -379,15 +418,20 @@ test("evaluation endpoint runs all 50 fixtures through the graph", async () => {
   assert.equal(response.status, 200);
   const result = await response.json();
   assert.equal(result.dataset.total, 50);
-  assert.equal(result.dataset.supported, 30);
-  assert.equal(result.dataset.unsupported, 20);
+  assert.equal(result.dataset.supported, 36);
+  assert.equal(result.dataset.unsupported, 14);
   assert.equal(result.dataset.evaluationType, "deterministic-regression");
-  assert.equal(result.dataset.independentHoldout, 0);
+  assert.equal(result.dataset.independentHoldout, 15);
   assert.equal(result.metrics.versionSelection, 100);
   assert.equal(result.metrics.evidenceCompleteness, 100);
   assert.equal(result.metrics.safeAbstention, 100);
   assert.equal(result.metrics.traceIntegrity, 100);
-  assert.match(result.limitations.join(" "), /실제 보험금 지급 정확도/);
+  assert.equal(result.holdout.dataset.total, 15);
+  assert.equal(result.holdout.dataset.evaluationType, "manual-labelled-holdout");
+  assert.equal(result.holdout.metrics.versionSelection, 100);
+  assert.equal(result.holdout.metrics.evidenceCompleteness, 100);
+  assert.equal(result.holdout.metrics.safeAbstention, 100);
+  assert.match(result.limitations.join(" "), /보험금 지급 정확도/);
 });
 
 test("PolicyOps approval endpoint stays human-gated", async () => {

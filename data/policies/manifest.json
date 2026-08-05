@@ -1,6 +1,6 @@
 {
   "manifestVersion": "1.0",
-  "retrievedAt": "2026-07-31",
+  "retrievedAt": "2026-08-05",
   "purpose": "예선 MVP에서 실제 공식 약관의 출처·적용기간·해시를 재현하기 위한 provenance manifest",
   "notice": "개인 보험증권·진료기록은 포함하지 않습니다. 운영 인덱스 자동 갱신이 아니라 검토 가능한 시연용 데이터입니다.",
   "sources": [
@@ -25,8 +25,21 @@
       "publicDataUrl": "https://www.data.go.kr/data/15111699/openapi.do",
       "effectiveStart": "2021-12-01",
       "effectiveEnd": "2025-04-02",
-      "documentPages": null,
-      "sha256": "e55697e8a90b1bcea972aea216d096b012e0850df81283f6665904f2cd81cb1a",
+      "documentPages": 544,
+      "sha256": "e55697f8a90b1bcea972aea216d096b012e0850df81283f6665904f2cd81cb1a",
+      "localFile": null,
+      "sourceKind": "official-product-policy"
+    },
+    {
+      "id": "epostlife-online-admission-surgery-2112",
+      "organization": "우정사업본부 · 우체국보험",
+      "title": "무배당 우체국온라인입원수술보험 2112 약관",
+      "sourceUrl": "https://epostlife.go.kr/resources/js/biz/ip/gs/pdf/60440.pdf",
+      "publicDataUrl": "https://www.data.go.kr/data/15111699/openapi.do",
+      "effectiveStart": "2021-12-01",
+      "effectiveEnd": "2025-04-02",
+      "documentPages": 116,
+      "sha256": "cece0ce6e0bde91350c9442f5afba9b40914740d12a7afe20a666aff74ebadff",
       "localFile": null,
       "sourceKind": "official-product-policy"
     },
