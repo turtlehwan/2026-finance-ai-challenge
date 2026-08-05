@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Node.js `>=22.13.0`이 필요하다. 브라우저에서 `http://localhost:5173`을 열고
+Node.js `>=24.0.0`이 필요하다. 브라우저에서 `http://localhost:5173`을 열고
 `공식 약관 연결 샘플 불러오기` → `손목 골절` → `이 사례 분석하기` 순서로 실행한다.
 
 ## 검증 명령
@@ -22,9 +22,20 @@ npm run lint
 npm run build
 ```
 
-테스트는 LangGraph 분석 API, 50건 결정론적 회귀 fixture, 표준약관 provenance
-API, PolicyOps의 승인 payload 검증까지 실행한다. 회귀 지표의 100%는 실제 보험금
-지급 정확도가 아니다.
+테스트는 LangGraph 분석 API, 50건 결정론적 회귀 fixture, 15건 수작업 라벨
+holdout, 표준약관 provenance API, PolicyOps의 승인 payload 검증까지 실행한다.
+회귀·holdout 지표의 100%는 실제 보험금 지급 정확도가 아니다.
+
+## 제출 문서
+
+- [기획서 최신본](docs/planning-proposal.md)
+- [기능명세서 최신본](docs/feature-specification.md)
+- [제출 문서용 시각 자료](docs/submission-visuals.md)
+- [기획서 PDF 초안](output/pdf/2026-finance-ai-challenge-proposal-draft.pdf)
+- [기능명세서 PDF 초안](output/pdf/2026-finance-ai-challenge-feature-specification-draft.pdf)
+
+PDF 초안은 대회 필수 항목 순서와 시각 자료를 반영한다. 실제 제출 전에는 DAKER가
+제공한 HWPX 양식에 팀명·팀원 정보를 입력해 PDF로 변환한다.
 
 ## 실제 데이터 출처
 
@@ -38,7 +49,11 @@ API, PolicyOps의 승인 payload 검증까지 실행한다. 회귀 지표의 100
 
 ## 제품 범위와 한계
 
-- 텍스트 레이어 PDF·TXT만 처리하며 이미지 스캔 PDF OCR은 지원하지 않는다.
+- 기본 경로는 텍스트 레이어 PDF·TXT를 처리한다. 사용자가 `AI 보조 문서 이해`에
+  동의하면 Workers AI 문서 변환으로 PDF·JPG·PNG·WEBP를 텍스트화한다. 저해상도·
+  손상 문서·복잡한 표는 실패할 수 있으며 원문 확인을 대체하지 않는다.
+- AI 보조 문서 변환은 원본을 Cloudflare Workers AI에 전송한다. 일반 LLM 도구에는
+  마스킹된 미리보기만 전달하며, 서비스는 원본을 자체 저장소나 모델 학습에 사용하지 않는다.
 - 개인 문서는 합성 샘플 또는 사용자가 직접 넣은 세션 데이터다.
 - 보험사 내부 청구 이력·지급 심사·확정 금액은 조회하지 않는다.
 - PolicyOps 승인 버튼은 예선 시연 상태만 기록하고 운영 인덱스를 자동 변경하지
