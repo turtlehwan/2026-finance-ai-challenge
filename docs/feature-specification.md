@@ -1,12 +1,14 @@
 # 2026 금융 AI Challenge 기능명세서 — 보험금 길잡이 Agent
 
 > 문서 상태: 예선 제출용 최신본
-> 기준일: 2026-08-05
+> 기준일: 2026-08-06
 > 작성 원칙: 배포 URL에서 실제 동작하는 기능만 기재한다. 미구현 기능은
 > 본문 범위에 포함하지 않는다.
 > 시각 자료: [제출 문서용 시각 자료](./submission-visuals.md)와
 > [`output/pdf/`의 기능명세서 PDF 초안](../output/pdf/2026-finance-ai-challenge-feature-specification-draft.pdf)을
 > 같은 기준으로 유지한다.
+> 기능의 실제성·제한·근거 등급은 [주장·의사결정 근거 대장](./claim-evidence-matrix.md)과
+> 함께 검토한다.
 
 ## 1. MVP 구현 범위
 
