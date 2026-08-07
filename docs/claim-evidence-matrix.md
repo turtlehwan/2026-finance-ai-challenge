@@ -39,9 +39,9 @@ scope: "2026 금융 AI Challenge 예선"
 | 실제 사용자가 넣은 PDF/TXT도 같은 파이프라인에서 처리된다 | `C` + `S` | `components/claim-guide/demo/document-intake.tsx`, `lib/claim-guide/documents.ts` | 텍스트 레이어 PDF/TXT 기본, AI 동의 시 이미지·스캔 변환 | 개인 문서·진료 이력은 저장·학습하지 않으며 심사 기본 사례는 합성이라고 고지 |
 | 새 약관을 계속 반영할 수 있다 | `C` + `H` | `components/claim-guide/policy-ops-section.tsx`, `lib/claim-guide/policies.ts`, `lib/claim-guide/evaluation.ts` | 변경 감지·Diff·회귀 평가·승인 시연은 동작; 자동 운영 인덱스 반영은 아님 | “자가 학습” 대신 “사람 승인형 PolicyOps 지식 갱신” |
 | GraphRAG 방식의 관계 확장이 구현됐다 | `C` | `lib/claim-guide/agent-graph.ts`의 `graphRetrievalTool`, `lib/claim-guide/policies.ts` | 보험 도메인 관계 그래프에서 정의·지급·면책·서류를 결정론적으로 확장 | Microsoft GraphRAG 전체 패키지나 임베딩 검색으로 오인시키지 않음 |
-| Agent 실행 그래프를 시각화하면 이해가 쉬워진다 | `H` + `C` | `@xyflow/react` 실행 캔버스 + 실제 trace, `docs/local/product-decisions.md` D-028 | 심사자가 실행 순서·대기·검증 실패를 화면에서 확인 가능 | “심사 이해를 돕는 설계 가설”로 두고 사용성 관찰을 계속 수집 |
+| Agent 실행 그래프를 시각화하면 이해가 쉬워진다 | `H` + `C` | `@xyflow/react` 실행 캔버스 + 실제 trace, `docs/submission-visuals.md` | 심사자가 실행 순서·대기·검증 실패를 화면에서 확인 가능 | “심사 이해를 돕는 설계 가설”로 두고 사용성 관찰을 계속 수집 |
 | 실제성과 안전 경계를 동시에 보여주는 것이 상위권 전략이다 | `H` + `E` | 2025 대상 SIGNAL 보도 [ZDNET](https://zdnet.co.kr/view/?no=20251112134842)와 현재 대회 요구의 결합 | 전년도 사례는 참고 선례이며 현재 대회의 공식 점수표가 아님 | “전년도 선례에서 얻은 설계 가설”로 명시 |
-| 50건 회귀·15건 holdout 수치가 실제 지급 정확도다 | `S` | `tests/fixtures`, `tests/holdout`, `lib/claim-guide/evaluation.ts` | 모두 합성 사실관계; 지급 이력·보험사 심사 데이터 없음 | “결정론적 그래프 품질 지표”라고만 표기 |
+| 50건 회귀·15건 holdout 수치가 실제 지급 정확도다 | `S` | `lib/claim-guide/evaluation.ts`, `data/evaluation/holdout-v1.json` | 모두 합성 사실관계; 지급 이력·보험사 심사 데이터 없음 | “결정론적 그래프 품질 지표”라고만 표기 |
 
 ## 3. 현재 1위 경쟁력 점검
 

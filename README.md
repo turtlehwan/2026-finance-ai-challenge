@@ -31,6 +31,7 @@ holdout, 표준약관 provenance API, PolicyOps의 승인 payload 검증까지 �
 - [기획서 최신본](docs/planning-proposal.md)
 - [기능명세서 최신본](docs/feature-specification.md)
 - [주장·의사결정 근거 대장](docs/claim-evidence-matrix.md)
+- [예선 준비도 보고서](docs/contest-readiness-report.md)
 - [조사 근거와 1위 전략](docs/research-basis.md)
 - [제출 문서용 시각 자료](docs/submission-visuals.md)
 - [기획서 PDF 초안](output/pdf/2026-finance-ai-challenge-proposal-draft.pdf)
