@@ -9,7 +9,6 @@ import {
   ExternalLinkIcon,
   HospitalIcon,
   PlayIcon,
-  SaveIcon,
   ShieldAlertIcon,
 } from "lucide-react"
 
@@ -18,7 +17,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -28,10 +26,11 @@ import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { ActionPack } from "@/components/claim-guide/demo/action-pack"
 import {
   AdaptiveAssistant,
@@ -42,7 +41,6 @@ import { AgentFlowGraph } from "@/components/claim-guide/demo/agent-flow-graph"
 import { CaseFacts } from "@/components/claim-guide/demo/case-facts"
 import { DocumentIntake } from "@/components/claim-guide/demo/document-intake"
 import { EvaluationPanel } from "@/components/claim-guide/demo/evaluation-panel"
-import { JourneyProgress } from "@/components/claim-guide/demo/journey-progress"
 import { ResultsPanel } from "@/components/claim-guide/demo/results-panel"
 import { useClaimAnalysis } from "@/components/claim-guide/demo/use-claim-analysis"
 import { EvidenceRail } from "@/components/claim-guide/evidence-rail"
@@ -80,7 +78,6 @@ export function AgentDemo() {
     phase,
     results,
     sources,
-    saveSession,
     selectedId,
     setActiveStep,
     setAnswer,
@@ -107,19 +104,6 @@ export function AgentDemo() {
     })
   }
 
-  const showAssistantInput = () => {
-    const input = document.querySelector<HTMLInputElement>(
-      "#assistant-request-input",
-    )
-    input?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "auto"
-        : "smooth",
-      block: "center",
-    })
-    input?.focus({ preventScroll: true })
-  }
-
   useEffect(() => {
     if (phase === "idle") {
       return
@@ -140,15 +124,11 @@ export function AgentDemo() {
   return (
     <section className="section-shell demo-section" id="demo" ref={demoRef}>
       <SectionHeading
-        title="사례로 확인 절차를 따라가 보세요"
-        description="사례를 고르면 분석이 시작되고, 질문 하나에 답한 뒤 근거와 준비물을 받습니다."
+        title="먼저, 사례 하나를 골라보세요"
+        description="분석 결과에서는 확인할 보장 항목, 가입 당시 보험약관의 근거 조항과 쪽수, 준비 서류를 순서대로 보여드립니다."
       />
 
       <div className="case-selection" id="case-selection">
-        <div className="case-selection-heading">
-          <span>1단계 · 사례 선택</span>
-          <p>아래에서 사례 하나를 고른 뒤 분석을 시작하세요.</p>
-        </div>
         <ToggleGroup
           className="case-tabs"
           type="single"
@@ -185,26 +165,8 @@ export function AgentDemo() {
             <CardTitle>{activeCase.title}</CardTitle>
             <CardDescription>{activeCase.description}</CardDescription>
           </div>
-          <CardAction>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon-lg"
-                  onClick={saveSession}
-                  aria-label="현재 사례 저장"
-                >
-                  <SaveIcon />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                개인정보 없이 사례 선택만 저장합니다
-              </TooltipContent>
-            </Tooltip>
-          </CardAction>
         </CardHeader>
         <CardContent className="journey-card-content">
-          <JourneyProgress phase={phase} />
           <AdaptiveAssistant
             onAnswer={setAnswer}
             onStart={startAnalysis}
@@ -215,7 +177,6 @@ export function AgentDemo() {
           <AdaptiveAssistantWorkspace
             activeView={activeView}
             focusRef={assistantFocusRef}
-            onAsk={showAssistantInput}
             onViewChange={showAssistantView}
             phase={phase}
           >
@@ -440,15 +401,22 @@ export function AgentDemo() {
       </Card>
 
       <div className="document-followup" id="document-intake">
-        <div className="document-followup-heading">
-          <span>직접 실행해 보기</span>
-          <h3>내 문서로 같은 흐름을 이어가세요</h3>
-          <p>
-            보험증권과 진료자료에서 정보를 읽으면, 다음 분석부터 계약일·보장
-            항목·진단 정보를 같은 근거 흐름에 반영합니다.
-          </p>
-        </div>
-        <DocumentIntake onBundle={setDocumentBundle} />
+        <Accordion type="single" collapsible className="document-disclosure">
+          <AccordionItem value="document-intake">
+            <AccordionTrigger>
+              <span className="document-disclosure-copy">
+                <span>직접 실행해 보기</span>
+                <strong>내 문서로 확인하기</strong>
+                <small>
+                  PDF·TXT 또는 준비된 샘플로 같은 Agent 흐름을 실행합니다.
+                </small>
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <DocumentIntake onBundle={setDocumentBundle} />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <EvaluationPanel />

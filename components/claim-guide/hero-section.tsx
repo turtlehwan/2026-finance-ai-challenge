@@ -1,16 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import Image from "next/image"
 import { ArrowDownIcon, PlayIcon } from "lucide-react"
 
-import { journeyPresentation } from "@/components/claim-guide/journey-presentation"
 import { Button } from "@/components/ui/button"
-import { EvidenceRail } from "@/components/claim-guide/evidence-rail"
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null)
-  const [activeStep, setActiveStep] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -37,7 +34,6 @@ export function HeroSection() {
                   ".hero-actions",
                   ".hero-visual",
                   ".hero-photo",
-                  ".hero-rail",
                 ],
                 { clearProps: "all" },
               )
@@ -67,19 +63,6 @@ export function HeroSection() {
                 "-=0.72",
               )
 
-            const rail = gsap.timeline()
-            journeyPresentation.forEach((_, index) => {
-              rail
-                .call(() => setActiveStep(index))
-                .to(`[data-evidence-node="${index}"] .evidence-icon-wrap`, {
-                  scale: 1.07,
-                  duration: 0.24,
-                  ease: "power2.out",
-                  yoyo: true,
-                  repeat: 1,
-                })
-                .to({}, { duration: 0.58 })
-            })
           },
         )
       }, sectionRef)
@@ -94,15 +77,15 @@ export function HeroSection() {
   }, [])
 
   const scrollToDemo = () => {
-    document.querySelector("#case-workspace")?.scrollIntoView({
+    document.querySelector("#demo")?.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "auto"
         : "smooth",
     })
   }
 
-  const scrollToWorkflow = () => {
-    document.querySelector("#workflow")?.scrollIntoView({
+  const scrollToTrust = () => {
+    document.querySelector("#trust")?.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "auto"
         : "smooth",
@@ -113,25 +96,24 @@ export function HeroSection() {
     <section className="hero-section" id="top" ref={sectionRef}>
       <div className="hero-copy">
         <h1>
-          <span className="hero-title-line">부모님 보험의 보장 내용을</span>
+          <span className="hero-title-line">부모님 보험에서</span>
           <span className="hero-title-line">
             <em>가입 당시 약관</em> 기준으로
           </span>
-          <span className="hero-title-line">확인할 항목부터</span>
+          <span className="hero-title-line">확인할 보장 항목을</span>
           <span className="hero-title-line">정리해 드립니다</span>
         </h1>
         <p className="hero-support">
-          보험증권과 진단 기록을 바탕으로 확인해 볼 보장 항목을 정리하고, 가입
-          당시 적용된 보험약관의 근거 조항과 쪽수를 함께 보여 드립니다. 최종 지급
-          여부는 보험회사가 판단합니다.
+          보험가입증서와 진단 기록을 바탕으로 확인해 볼 보장 항목을 정리하고,
+          가입 당시 적용된 보험약관의 근거 조항과 쪽수를 함께 보여 드립니다.
         </p>
         <div className="hero-actions">
           <Button size="lg" onClick={scrollToDemo}>
             <PlayIcon data-icon="inline-start" />
             준비된 사례로 확인하기
           </Button>
-          <Button variant="ghost" size="lg" onClick={scrollToWorkflow}>
-            확인 절차 보기
+          <Button variant="ghost" size="lg" onClick={scrollToTrust}>
+            신뢰 기준 보기
             <ArrowDownIcon data-icon="inline-end" />
           </Button>
         </div>
@@ -147,17 +129,6 @@ export function HeroSection() {
           fetchPriority="high"
           unoptimized
         />
-        <div className="hero-rail">
-          <div className="hero-rail-header">
-            <strong>확인 순서</strong>
-            <span>네 단계</span>
-          </div>
-          <EvidenceRail items={journeyPresentation} activeStep={activeStep} />
-          <div className="hero-status" aria-live="polite">
-            <span aria-hidden="true" />
-            {journeyPresentation[activeStep].label} 단계입니다
-          </div>
-        </div>
       </div>
     </section>
   )

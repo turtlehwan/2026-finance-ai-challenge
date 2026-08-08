@@ -15,8 +15,8 @@ import {
 import { Switch } from "@/components/ui/switch"
 
 const navItems = [
-  { href: "#demo", label: "보장 확인하기" },
-  { href: "#workflow", label: "확인 절차" },
+  { href: "#demo", label: "사례 체험" },
+  { href: "#official-channels", label: "공식 확인" },
   { href: "#trust", label: "신뢰 기준" },
 ]
 

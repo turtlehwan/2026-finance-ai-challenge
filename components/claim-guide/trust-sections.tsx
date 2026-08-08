@@ -7,7 +7,6 @@ import {
   XCircleIcon,
 } from "lucide-react"
 
-import { journeyPresentation } from "@/components/claim-guide/journey-presentation"
 import { SectionHeading } from "@/components/claim-guide/section-heading"
 import { Separator } from "@/components/ui/separator"
 
@@ -41,20 +40,6 @@ const notConfirmable = [
   },
 ]
 
-const agentTasks = [
-  "보험증권과 진단 기록에서 사실 정리하기",
-  "계약일에 맞는 보험약관 버전 찾기",
-  "정의·지급·면책 조항 함께 확인하기",
-  "보험사에 물어볼 내용과 준비 서류 정리",
-]
-
-const humanTasks = [
-  "빠진 사실 채우기",
-  "근거로 든 조항이 맞는지 확인",
-  "보험사에 청구 이력 확인",
-  "청구서 제출",
-]
-
 export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -86,7 +71,7 @@ export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
                 onEnter: (elements) => {
                   gsap.fromTo(
                     elements,
-                    { autoAlpha: 0, y: 22 },
+                    { autoAlpha: 0, y: 8 },
                     {
                       autoAlpha: 1,
                       y: 0,
@@ -143,47 +128,6 @@ export function TrustSections({ policyOps }: { policyOps: React.ReactNode }) {
             </a>
           </div>
         </div>
-        <div className="handoff-grid">
-          <div className="handoff-tasks">
-            <div>
-              <strong>서비스가 정리하는 것</strong>
-              <ul>
-                {agentTasks.map((task) => (
-                  <li key={task}>{task}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <strong>직접 하셔야 하는 것</strong>
-              <ul>
-                {humanTasks.map((task) => (
-                  <li key={task}>{task}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section-shell workflow-section" id="workflow">
-        <SectionHeading
-          className="scroll-reveal"
-          title="조사는 Agent, 결정은 사람"
-          description="자동화는 사실을 모으고 근거를 연결하는 데 쓰고, 정보가 부족하거나 판단이 필요한 지점에서는 사람에게 넘깁니다."
-        />
-        <ol className="workflow-line">
-          {journeyPresentation.map((step, index) => (
-            <li className="workflow-step scroll-reveal" key={step.label}>
-              <span className="workflow-index" aria-hidden="true">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <strong>{step.label}</strong>
-                <p>{step.detail}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
       </section>
 
       <section className="section-shell trust-section" id="trust">

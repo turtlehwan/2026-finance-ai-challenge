@@ -14,6 +14,7 @@ import { useGSAP } from "@gsap/react"
 import type { LucideIcon } from "lucide-react"
 import {
   BotIcon,
+  ChevronDownIcon,
   ClipboardCheckIcon,
   FileSearchIcon,
   ListChecksIcon,
@@ -97,12 +98,6 @@ function getViewOptions(phase: DemoPhase): ViewOption[] {
         label: "지금 할 일",
         detail: "분석 시작",
         icon: ListChecksIcon,
-      },
-      {
-        value: "case",
-        label: "사례 정보",
-        detail: "가입·진단 사실",
-        icon: UserRoundIcon,
       },
     ]
   }
@@ -222,6 +217,7 @@ export function AdaptiveAssistant({
   phase: DemoPhase
 }) {
   const [input, setInput] = useState("")
+  const [composerOpen, setComposerOpen] = useState(false)
   const [messageState, setMessageState] = useState<{
     phase: DemoPhase
     value: string
@@ -424,50 +420,70 @@ export function AdaptiveAssistant({
         </div>
       </div>
 
-      <form className="assistant-composer" onSubmit={submitRequest}>
-        <Input
-          id="assistant-request-input"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          placeholder="궁금한 것을 말하거나 적어 주세요"
-          aria-label="보험 확인 비서에게 요청하기"
+      <Button
+        type="button"
+        variant="outline"
+        className="assistant-request-toggle"
+        aria-expanded={composerOpen}
+        aria-controls="assistant-request-panel"
+        onClick={() => setComposerOpen((open) => !open)}
+      >
+        <MessageCircleMoreIcon data-icon="inline-start" />
+        {composerOpen ? "요청 입력 닫기" : "글이나 음성으로 요청하기"}
+        <ChevronDownIcon
+          className={cn("assistant-request-chevron", composerOpen && "is-open")}
+          data-icon="inline-end"
         />
-        <Button
-          type="button"
-          variant={isListening ? "default" : "outline"}
-          size="icon-lg"
-          onClick={toggleListening}
-          disabled={!speechSupported}
-          aria-label={isListening ? "음성 듣기 중지" : "음성으로 요청하기"}
-          aria-pressed={isListening}
-        >
-          {isListening ? <SquareIcon /> : <MicIcon />}
-        </Button>
-        <Button type="submit" disabled={!input.trim()}>
-          <SendIcon data-icon="inline-start" />
-          요청하기
-        </Button>
-      </form>
+      </Button>
 
-      <div className="assistant-quick-requests" aria-label="빠른 요청">
-        {quickRequests.map((request) => (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => handleRequest(request)}
-            key={request}
-          >
-            {request}
-          </Button>
-        ))}
-      </div>
+      {composerOpen ? (
+        <div className="assistant-request-panel" id="assistant-request-panel">
+          <form className="assistant-composer" onSubmit={submitRequest}>
+            <Input
+              id="assistant-request-input"
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder="궁금한 것을 말하거나 적어 주세요"
+              aria-label="보험 확인 비서에게 요청하기"
+            />
+            <Button
+              type="button"
+              variant={isListening ? "default" : "outline"}
+              size="icon-lg"
+              onClick={toggleListening}
+              disabled={!speechSupported}
+              aria-label={isListening ? "음성 듣기 중지" : "음성으로 요청하기"}
+              aria-pressed={isListening}
+            >
+              {isListening ? <SquareIcon /> : <MicIcon />}
+            </Button>
+            <Button type="submit" disabled={!input.trim()}>
+              <SendIcon data-icon="inline-start" />
+              요청하기
+            </Button>
+          </form>
 
-      {isListening ? (
-        <p className="assistant-privacy-note" role="status">
-          음성은 서비스 서버에 저장하지 않습니다. 브라우저에 따라 외부 인식
-          서비스로 전달될 수 있습니다.
-        </p>
+          <div className="assistant-quick-requests" aria-label="빠른 요청">
+            {quickRequests.map((request) => (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => handleRequest(request)}
+                key={request}
+              >
+                {request}
+              </Button>
+            ))}
+          </div>
+
+          {isListening ? (
+            <p className="assistant-privacy-note" role="status">
+              음성은 서비스 서버에 저장하지 않습니다. 브라우저에 따라 외부 인식
+              서비스로 전달될 수 있습니다.
+            </p>
+          ) : null}
+        </div>
       ) : null}
     </section>
   )
@@ -477,14 +493,12 @@ export function AdaptiveAssistantWorkspace({
   activeView,
   children,
   focusRef,
-  onAsk,
   onViewChange,
   phase,
 }: {
   activeView: AssistantView
   children: ReactNode
   focusRef: RefObject<HTMLElement | null>
-  onAsk: () => void
   onViewChange: (view: AssistantView) => void
   phase: DemoPhase
 }) {
@@ -524,14 +538,12 @@ export function AdaptiveAssistantWorkspace({
 
       gsap.fromTo(
         ".assistant-focus-content",
-        { autoAlpha: 0, y: 18, scale: 0.985 },
+        { autoAlpha: 0 },
         {
           autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.38,
+          duration: 0.28,
           ease: "power2.out",
-          clearProps: "transform,opacity,visibility",
+          clearProps: "opacity,visibility",
         },
       )
     },
@@ -543,40 +555,37 @@ export function AdaptiveAssistantWorkspace({
   )
 
   return (
-    <div className="assistant-workspace" ref={scopeRef}>
-      <nav className="assistant-view-nav" aria-label="지금 크게 볼 내용">
-        {viewOptions.map((option) => {
-          const Icon = option.icon
-          const isActive = option.value === activeView
+    <div
+      className={cn(
+        "assistant-workspace",
+        viewOptions.length === 1 && "is-single-view",
+      )}
+      ref={scopeRef}
+    >
+      {viewOptions.length > 1 ? (
+        <nav className="assistant-view-nav" aria-label="지금 크게 볼 내용">
+          {viewOptions.map((option) => {
+            const Icon = option.icon
+            const isActive = option.value === activeView
 
-          return (
-            <button
-              type="button"
-              className={cn("assistant-view-button", isActive && "is-active")}
-              aria-current={isActive ? "step" : undefined}
-              onClick={() => onViewChange(option.value)}
-              key={option.value}
-            >
-              <Icon aria-hidden="true" />
-              <span>
-                <strong>{option.label}</strong>
-                <small>{option.detail}</small>
-              </span>
-            </button>
-          )
-        })}
-        <button
-          type="button"
-          className="assistant-view-button assistant-ask-button"
-          onClick={onAsk}
-        >
-          <MessageCircleMoreIcon aria-hidden="true" />
-          <span>
-            <strong>다른 요청</strong>
-            <small>글 또는 음성</small>
-          </span>
-        </button>
-      </nav>
+            return (
+              <button
+                type="button"
+                className={cn("assistant-view-button", isActive && "is-active")}
+                aria-current={isActive ? "step" : undefined}
+                onClick={() => onViewChange(option.value)}
+                key={option.value}
+              >
+                <Icon aria-hidden="true" />
+                <span>
+                  <strong>{option.label}</strong>
+                  <small>{option.detail}</small>
+                </span>
+              </button>
+            )
+          })}
+        </nav>
+      ) : null}
 
       <section
         className="assistant-focus-surface"
