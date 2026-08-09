@@ -1,0 +1,31 @@
+{
+  "mode": "public-team-info-required",
+  "teamName": "쿠쿠",
+  "memberNames": "required-before-submission",
+  "outputs": [
+    {
+      "label": "기획서",
+      "path": "output/hwpx/2026_금융_AI_Challenge_기획서_팀정보입력필요.hwpx",
+      "sha256": "6a2c41e32ce643f73e4d408141c02d8acbbb76bdee34e7ab7561b129decc6961",
+      "bytes": 142520,
+      "templateSha256": "15ba1f89595f15c7582abec69bf4f06dc99864c5ac778a400d224f38ce95c039",
+      "rendererPageCount": 1,
+      "a4SliceCount": 7,
+      "entryCount": 11,
+      "renderWarnings": [],
+      "renderSvg": "tmp/hwpx-render/2026_금융_AI_Challenge_기획서_팀정보입력필요.svg"
+    },
+    {
+      "label": "기능명세서",
+      "path": "output/hwpx/2026_금융_AI_Challenge_기능명세서_팀정보입력필요.hwpx",
+      "sha256": "28f13640d2c1dc83f0531da2e06be46707af954fb7e6f61bd917d16f6db40a5d",
+      "bytes": 182239,
+      "templateSha256": "83be2cd46904d54717d624272f3af88c99b5b06c45cb12490f93688d31604a4b",
+      "rendererPageCount": 1,
+      "a4SliceCount": 8,
+      "entryCount": 11,
+      "renderWarnings": [],
+      "renderSvg": "tmp/hwpx-render/2026_금융_AI_Challenge_기능명세서_팀정보입력필요.svg"
+    }
+  ]
+}

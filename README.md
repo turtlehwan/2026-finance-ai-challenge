@@ -36,9 +36,14 @@ holdout, 표준약관 provenance API, PolicyOps의 승인 payload 검증까지 �
 - [제출 문서용 시각 자료](docs/submission-visuals.md)
 - [기획서 PDF 초안](output/pdf/2026-finance-ai-challenge-proposal-draft.pdf)
 - [기능명세서 PDF 초안](output/pdf/2026-finance-ai-challenge-feature-specification-draft.pdf)
+- [공식 양식 기반 HWPX와 최종 생성 안내](output/hwpx/README.md)
+- [공식 양식 기반 기획서 HWPX](output/hwpx/2026_금융_AI_Challenge_기획서_팀정보입력필요.hwpx)
+- [공식 양식 기반 기능명세서 HWPX](output/hwpx/2026_금융_AI_Challenge_기능명세서_팀정보입력필요.hwpx)
 
-PDF 초안은 대회 필수 항목 순서와 시각 자료를 반영한다. 실제 제출 전에는 DAKER가
-제공한 HWPX 양식에 팀명·팀원 정보를 입력해 PDF로 변환한다.
+공식 HWPX에는 최신 내용과 팀명 `쿠쿠`가 이식되어 있다. 공개 저장소의 두 파일은
+구성원 실명 대신 제출 차단 표식을 포함하므로 그대로 제출하지 않는다. 제출 직전
+`SUBMISSION_MEMBER_NAMES` 환경 변수로 Git 제외 경로에 실명본을 생성하고, 한컴에서
+쪽 나눔을 확인한 뒤 PDF로 변환한다. 자세한 절차는 HWPX 안내 문서를 따른다.
 
 ## 실제 데이터 출처
 
