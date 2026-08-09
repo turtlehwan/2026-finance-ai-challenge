@@ -4,43 +4,48 @@
 @import "@xyflow/react/dist/style.css";
 
 :root {
-  --page-canvas: #f7fafc;
+  --page-canvas: #f4f6f1;
   --background: #ffffff;
-  --foreground: #0b2348;
+  --foreground: #14211c;
   --card: #ffffff;
-  --card-foreground: #0b2348;
+  --card-foreground: #14211c;
   --popover: #ffffff;
-  --popover-foreground: #0b2348;
-  --primary: #0b3b7c;
+  --popover-foreground: #14211c;
+  --primary: #154c3d;
   --primary-foreground: #ffffff;
-  --secondary: #eef4fa;
-  --secondary-foreground: #183b64;
-  --muted: #f4f8fc;
-  --muted-foreground: #5b6d82;
-  --accent: #e4f6f2;
-  --accent-foreground: #087e74;
-  --destructive: #9b3030;
-  --border: #d5e0eb;
-  --input: #d5e0eb;
-  --ring: #0c8c84;
-  --success: #06665f;
-  --warning: #7b4706;
-  --success-soft: #eef9f6;
-  --success-border: #bce0db;
-  --warning-soft: #fff8ea;
-  --warning-border: #e1bc7e;
-  --danger-soft: #fff1f1;
-  --danger-border: #e8c5c5;
+  --secondary: #e9eee7;
+  --secondary-foreground: #28483d;
+  --muted: #f8faf7;
+  --muted-foreground: #52605a;
+  --accent: #dcece5;
+  --accent-foreground: #0f4a39;
+  --destructive: #9a3835;
+  --border: #d9e0da;
+  --input: #b8c4bc;
+  --ring: #17634d;
+  --success: #17634d;
+  --warning: #8f5500;
+  --success-soft: #eef7f3;
+  --success-border: #b8d9cb;
+  --warning-soft: #fff3d8;
+  --warning-border: #dfbc78;
+  --danger-soft: #fae9e7;
+  --danger-border: #e3bcb8;
   --inverse-foreground: #ffffff;
-  --inverse-muted: #c7d4e6;
-  --inverse-border: #435977;
-  --inverse-accent: #79d4cb;
-  --inverse-surface: #153258;
-  --chart-1: #0b3b7c;
-  --chart-2: #087e74;
-  --chart-3: #a86408;
-  --chart-4: #c74848;
-  --chart-5: #6d56a7;
+  --inverse-muted: #cfddd7;
+  --inverse-border: #4a6a5e;
+  --inverse-accent: #9cd7c2;
+  --inverse-surface: #153f33;
+  --chart-1: #154c3d;
+  --chart-2: #17634d;
+  --chart-3: #8f5500;
+  --chart-4: #9a3835;
+  --chart-5: #315f8b;
+  --surface-glass: rgb(255 255 255 / 70%);
+  --surface-glass-strong: rgb(251 252 249 / 94%);
+  --focus-soft: rgb(23 99 77 / 22%);
+  --foreground-soft: rgb(20 33 28 / 14%);
+  --hover-wash: rgb(20 33 28 / 2.5%);
   --radius: 0.875rem;
   --font-sans:
     Pretendard, "Pretendard Variable", "Noto Sans KR", "Apple SD Gothic Neo",
@@ -58,8 +63,8 @@
   --leading-tight: 1.35;
   --leading-body: 1.65;
   --leading-relaxed: 1.8;
-  --shadow-card: 0 1px 2px rgb(11 35 72 / 5%), 0 14px 42px rgb(11 35 72 / 7%);
-  --shadow-float: 0 18px 48px rgb(11 35 72 / 12%);
+  --shadow-card: 0 1px 2px rgb(20 33 28 / 5%), 0 14px 42px rgb(20 33 28 / 7%);
+  --shadow-float: 0 18px 48px rgb(20 33 28 / 12%);
 }
 
 @theme inline {
@@ -146,7 +151,7 @@ svg {
 }
 
 ::selection {
-  background: #ccefe9;
+  background: #cfe7dc;
   color: var(--foreground);
 }
 
@@ -168,8 +173,8 @@ svg {
   position: sticky;
   top: 0;
   z-index: 40;
-  border-bottom: 1px solid rgb(213 224 235 / 85%);
-  background: rgb(255 255 255 / 95%);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-glass-strong);
   backdrop-filter: blur(14px);
 }
 
@@ -619,7 +624,7 @@ button.evidence-node {
   padding: 0.85rem;
   border: 1px solid var(--border);
   border-radius: 0.75rem;
-  background: rgb(255 255 255 / 62%);
+  background: var(--surface-glass);
 }
 
 .document-ai-opt-in [data-slot="switch"] {
@@ -892,7 +897,7 @@ button.evidence-node {
 .agent-flow-canvas .react-flow__attribution {
   padding: 0.2rem 0.35rem;
   border-radius: 0.35rem 0 0;
-  background: rgb(255 255 255 / 88%);
+  background: var(--surface-glass-strong);
   color: var(--muted-foreground);
   font-size: var(--text-caption);
 }
@@ -969,12 +974,12 @@ button.evidence-node {
 }
 
 .agent-flow-node.is-active {
-  outline: 3px solid rgb(12 140 132 / 20%);
+  outline: 3px solid var(--focus-soft);
   outline-offset: 3px;
 }
 
 .agent-flow-node.is-selected:not(.is-active) {
-  outline: 2px solid rgb(11 35 72 / 16%);
+  outline: 2px solid var(--foreground-soft);
   outline-offset: 3px;
 }
 
@@ -2045,7 +2050,7 @@ button.evidence-node {
 }
 
 .source-ledger li:hover {
-  background: rgb(11 35 72 / 2%);
+  background: var(--hover-wash);
 }
 
 .ledger-kind {
