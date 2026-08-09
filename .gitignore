@@ -51,3 +51,6 @@ next-env.d.ts
 # Local product intent and decision history. Move validated decisions into a PRD
 # if the project adds one; never commit the working conversation log itself.
 /docs/local/
+
+# Submission artifacts containing team members' legal names are local-only.
+/output/private/
