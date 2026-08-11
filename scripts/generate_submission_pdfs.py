@@ -264,7 +264,7 @@ def header_footer(canvas, doc):
     canvas.line(18 * mm, 14 * mm, A4[0] - 18 * mm, 14 * mm)
     canvas.setFillColor(SLATE)
     canvas.setFont("NotoSansKR", 7.5)
-    canvas.drawString(18 * mm, 8.5 * mm, "보험금 길잡이 Agent · 2026 금융 AI Challenge 예선 제출용 초안")
+    canvas.drawString(18 * mm, 8.5 * mm, "내부 검토용 편집본 · 공식 제출 양식 아님")
     canvas.drawRightString(A4[0] - 18 * mm, 8.5 * mm, f"{doc.page} / {{total}}")
     canvas.restoreState()
 
@@ -288,7 +288,7 @@ class NumberedCanvas(Canvas):
             self.line(18 * mm, 14 * mm, A4[0] - 18 * mm, 14 * mm)
             self.setFillColor(SLATE)
             self.setFont("NotoSansKR", 7.5)
-            self.drawString(18 * mm, 8.5 * mm, "보험금 길잡이 Agent · 2026 금융 AI Challenge 예선 제출용 초안")
+            self.drawString(18 * mm, 8.5 * mm, "내부 검토용 편집본 · 공식 제출 양식 아님")
             self.drawRightString(A4[0] - 18 * mm, 8.5 * mm, f"{self._pageNumber} / {count}")
             super().showPage()
         super().save()
@@ -306,11 +306,13 @@ def title_page(title, subtitle, s):
         Paragraph(title, s["title"]),
         Paragraph(subtitle, s["subtitle"]),
         Spacer(1, 22 * mm),
+        LabelBar("내용·시각화 검토본 · 공식 제출 양식 아님"),
+        Spacer(1, 5 * mm),
         LabelBar("근거는 명확하게 · 판단은 사람에게 · 실행은 공식 채널에서"),
         Spacer(1, 10 * mm),
-        Paragraph("문서 상태: 예선 제출용 검토 초안 · 기준일: 2026-08-12", s["small"]),
+        Paragraph("문서 상태: 내부 검토용 편집본 · 기준일: 2026-08-12", s["small"]),
         Spacer(1, 2 * mm),
-        Paragraph("제출 전 DAKER 제공 HWPX 양식의 팀명·팀원 항목을 입력하고 PDF로 변환합니다.", s["small"]),
+        Paragraph("이 PDF는 그대로 제출하지 않습니다. DAKER 제공 HWPX 양식에 팀 정보를 입력한 뒤 한컴에서 PDF로 변환한 파일만 제출합니다.", s["small"]),
         PageBreak(),
     ]
 
