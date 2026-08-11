@@ -6,19 +6,19 @@ flowchart TB
     end
     subgraph Demo["예선 데모 데이터"]
       S["비식별 합성 보험가입증서·진료자료"]
-      H["수작업 라벨 holdout 15건\n결정론적 회귀 50건"]
+      H["분리 수작업 합성 점검 15건\n결정론적 회귀 50건"]
     end
     P1 & P2 & P3 --> R["상품·가입일·조항·PDF 쪽수\n결정론적 근거 그래프"]
     S --> R
-    R --> A["사용자 화면\n확인 권장·추가 정보 필요·판단 보류"]
-    H --> Q["버전 선택·근거 완전성·안전한 보류 평가"]
+    R --> A["사용자 화면\n확인 권장·정보 필요·가능성 낮음·확인 불가"]
+    H --> Q["버전 선택·근거 완전성·안전 중단·trace 평가"]
 
     S -. "사용자 명시 동의 때만\nPDF·이미지 원본 전송" .-> W["Cloudflare Workers AI\n문서 텍스트화"]
     W --> M["브라우저에 결과 반환\n서버 저장 없음"]
     M --> R
     S -. "규칙 마스킹 후" .-> L["Workers AI JSON 도구\n누락 사실 후보만"]
     L --> R
-    A --> F["보험사 공식 채널에서\n최종 심사·청구"]
+    A --> F["사람·보험사 공식 채널에서\n최종 판단·청구"]
 
     classDef official fill:#E7F0FF,stroke:#2563EB,color:#0F2E59;
     classDef demo fill:#F4F7FA,stroke:#64748B,color:#172033;
