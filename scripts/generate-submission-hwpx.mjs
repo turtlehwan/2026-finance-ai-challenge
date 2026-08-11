@@ -24,7 +24,7 @@ const PRIVATE_OUTPUT_DIR = path.join(ROOT_DIR, "output", "private", "submission"
 const A4_PAGE_HEIGHT_PT = 841.86;
 
 const FLOW_SUMMARY =
-  "보험가입증서·진료자료 → 사건·사실 추출 → 상품코드·가입일 기준 보험약관 버전 선택 → 보장 항목 대조 → 정보 부족 시 사람에게 질문 → 정의·지급·제한·면책 근거 감사 → 서류·공식 경로 → 사용자와 보험사의 최종 확인";
+  "입력 → 문서 Tool → 사건 Agent → 버전 Tool → 보장 Agent → 정보 Gate → 사람 질문 → 근거 Auditor → Action Planner → 사용자와 보험회사의 최종 확인";
 
 const DOCUMENTS = [
   {
@@ -47,13 +47,13 @@ const DOCUMENTS = [
     appendSection: { sourceSection: "sources", targetSection: 7, heading: "출처" },
     requiredMarkers: [
       "보험금 길잡이 Agent",
-      "가입 당시 적용된 보험약관",
+      "가입 당시 보험약관",
       "10.3조 원",
       "P400073",
       "사람에게 질문",
-      "50건 고정 fixture",
-      "15건 수작업 라벨 holdout",
-      "최종 지급 판단·청구 대행·손해사정·상품 권유는 하지 않으며",
+      "결정론적 회귀 50건",
+      "분리 수작업 합성 점검 15건",
+      "지급 여부·금액을 확정하지 않으며",
     ],
   },
   {
@@ -75,13 +75,13 @@ const DOCUMENTS = [
     privateFilename: "2026_금융_AI_Challenge_기능명세서_최종.hwpx",
     appendSection: { sourceSection: 6, targetSection: 5, heading: "실제 데이터·기술 출처" },
     requiredMarkers: [
-      "실제 Agent 상태 그래프",
+      "실제 LangGraph",
       "P400073",
       "React Flow",
       "https://finai26.turtlehwan.dev",
       "50건",
-      "15건 수작업 라벨 holdout",
-      "범용 LLM·임베딩 검색·Hybrid RAG는 현재 런타임에서 수행하지 않는다",
+      "분리 수작업 합성 점검",
+      "임베딩 검색·Hybrid RAG·범용 LLM 기반 약관 검색",
       "실제 보험금 지급 여부는 보험회사가 결정",
     ],
   },
@@ -470,7 +470,7 @@ function updateProposalFreeTitle(mainTable) {
   const headingRow = elementChildren(mainTable, "hp:tr").find((row) => nodeText(row).trim().startsWith("7."));
   if (!headingRow) return;
   const textNodes = Array.from(headingRow.getElementsByTagName("hp:t"));
-  if (textNodes[0]) textNodes[0].textContent = "7. 안전성과 검증 가능성을 기능으로 만든 Agent";
+  if (textNodes[0]) textNodes[0].textContent = "7. 검증 가능한 신뢰 계약";
 }
 
 function removeLayoutCaches(doc) {
