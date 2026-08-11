@@ -26,6 +26,20 @@ const A4_PAGE_HEIGHT_PT = 841.86;
 const FLOW_SUMMARY =
   "입력 → 문서 Tool → 사건 Agent → 버전 Tool → 보장 Agent → 정보 Gate → 사람 질문 → 근거 Auditor → Action Planner → 사용자와 보험회사의 최종 확인";
 
+function summarizeMermaid(lines) {
+  const source = lines.join(" ");
+  if (source.includes("제품 가설") || source.includes("청구 전 확인 공백")) {
+    return "■ 문제·근거 연결: 공식 미인지·절차 근거(O) → 청구 전 확인 공백 가설(H) → 구현 증거(C) → 공식 채널";
+  }
+  if (source.includes("Workers AI") || source.includes("마스킹")) {
+    return "■ 데이터·권한 경계: 공식 약관(O) + 합성·사용자 문서 → 동의형 AI 변환·마스킹 → 결정론적 근거 → 사람의 최종 판단";
+  }
+  if (source.includes("입력 증거") || source.includes("안전 중단")) {
+    return "■ 90초 검증 계약: 입력 증거 → 질문·재개 → 버전·면책·쪽수 → 서류·공식 경로 / 감사 실패 시 안전 중단";
+  }
+  return `■ Agentic 실행 흐름: ${FLOW_SUMMARY}`;
+}
+
 const DOCUMENTS = [
   {
     id: "proposal",
@@ -234,6 +248,7 @@ function markdownLinesToParagraphs(lines, { keepLinkUrls = false } = {}) {
   let table = [];
   let inFence = false;
   let fenceLanguage = "";
+  let fenceLines = [];
   let listContinuationIndex = null;
   const flushProse = () => {
     if (prose.length === 0) return;
@@ -258,16 +273,21 @@ function markdownLinesToParagraphs(lines, { keepLinkUrls = false } = {}) {
       if (!inFence) {
         inFence = true;
         fenceLanguage = trimmed.slice(3).trim().toLowerCase();
+        fenceLines = [];
       } else {
         if (fenceLanguage === "mermaid") {
-          paragraphs.push({ kind: "lead", text: `■ Agentic 실행 흐름: ${FLOW_SUMMARY}` });
+          paragraphs.push({ kind: "lead", text: summarizeMermaid(fenceLines) });
         }
         inFence = false;
         fenceLanguage = "";
+        fenceLines = [];
       }
       continue;
     }
-    if (inFence) continue;
+    if (inFence) {
+      fenceLines.push(trimmed);
+      continue;
+    }
     if (!trimmed) {
       flushProse();
       flushTable();
