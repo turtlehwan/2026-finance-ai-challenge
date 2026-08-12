@@ -10,6 +10,8 @@ import JSZip from "jszip";
 import { parse, renderHwpxToSvg, validateHwpx } from "kordoc";
 
 const HP_NS = "http://www.hancom.co.kr/hwpml/2011/paragraph";
+const HC_NS = "http://www.hancom.co.kr/hwpml/2011/core";
+const OPF_NS = "http://www.idpf.org/2007/opf/";
 const TEAM_NAME = process.env.SUBMISSION_TEAM_NAME?.trim() || "쿠쿠";
 const MEMBER_NAMES = process.env.SUBMISSION_MEMBER_NAMES?.trim() || "";
 const MEMBER_BLOCKER = "※ 제출 직전 팀장·팀원 실명 입력 필수";
@@ -23,21 +25,41 @@ const PUBLIC_OUTPUT_DIR = path.join(ROOT_DIR, "output", "hwpx");
 const PRIVATE_OUTPUT_DIR = path.join(ROOT_DIR, "output", "private", "submission");
 const A4_PAGE_HEIGHT_PT = 841.86;
 
-const FLOW_SUMMARY =
-  "입력 → 문서 Tool → 사건 Agent → 버전 Tool → 보장 Agent → 정보 Gate → 사람 질문 → 근거 Auditor → Action Planner → 사용자와 보험회사의 최종 확인";
+const VISUALS = {
+  "policy-version-boundary": {
+    svgPath: path.join(ROOT_DIR, "docs", "visuals", "policy-version-boundary.svg"),
+    pngPath: path.join(RENDER_DIR, "visual-policy-version-boundary.png"),
+    packagePath: "BinData/visual-policy-version-boundary.png",
+    itemId: "visual_policy_version_boundary",
+    alt: "약관 버전 경계 시각화",
+  },
+  "mandatory-evidence-bundle": {
+    svgPath: path.join(ROOT_DIR, "docs", "visuals", "mandatory-evidence-bundle.svg"),
+    pngPath: path.join(RENDER_DIR, "visual-mandatory-evidence-bundle.png"),
+    packagePath: "BinData/visual-mandatory-evidence-bundle.png",
+    itemId: "visual_mandatory_evidence_bundle",
+    alt: "필수 근거 5유형 시각화",
+  },
+  "trace-outcome-comparison": {
+    svgPath: path.join(ROOT_DIR, "docs", "visuals", "trace-outcome-comparison.svg"),
+    pngPath: path.join(RENDER_DIR, "visual-trace-outcome-comparison.png"),
+    packagePath: "BinData/visual-trace-outcome-comparison.png",
+    itemId: "visual_trace_outcome_comparison",
+    alt: "답변 전후와 안전 중단 실행 비교",
+  },
+};
+
+function resolveMermaidVisual(lines) {
+  const source = lines.join(" ");
+  if (source.includes("2025-04-02") && source.includes("2025-04-03")) return "policy-version-boundary";
+  if (source.includes("약관 버전 확정") && source.includes("청구서류")) return "mandatory-evidence-bundle";
+  if (source.includes("첫 실행") && source.includes("두 번째 호출")) return "trace-outcome-comparison";
+  return null;
+}
 
 function summarizeMermaid(lines) {
   const source = lines.join(" ");
-  if (source.includes("제품 가설") || source.includes("청구 전 확인 공백")) {
-    return "■ 문제·근거 연결: 공식 미인지·절차 근거(O) → 청구 전 확인 공백 가설(H) → 구현 증거(C) → 공식 채널";
-  }
-  if (source.includes("Workers AI") || source.includes("마스킹")) {
-    return "■ 데이터·권한 경계: 공식 약관(O) + 합성·사용자 문서 → 동의형 AI 변환·마스킹 → 결정론적 근거 → 사람의 최종 판단";
-  }
-  if (source.includes("입력 증거") || source.includes("안전 중단")) {
-    return "■ 90초 검증 계약: 입력 증거 → 질문·재개 → 버전·면책·쪽수 → 서류·공식 경로 / 감사 실패 시 안전 중단";
-  }
-  return `■ Agentic 실행 흐름: ${FLOW_SUMMARY}`;
+  return `■ 실행 흐름: ${source.replace(/\s+/g, " ").slice(0, 180)}`;
 }
 
 const DOCUMENTS = [
@@ -64,10 +86,10 @@ const DOCUMENTS = [
       "가입 당시 보험약관",
       "10.3조 원",
       "P400073",
-      "사람에게 질문",
-      "결정론적 회귀 50건",
-      "분리 수작업 합성 점검 15건",
-      "지급 여부·금액을 확정하지 않으며",
+      "첫 실행 질문 종료",
+      "규칙 경계값 회귀 50건",
+      "수작업 라벨 경계 사례 15건",
+      "지급 여부·금액·기존 청구 여부를 확정하지 않으며",
     ],
   },
   {
@@ -91,11 +113,11 @@ const DOCUMENTS = [
     requiredMarkers: [
       "실제 LangGraph",
       "P400073",
-      "React Flow",
+      "@xyflow/react",
       "https://finai26.turtlehwan.dev",
       "50건",
-      "분리 수작업 합성 점검",
-      "임베딩 검색·Hybrid RAG·범용 LLM 기반 약관 검색",
+      "수작업 라벨 경계 사례",
+      "임베딩 검색·Hybrid RAG·범용 LLM 약관 검색",
       "실제 보험금 지급 여부는 보험회사가 결정",
     ],
   },
@@ -109,7 +131,6 @@ const PRESERVE_ONLY_PARTS = [
   "META-INF/container.xml",
   "META-INF/manifest.xml",
   "META-INF/container.rdf",
-  "Contents/content.hpf",
 ];
 
 function sha256(bytes) {
@@ -276,7 +297,12 @@ function markdownLinesToParagraphs(lines, { keepLinkUrls = false } = {}) {
         fenceLines = [];
       } else {
         if (fenceLanguage === "mermaid") {
-          paragraphs.push({ kind: "lead", text: summarizeMermaid(fenceLines) });
+          const visualId = resolveMermaidVisual(fenceLines);
+          if (visualId) {
+            paragraphs.push({ kind: "image", visualId, text: VISUALS[visualId].alt });
+          } else {
+            paragraphs.push({ kind: "lead", text: summarizeMermaid(fenceLines) });
+          }
         }
         inFence = false;
         fenceLanguage = "";
@@ -377,6 +403,7 @@ function weightedLength(text) {
 }
 
 function estimatedLines(paragraph) {
+  if (paragraph.kind === "image") return 13;
   return Math.max(1, Math.ceil(weightedLength(paragraph.text) / (paragraph.kind === "lead" ? 43 : 47)));
 }
 
@@ -413,12 +440,66 @@ function createParagraph(doc, paragraph, document) {
   const p = doc.createElementNS(HP_NS, "hp:p");
   Object.entries({ id: "2147483648", paraPrIDRef: "0", styleIDRef: "0", pageBreak: "0", columnBreak: "0", merged: "0" }).forEach(([key, value]) => p.setAttribute(key, value));
   const run = doc.createElementNS(HP_NS, "hp:run");
+  if (paragraph.kind === "image") {
+    run.setAttribute("charPrIDRef", document.bodyCharPr);
+    run.appendChild(createImageElement(doc, VISUALS[paragraph.visualId]));
+    p.appendChild(run);
+    return p;
+  }
   run.setAttribute("charPrIDRef", paragraph.kind === "lead" ? document.boldCharPr : document.bodyCharPr);
   const text = doc.createElementNS(HP_NS, "hp:t");
   text.appendChild(doc.createTextNode(paragraph.text));
   run.appendChild(text);
   p.appendChild(run);
   return p;
+}
+
+function createImageElement(doc, visual) {
+  const width = 44_000;
+  const height = 22_000;
+  const id = String(9_600_000 + Object.values(VISUALS).indexOf(visual));
+  const pic = doc.createElementNS(HP_NS, "hp:pic");
+  Object.entries({ id, zOrder: "0", numberingType: "PICTURE", textWrap: "TOP_AND_BOTTOM", textFlow: "BOTH_SIDES", lock: "0", dropcapstyle: "None", href: "", groupLevel: "0", instid: id, reverse: "0" }).forEach(([key, value]) => pic.setAttribute(key, value));
+
+  const simple = (name, attributes) => {
+    const node = doc.createElementNS(HP_NS, `hp:${name}`);
+    Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, String(value)));
+    return node;
+  };
+  pic.appendChild(simple("offset", { x: 0, y: 0 }));
+  pic.appendChild(simple("orgSz", { width, height }));
+  pic.appendChild(simple("curSz", { width, height }));
+  pic.appendChild(simple("flip", { horizontal: 0, vertical: 0 }));
+  pic.appendChild(simple("rotationInfo", { angle: 0, centerX: width / 2, centerY: height / 2, rotateimage: 1 }));
+
+  const renderingInfo = doc.createElementNS(HP_NS, "hp:renderingInfo");
+  for (const matrixName of ["transMatrix", "scaMatrix", "rotMatrix"]) {
+    const matrix = doc.createElementNS(HC_NS, `hc:${matrixName}`);
+    Object.entries({ e1: 1, e2: 0, e3: 0, e4: 0, e5: 1, e6: 0 }).forEach(([key, value]) => matrix.setAttribute(key, String(value)));
+    renderingInfo.appendChild(matrix);
+  }
+  pic.appendChild(renderingInfo);
+
+  const imageRect = doc.createElementNS(HP_NS, "hp:imgRect");
+  const points = [[0, 0], [width, 0], [width, height], [0, height]];
+  points.forEach(([x, y], index) => {
+    const point = doc.createElementNS(HC_NS, `hc:pt${index}`);
+    point.setAttribute("x", String(x));
+    point.setAttribute("y", String(y));
+    imageRect.appendChild(point);
+  });
+  pic.appendChild(imageRect);
+  pic.appendChild(simple("imgClip", { left: 0, right: width, top: 0, bottom: height }));
+  pic.appendChild(simple("inMargin", { left: 0, right: 0, top: 0, bottom: 0 }));
+  pic.appendChild(simple("imgDim", { dimwidth: width, dimheight: height }));
+  const image = doc.createElementNS(HC_NS, "hc:img");
+  Object.entries({ binaryItemIDRef: visual.itemId, bright: 0, contrast: 0, effect: "REAL_PIC", alpha: 0 }).forEach(([key, value]) => image.setAttribute(key, String(value)));
+  pic.appendChild(image);
+  pic.appendChild(doc.createElementNS(HP_NS, "hp:effects"));
+  pic.appendChild(simple("sz", { width, widthRelTo: "ABSOLUTE", height, heightRelTo: "ABSOLUTE", protect: 0 }));
+  pic.appendChild(simple("pos", { treatAsChar: 1, affectLSpacing: 0, flowWithText: 1, allowOverlap: 0, holdAnchorAndSO: 0, vertRelTo: "PARA", horzRelTo: "PARA", vertAlign: "TOP", horzAlign: "LEFT", vertOffset: 0, horzOffset: 0 }));
+  pic.appendChild(simple("outMargin", { left: 0, right: 0, top: 0, bottom: 0 }));
+  return pic;
 }
 
 function replaceCellParagraphs(cell, paragraphs, doc, document, charPrOverride) {
@@ -551,6 +632,42 @@ async function assertPreservedParts(zip, expectedHashes, label) {
   }
 }
 
+async function ensureVisualPngs() {
+  await mkdir(RENDER_DIR, { recursive: true });
+  for (const visual of Object.values(VISUALS)) {
+    execFileSync("/usr/bin/sips", ["-s", "format", "png", visual.svgPath, "--out", visual.pngPath], { stdio: "ignore" });
+  }
+}
+
+async function addVisualAssets(zip, sectionParagraphs, documentLabel) {
+  const usedVisualIds = new Set();
+  for (const paragraphs of sectionParagraphs.values()) {
+    for (const paragraph of paragraphs) {
+      if (paragraph.kind === "image") usedVisualIds.add(paragraph.visualId);
+    }
+  }
+  if (usedVisualIds.size === 0) return;
+  await ensureVisualPngs();
+
+  const contentEntry = zip.file("Contents/content.hpf");
+  if (!contentEntry) throw new Error(`${documentLabel} content.hpf 누락`);
+  const contentDoc = new DOMParser().parseFromString(await contentEntry.async("string"), "application/xml");
+  const manifest = contentDoc.getElementsByTagName("opf:manifest")[0];
+  if (!manifest) throw new Error(`${documentLabel} content.hpf manifest 누락`);
+
+  for (const visualId of usedVisualIds) {
+    const visual = VISUALS[visualId];
+    zip.file(visual.packagePath, await readFile(visual.pngPath));
+    const item = contentDoc.createElementNS(OPF_NS, "opf:item");
+    item.setAttribute("id", visual.itemId);
+    item.setAttribute("href", visual.packagePath);
+    item.setAttribute("media-type", "image/png");
+    item.setAttribute("isEmbeded", "1");
+    manifest.appendChild(item);
+  }
+  zip.file("Contents/content.hpf", new XMLSerializer().serializeToString(contentDoc));
+}
+
 async function writeHwpx(zip) {
   const mimetypeEntry = zip.file("mimetype");
   if (!mimetypeEntry) throw new Error("HWPX mimetype 엔트리가 없습니다.");
@@ -632,6 +749,7 @@ async function buildDocument(document) {
   const sectionParagraphs = buildSectionParagraphs(markdown, document);
   const templateZip = await JSZip.loadAsync(templateBytes, { checkCRC32: true });
   const preservedHashes = await snapshotPartHashes(templateZip, PRESERVE_ONLY_PARTS);
+  await addVisualAssets(templateZip, sectionParagraphs, document.label);
   const sectionEntry = templateZip.file("Contents/section0.xml");
   if (!sectionEntry) throw new Error(`${document.label} 공식 양식에서 section0.xml을 찾지 못했습니다.`);
   const doc = new DOMParser().parseFromString(await sectionEntry.async("string"), "application/xml");

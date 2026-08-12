@@ -205,57 +205,32 @@ class FlowDiagram(Flowable):
             self.canv.drawCentredString((x1 + x2) / 2, (y1 + y2) / 2 + 3, label)
 
     def draw(self):
-        if self.kind == "problem":
-            self._box(0, 44 * mm, 48 * mm, 16 * mm, "공식 사실｜O\n지급 사실 미인지", PALE_SOURCE, SOURCE_BLUE)
-            self._box(0, 16 * mm, 48 * mm, 16 * mm, "공식 조사｜O\n절차·안내 부담", PALE_SOURCE, SOURCE_BLUE)
-            self._box(63 * mm, 30 * mm, 48 * mm, 18 * mm, "제품 가설｜H\n청구 전 확인 공백", PALE_AMBER, AMBER)
-            self._box(126 * mm, 30 * mm, 48 * mm, 18 * mm, "구현 검증｜C\n무엇을 확인할지 정리", PALE_BLUE, BLUE)
-            self._arrow(48 * mm, 52 * mm, 63 * mm, 42 * mm)
-            self._arrow(48 * mm, 24 * mm, 63 * mm, 36 * mm)
-            self._arrow(111 * mm, 39 * mm, 126 * mm, 39 * mm)
+        if self.kind == "version":
+            self._box(0, 36 * mm, 70 * mm, 22 * mm, "P400051~054｜2112 약관\n2025-04-02까지\n지급 p.491 · 정의 p.495", PALE_BLUE, BLUE)
+            self._box(104 * mm, 36 * mm, 70 * mm, 22 * mm, "P400073~076｜2504 약관\n2025-04-03부터\n지급 p.497 · 정의 p.501", PALE_SOURCE, SOURCE_BLUE)
+            self._box(72 * mm, 12 * mm, 30 * mm, 16 * mm, "계약일\n경계", PALE_AMBER, AMBER)
+            self._arrow(70 * mm, 47 * mm, 104 * mm, 47 * mm)
             self.canv.setFillColor(SLATE)
-            self.canv.setFont("NotoSansKR", 6.5)
-            self.canv.drawCentredString(87 * mm, 5 * mm, "통계의 직접 시장규모 전환 금지 · 가설은 MVP와 사용자 조사로 검증")
-        elif self.kind == "evidence":
-            w, h = 30 * mm, 14 * mm
-            nodes = [
-                (0, 48 * mm, "Tool\n문서 사실 추출", MIST, LINE),
-                (36 * mm, 48 * mm, "Agent\n사건 상태", PALE_BLUE, BLUE),
-                (72 * mm, 48 * mm, "Tool\n가입일 버전", MIST, LINE),
-                (108 * mm, 48 * mm, "Agent\n보장 대조", PALE_BLUE, BLUE),
-                (144 * mm, 48 * mm, "Auditor\n면책 포함", PALE_BLUE, BLUE),
-            ]
-            for x, y, text, fill, stroke in nodes:
-                self._box(x, y, w, h, text, fill, stroke)
-            for index in range(len(nodes) - 1):
-                self._arrow(nodes[index][0] + w, nodes[index][1] + h / 2, nodes[index + 1][0], nodes[index + 1][1] + h / 2)
-            self._box(50 * mm, 16 * mm, 36 * mm, 14 * mm, "Human\n추가 질문", PALE_AMBER, AMBER)
-            self._box(108 * mm, 16 * mm, 48 * mm, 14 * mm, "Action Planner\n근거·서류·경로", PALE_BLUE, BLUE)
-            self._arrow(123 * mm, 48 * mm, 123 * mm, 30 * mm, "충분")
-            self._arrow(103 * mm, 48 * mm, 68 * mm, 30 * mm, "부족")
-            self._arrow(86 * mm, 23 * mm, 108 * mm, 23 * mm)
-        elif self.kind == "boundary":
-            self._box(0, 48 * mm, 46 * mm, 15 * mm, "공식 실제 약관｜O\n2개 상품·3개 버전", PALE_SOURCE, SOURCE_BLUE)
-            self._box(56 * mm, 48 * mm, 46 * mm, 15 * mm, "비식별 합성\n보험가입증서·진료자료", MIST, LINE)
-            self._box(112 * mm, 48 * mm, 62 * mm, 15 * mm, "결정론적 근거 그래프\n조항·쪽수·출처", PALE_BLUE, BLUE)
-            self._arrow(46 * mm, 55.5 * mm, 56 * mm, 55.5 * mm)
-            self._arrow(102 * mm, 55.5 * mm, 112 * mm, 55.5 * mm)
-            self._box(0, 14 * mm, 52 * mm, 15 * mm, "사용자 명시 동의\n원본 PDF·이미지", PALE_AMBER, AMBER)
-            self._box(62 * mm, 14 * mm, 52 * mm, 15 * mm, "Workers AI 변환\n저장 없이 브라우저 반환", PALE_AMBER, AMBER)
-            self._box(124 * mm, 14 * mm, 50 * mm, 15 * mm, "마스킹 미리보기\n누락 사실 후보만", PALE_AMBER, AMBER)
-            self._arrow(52 * mm, 21.5 * mm, 62 * mm, 21.5 * mm)
-            self._arrow(114 * mm, 21.5 * mm, 124 * mm, 21.5 * mm)
-            self._arrow(143 * mm, 29 * mm, 143 * mm, 48 * mm)
+            self.canv.setFont("NotoSansKR", 7)
+            self.canv.drawCentredString(87 * mm, 5 * mm, "같은 S52 골절이라도 상품코드·계약일로 버전을 먼저 확정")
+        elif self.kind == "bundle":
+            self._box(0, 40 * mm, 35 * mm, 18 * mm, "입력 사실\n상품코드·계약일", MIST, LINE)
+            self._box(45 * mm, 40 * mm, 35 * mm, 18 * mm, "Version Tool\n약관 버전 확정", PALE_BLUE, BLUE)
+            self._box(90 * mm, 36 * mm, 48 * mm, 26 * mm, "필수 근거 5유형\n정의·지급·제한\n면책·청구서류", PALE_SOURCE, SOURCE_BLUE)
+            self._box(148 * mm, 40 * mm, 26 * mm, 18 * mm, "Auditor\n출처·쪽수", PALE_BLUE, BLUE)
+            self._arrow(35 * mm, 49 * mm, 45 * mm, 49 * mm)
+            self._arrow(80 * mm, 49 * mm, 90 * mm, 49 * mm)
+            self._arrow(138 * mm, 49 * mm, 148 * mm, 49 * mm)
+            self._box(48 * mm, 10 * mm, 78 * mm, 14 * mm, "필수 유형 누락·버전 불일치\n→ 확인 불가·공식 문의", PALE_AMBER, AMBER)
+            self._arrow(114 * mm, 36 * mm, 114 * mm, 24 * mm, "실패")
         else:
-            self._box(0, 36 * mm, 38 * mm, 16 * mm, "입력 증거\n합성 사례·문서", MIST, LINE)
-            self._box(45 * mm, 36 * mm, 38 * mm, 16 * mm, "분기 증거\n질문·재개", PALE_AMBER, AMBER)
-            self._box(90 * mm, 36 * mm, 38 * mm, 16 * mm, "근거 증거\n버전·면책·쪽수", PALE_SOURCE, SOURCE_BLUE)
-            self._box(136 * mm, 36 * mm, 38 * mm, 16 * mm, "행동 증거\n서류·공식 경로", PALE_BLUE, BLUE)
-            self._arrow(38 * mm, 44 * mm, 45 * mm, 44 * mm)
-            self._arrow(83 * mm, 44 * mm, 90 * mm, 44 * mm)
-            self._arrow(128 * mm, 44 * mm, 136 * mm, 44 * mm)
-            self._box(48 * mm, 8 * mm, 78 * mm, 14 * mm, "실패 증거｜정보 부족·버전 불일치·면책 누락\n→ 답변 생성 대신 안전 중단", PALE_AMBER, AMBER)
-            self._arrow(109 * mm, 36 * mm, 109 * mm, 22 * mm, "실패")
+            self._box(0, 42 * mm, 48 * mm, 18 * mm, "첫 실행｜답변 없음\nGate → Human Review → END", PALE_AMBER, AMBER)
+            self._box(63 * mm, 42 * mm, 48 * mm, 18 * mm, "두 번째 호출｜답변 포함\n전체 그래프 재실행 → 감사", PALE_BLUE, BLUE)
+            self._box(126 * mm, 42 * mm, 48 * mm, 18 * mm, "감사 통과\n제한 상태·다음 행동", PALE_SOURCE, SOURCE_BLUE)
+            self._arrow(48 * mm, 51 * mm, 63 * mm, 51 * mm)
+            self._arrow(111 * mm, 51 * mm, 126 * mm, 51 * mm)
+            self._box(48 * mm, 10 * mm, 78 * mm, 14 * mm, "지원 밖 버전·근거 누락\n→ 확인 불가·공식 문의", PALE_AMBER, AMBER)
+            self._arrow(87 * mm, 42 * mm, 87 * mm, 24 * mm, "실패")
 
 
 def header_footer(canvas, doc):
@@ -310,7 +285,7 @@ def title_page(title, subtitle, s):
         Spacer(1, 5 * mm),
         LabelBar("근거는 명확하게 · 판단은 사람에게 · 실행은 공식 채널에서"),
         Spacer(1, 10 * mm),
-        Paragraph("문서 상태: 내부 검토용 편집본 · 기준일: 2026-08-12", s["small"]),
+        Paragraph("문서 상태: 내부 검토용 편집본 · 기준일: 2026-08-13", s["small"]),
         Spacer(1, 2 * mm),
         Paragraph("이 PDF는 그대로 제출하지 않습니다. DAKER 제공 HWPX 양식에 팀 정보를 입력한 뒤 한컴에서 PDF로 변환한 파일만 제출합니다.", s["small"]),
         PageBreak(),
@@ -380,7 +355,7 @@ def build_proposal(path):
         ["핵심 설계", "Agent가 실제로 하는 일", "심사자 확인 증거"],
         ["사건 기반 확인", "보험가입증서·진료자료·사고 설명에서 확인할 보장 항목 선별", "사례 실행 후 사건·진단·보장 항목 구조화"],
         ["가입일 기준 약관", "상품코드·계약일로 적용 보험약관 버전 선택", "P400051/073, P600107의 판매기간·버전·쪽수"],
-        ["반대 근거 동시 검토", "정의·지급·제한·면책 관계 확장", "Claim Evidence Map과 면책 동반 원문"],
+        ["필수 근거 동반 확인", "선택 버전의 정의·지급·제한·면책·서류를 함께 조회", "Claim Evidence Map과 조항·쪽수"],
         ["사람 중심 실행", "부족 사실 질문, 서류·공식 경로 안내", "질문 분기와 공식 채널 CTA"],
     ], [36 * mm, 74 * mm, 64 * mm], s)]
     story += [PageBreak()]
@@ -392,7 +367,7 @@ def build_proposal(path):
         "같은 179명 중 보험금 지급 과정 안내 부족 54.7%",
     ], s)
     story += [Paragraph("출처: 금융위원회 ‘숨은보험금 10.3조 원’ 보도자료 · 보험연구원 ‘2022 보험소비자 행태조사’. 공식 통계는 인접 문제의 근거이며, 청구 전 확인 공백의 규모를 직접 측정한 수치는 아닙니다.", s["small"])]
-    story += [Spacer(1, 3 * mm), FlowDiagram("problem", height=66 * mm), Paragraph("그림 1. 공식 사실(O)과 제품 가설(H), 구현 증거(C)의 구분. 통계를 곧바로 서비스 성과로 바꾸지 않습니다.", s["small"])]
+    story += [Spacer(1, 3 * mm), FlowDiagram("version", height=66 * mm), Paragraph("그림 1. 상품코드·계약일 경계에 따른 2112/2504 약관 버전과 근거 쪽수 전환", s["small"])]
     story += [table([
         ["관찰된 불편", "확인 근거", "서비스가 줄이는 공백"],
         ["지급 사실 자체를 알기 어려움", "금융위원회 숨은보험금 미인지 근거", "보험 영역에서 미인지 문제가 실제 존재한다는 인접 근거"],
@@ -403,14 +378,14 @@ def build_proposal(path):
     story += [callout("<b>문제의 핵심</b> · 확정 금액을 계산하는 것이 아니라, 복잡한 서류와 가입 당시 보험약관을 대조해 사용자가 ‘무엇을 확인해야 하는지’를 놓치지 않게 하는 일입니다.", s), PageBreak()]
 
     story += section("4. 서비스 컨셉 및 차별성", s)
-    story += [paragraph("<b>보험은 사람이 결정하고, Agent는 놓치지 않게 돕습니다.</b> 단순 검색은 관련 문장을 찾지만, 이 서비스는 버전을 먼저 확정하고, 여러 문서의 사실을 상태로 누적하며, 반대 근거를 함께 확인하고, 정보가 없으면 멈춰 질문합니다. 핵심은 Agent 수가 아니라 상태·분기·중단·재개·감사입니다.", s)]
-    story += [FlowDiagram("evidence"), Paragraph("그림 2. Agentic 근거 확인 흐름. 역할별 색과 접두사는 Agent·Tool·Human의 권한을 구분합니다.", s["small"])]
+    story += [paragraph("<b>보험은 사람이 결정하고, Agent는 놓치지 않게 돕습니다.</b> 단순 검색은 관련 문장을 찾지만, 이 서비스는 버전을 먼저 확정하고 같은 버전의 필수 근거를 함께 확인하며, 답변이 없으면 첫 실행을 질문 상태로 끝냅니다. 핵심은 Agent 수가 아니라 상태·분기·사람 확인·감사입니다.", s)]
+    story += [FlowDiagram("bundle"), Paragraph("그림 2. 선택 버전의 정의·지급·제한·면책·청구서류 5유형을 동반 확인하는 근거 계약", s["small"])]
     story += [table([
         ["비교 기준", "개별 조회·청구/일반 질의응답", "보험금 길잡이 Agent"],
         ["시작점", "이미 아는 계약·청구 건 또는 단일 질문", "보험사건과 문서 묶음"],
         ["약관 선택", "최신 안내·검색 결과 중심", "상품코드·계약일·판매기간으로 버전 먼저 확정"],
-        ["근거 범위", "절차 또는 관련 문장", "정의·지급·제한·면책을 관계로 함께 확인"],
-        ["정보 부족", "별도 문의 또는 일반 답변", "부족한 사실 질문 또는 확인 불가로 안전 중단"],
+        ["근거 범위", "절차 또는 관련 문장", "같은 버전의 정의·지급·제한·면책·서류 동반 조회"],
+        ["정보 부족", "별도 문의 또는 일반 답변", "첫 실행 질문 종료·답변 후 동일 사건 재호출"],
         ["결과", "조회·청구 화면 또는 답변 텍스트", "근거 경로·미확인 조건·서류·공식 실행 경로"],
     ], [34 * mm, 67 * mm, 73 * mm], s)]
     story += [PageBreak()]
@@ -422,20 +397,20 @@ def build_proposal(path):
         ["무배당 우체국와이드건강보험 2504", "P400073~076<br/>2025-04-03~2025-06-04", "S52 골절 특약"],
         ["무배당 우체국온라인입원수술보험 2112", "P600107<br/>2021-12-01~2025-04-02", "4일 이상 입원·수술 확인"],
     ], [62 * mm, 56 * mm, 56 * mm], s)]
-    story += [Spacer(1, 3 * mm), FlowDiagram("boundary"), Paragraph("그림 3. 실제 데이터와 외부 AI 처리 경계. 원본 PDF·이미지는 사용자의 명시 동의가 있을 때만 Workers AI 문서 변환에 전송됩니다.", s["small"]), PageBreak()]
+    story += [Spacer(1, 3 * mm), FlowDiagram("trace"), Paragraph("그림 3. 답변 전 종료, 답변 후 전체 재호출, 근거 실패 시 안전 중단의 실제 실행 비교", s["small"]), PageBreak()]
 
     # A continued section begins on a fresh page; retain a deliberate reading margin
     # instead of placing its heading flush to the page boundary.
     story += [Spacer(1, 5 * mm)]
     story += section("5. 활용 데이터 및 생성형 AI 모델 적용 방안 (계속)", s)
     story += bullet([
-        "<b>기본 경로</b>: 규칙 기반 파싱, 개인정보 마스킹, 상품·가입일 기반 버전 계산, 결정론적 근거 그래프, Evidence Auditor를 실행합니다.",
+        "<b>기본 경로</b>: 규칙 기반 파싱, 개인정보 마스킹, 상품·가입일 기반 버전 계산, 버전별 필수 근거 동반 조회, Evidence Auditor를 실행합니다.",
         "<b>선택형 AI 문서 변환</b>: 사용자가 동의하면 Cloudflare Workers AI Markdown Conversion이 PDF·JPG·PNG·WEBP를 텍스트화합니다. 원본은 서비스 DB·파일시스템에 저장하지 않습니다.",
         "<b>제한형 LLM 도구</b>: 마스킹된 미리보기만 `@cf/meta/llama-3.1-8b-instruct-fast` JSON Mode에 전달해 누락 사실 후보와 짧은 확인 질문을 받습니다.",
         "<b>AI가 하지 않는 일</b>: 보험금 지급 판단, 약관 검색·인용, 임베딩 검색, Hybrid RAG, 지급액 계산을 맡기지 않습니다.",
         "<b>사람 중심 통제</b>: 금융위원회 금융분야 AI 가이드라인의 보조성 원칙에 맞춰 최종 의사결정과 책임을 사람에게 둡니다.",
     ], s)
-    story += [callout("<b>정직성 고지</b> · 현재 MVP의 보험약관 선택과 근거 인용은 코드의 결정론적 관계 탐색이 수행합니다. LLM 응답만으로 보장 상태·적용 버전·조항 인용을 만들 수 없습니다.", s)]
+    story += [callout("<b>정직성 고지</b> · 현재 MVP의 보험약관 선택과 근거 인용은 코드의 버전 대조와 버전별 근거 조회가 수행합니다. 관계 그래프 순회·GraphRAG는 구현하지 않았고, LLM 응답만으로 상태·버전·인용을 만들 수 없습니다.", s)]
     story += section("6. 기대 효과 및 확장 가능성", s)
     story += bullet([
         "가족 보호자가 보험사 문의 전에 확인 가능한 사실, 근거 조항, 필요한 서류를 한 번에 준비합니다.",
@@ -446,17 +421,17 @@ def build_proposal(path):
     ], s)
     story += [PageBreak()]
     story += section("7. 검증 가능한 신뢰 계약", s)
-    story += [FlowDiagram("verification", height=60 * mm), Paragraph("그림 4. 성공 결과뿐 아니라 질문·재개와 안전 중단까지 포함한 90초 검증 계약", s["small"]), Spacer(1, 3 * mm)]
+    story += [FlowDiagram("trace", height=60 * mm), Paragraph("그림 3. 답변 전 미확정·답변 후 전체 재호출·감사 실패 시 안전 중단", s["small"]), Spacer(1, 3 * mm)]
     story += [table([
         ["항목", "예선 MVP의 현재 범위"],
         ["공식 근거", "우체국보험 2개 상품·3개 버전의 조항·페이지·해시와 출처 URL을 결과에 연결"],
-        ["평가", "결정론적 회귀 50건과 분리 수작업 합성 점검 15건. 실행 계약을 검사하며 실제 지급 정확도가 아님"],
+        ["평가", "규칙 경계값 회귀 50건과 수작업 라벨 경계 사례 15건. 모두 answer=no인 같은 상품군의 합성 점검"],
         ["문서 입력", "AI 보조 해제 시 텍스트 레이어 PDF·TXT. 동의 시 PDF·JPG·PNG·WEBP 변환. 저해상도·손상·복잡한 표는 실패 가능"],
         ["최종 판단", "보험사 청구 이력·지급심사·확정 금액을 조회하지 않으며, 최종 지급 여부는 보험회사가 결정"],
     ], [45 * mm, 129 * mm], s)]
     story += [Spacer(1, 5 * mm), paragraph("<b>90초 심사 재현</b>", s)]
     story += bullet([
-        "손목 골절 사례를 실행하고 수술 여부 질문에 답해 Human-in-the-loop 재개를 확인합니다.",
+        "손목 골절 사례의 첫 호출이 질문에서 끝나고, 답변 뒤 같은 사건 전체 그래프가 다시 실행되는지 확인합니다.",
         "P400073 / 2504 약관의 정의·지급·제한·면책·서류 근거와 쪽수를 확인합니다.",
         "면책 함정 사례에서 ‘잘 모르겠어요’를 선택해 정보 필요 또는 확인 불가로 중단되는지 확인합니다.",
         "실행 캔버스에서 Agent·Tool·Gate·Human의 입력·출력과 중단 이유를 확인합니다.",
@@ -471,24 +446,24 @@ def build_feature_spec(path):
     story += section("1. MVP 구현 범위", s)
     story += bullet([
         "공식 우체국보험 2개 상품·3개 버전과 비식별 합성 사례 4종을 연결합니다.",
-        "상품코드·가입일 기반 보험약관 버전 선택, 조항·페이지·해시 provenance, 정의·지급·제한·면책 관계 탐색을 실행합니다.",
-        "사용자 문서의 사실을 구조화하고, 정보 부족 시 Human-in-the-loop 질문으로 중단·재개합니다.",
+        "상품코드·가입일 기반 보험약관 버전 선택, 조항·페이지·해시 provenance, 정의·지급·제한·면책·서류 동반 조회를 실행합니다.",
+        "사용자 문서의 사실을 구조화하고, 답변이 없으면 첫 실행을 질문 상태로 끝낸 뒤 답변을 넣어 전체 그래프를 다시 호출합니다.",
         "실제 LangGraph trace를 React Flow의 LangFlow형 실행 캔버스에 노드별 입력·출력·상태·소요시간으로 표시합니다.",
         "동의형 Workers AI 문서 변환과 마스킹된 누락 사실 후보 JSON 도구를 제한적으로 제공합니다.",
-        "결정론적 회귀 50건과 분리 수작업 합성 점검 15건의 범위·지표·한계를 화면에 공개합니다.",
+        "규칙 경계값 회귀 50건과 수작업 라벨 경계 사례 15건의 범위·미검증 경로를 화면에 공개합니다.",
     ], s)
-    story += [callout("<b>구현 경계</b> · 현재 런타임은 임베딩 검색·Hybrid RAG·범용 LLM 기반 약관 검색을 수행하지 않습니다. 약관 버전과 인용은 결정론적 근거 그래프가 담당합니다.", s)]
+    story += [callout("<b>구현 경계</b> · 현재 런타임은 임베딩 검색·Hybrid RAG·GraphRAG·범용 LLM 약관 검색을 수행하지 않습니다. 약관 버전과 인용은 코드의 버전 대조와 버전별 근거 조회가 담당합니다.", s)]
     story += section("2. 주요 기능 목록", s)
     story += [table([
         ["기능명", "실제 동작", "관련 화면", "상태"],
         ["약관 버전 선택", "상품코드·가입일과 공식 판매기간 대조", "문서 입력·분석", "완료"],
-        ["근거 그래프", "정의·지급·제한·면책·서류 조항을 관계로 확장", "분석 결과", "완료"],
+        ["필수 근거 묶음", "선택 버전의 정의·지급·제한·면책·서류 조항을 동반 조회", "분석 결과", "완료"],
         ["Evidence Audit", "버전·인용·면책 동반·공식 출처 검증, 실패 시 안전 중단", "분석 결과", "완료"],
-        ["Human-in-the-loop", "수술·기존 청구 등 필수 사실을 질문하고 답변 뒤 재실행", "정보 확인", "완료"],
+        ["한 번의 확인 질문", "답변이 없으면 질문 상태로 종료하고 답변 뒤 전체 그래프 재호출", "정보 확인", "완료"],
         ["실행 캔버스", "실제 trace의 노드별 입력·출력·상태·소요시간 시각화", "분석 과정", "완료"],
         ["AI 문서 변환", "동의 시 PDF·JPG·PNG·WEBP를 Workers AI로 텍스트화", "문서 입력", "완료"],
         ["제한형 LLM 도구", "마스킹 미리보기에서 누락 사실 후보·질문만 JSON 생성", "문서 입력·trace", "완료"],
-        ["평가 공개", "50건 회귀와 15건 분리 수작업 합성 점검의 결과·한계", "내부 평가", "완료"],
+        ["평가 공개", "50건 회귀와 15건 수작업 라벨 경계 사례의 결과·한계", "내부 평가", "완료"],
         ["공식 경로", "필요 서류·확인 질문과 내보험찾아줌·실손24 안내", "다음 행동", "완료"],
     ], [33 * mm, 79 * mm, 38 * mm, 24 * mm], s)]
     story += [PageBreak()]
@@ -499,24 +474,24 @@ def build_feature_spec(path):
         ["1", "배포 URL에 접속하고 큰글씨 설정을 선택", "320px 이상 모바일부터 데스크톱까지 같은 4단계 흐름 제공"],
         ["2", "합성 사례를 고르거나 문서를 1~2개 입력", "기본은 텍스트 레이어 PDF·TXT. AI 동의 시 PDF·이미지 변환"],
         ["3", "‘이 사례 분석하기’ 또는 ‘분석 시작해줘’ 실행", "사건 분석·문서 사실·적용 버전·보장 대조를 실제 LangGraph가 수행"],
-        ["4", "추가 질문에 답변", "필수 사실 부족 시 멈추고, 답변 뒤 근거 감사 경로를 재실행"],
+        ["4", "추가 질문에 답변", "첫 호출 종료 후 같은 사건에 답변을 넣어 전체 그래프 재호출"],
         ["5", "결과·근거·서류·분석 과정 중 필요한 보기 선택", "하나의 컴포넌트를 전면으로 가져오고, 근거·한계·다음 행동을 함께 표시"],
         ["6", "공식 채널로 이동", "보험사 공식 채널에서 실제 조회·청구를 사용자가 직접 실행"],
     ], [14 * mm, 72 * mm, 88 * mm], s)]
-    story += [Spacer(1, 5 * mm), FlowDiagram("evidence"), Paragraph("그림 1. 실제 trace 기반 Agent 실행 캔버스의 읽기 순서", s["small"]), PageBreak()]
+    story += [Spacer(1, 5 * mm), FlowDiagram("trace"), Paragraph("그림 1. 답변 전 종료·답변 후 재호출·근거 실패 안전 중단", s["small"]), PageBreak()]
     story += section("4. AI 및 데이터 처리 방식", s)
-    story += [FlowDiagram("boundary"), Paragraph("그림 2. 실제 데이터와 선택형 AI 처리 경계", s["small"])]
+    story += [FlowDiagram("bundle"), Paragraph("그림 2. 버전 확정 뒤 필수 근거 5유형을 동반 확인하는 실행 책임", s["small"])]
     story += bullet([
         "공식 데이터: P400051~054 / 2112, P400073~076 / 2504, P600107 / 2112의 공식 약관·판매기간·조항·페이지와 해시.",
         "데모 데이터: 보험가입증서·진료자료·사고 사실은 비식별 합성. 실고객 청구·지급·진료 이력은 사용하지 않음.",
-        "기본 처리: 규칙 기반 사실 추출, 개인정보 마스킹, 결정론적 버전 선택과 조항 관계 탐색, Evidence Audit.",
+        "기본 처리: 규칙 기반 사실 추출, 개인정보 마스킹, 결정론적 버전 선택과 필수 근거 동반 조회, Evidence Audit.",
         "AI 동의 처리: 원본 PDF·이미지는 Workers AI Markdown Conversion에 전송. 이후 일반 LLM 도구에는 서버 측 재마스킹까지 적용한 미리보기만 전달.",
         "AI 출력 제한: 누락 사실 후보·짧은 질문만. 보장 상태·약관 인용·금액·지급 판단은 코드가 아닌 LLM 응답으로 만들 수 없음.",
     ], s)
     story += [callout("<b>개인정보 처리</b> · 업로드 원본은 서비스 파일시스템·DB·모델 학습에 저장하지 않습니다. 다만 AI 보조를 켜면 원본 문서가 외부 Cloudflare Workers AI 변환에 전송되므로, 토글에서 명시 동의를 받습니다.", s), PageBreak()]
 
     story += section("5. MVP 검증 방법", s)
-    story += [FlowDiagram("verification", height=60 * mm), Paragraph("그림 3. 심사자가 입력·분기·근거·행동·실패 증거를 순서대로 확인하는 검증 경로", s["small"]), Spacer(1, 3 * mm)]
+    story += [FlowDiagram("trace", height=60 * mm), Paragraph("그림 3. 심사자가 질문 종료·답변 재호출·감사 실패를 비교하는 검증 경로", s["small"]), Spacer(1, 3 * mm)]
     story += [table([
         ["검증 항목", "심사자 확인 절차", "예상 결과"],
         ["공식 골절 근거", "공식 약관 연결 샘플을 불러오고 손목 골절 사례 실행", "P400073 / 2504와 조항·페이지·면책 동반 근거 표시"],
@@ -524,14 +499,14 @@ def build_feature_spec(path):
         ["입원·수술 구분", "5일 입원 사례 실행 후 수술 여부 질문에 답변", "P600107 / 2112의 4일 이상 입원 요건과 수술 기록 필요를 구분"],
         ["안전 중단", "면책 함정 사례에서 ‘잘 모르겠어요’ 선택", "보상 조항만으로 단정하지 않고 정보 필요 또는 확인 불가"],
         ["AI 보조", "비식별 합성 PDF·이미지로 AI 보조 토글을 켬", "동의 고지, 변환 결과 또는 안전한 실패 안내. 해제 시 텍스트 레이어 PDF·TXT만 처리"],
-        ["평가", "내부 평가 카드 확인", "50건 회귀와 15건 합성 점검을 분리 표시하고 실제 지급 정확도 아님을 고지"],
+        ["평가", "내부 평가 카드 확인", "50건 회귀와 15건 경계 사례를 표시하고 질문 대기·AI 품질 미포함을 고지"],
         ["반응형", "320·390·1024·1440px에서 확인", "가로 스크롤 없이 재배치, 14px 최소 글자와 큰글씨 모드 유지"],
     ], [32 * mm, 82 * mm, 60 * mm], s)]
     story += [PageBreak()]
     story += section("MVP 제한사항과 실행 환경", s)
     story += [table([
         ["현재 증명한 것", "현재 증명하지 않은 것"],
-        ["실제 LangGraph 실행·질문 후 재개", "보험금 지급 정확도·지급 가능성"],
+        ["실제 LangGraph 실행·답변 후 전체 재호출", "체크포인트 재개·보험금 지급 정확도"],
         ["2개 상품·3개 버전의 계약일 선택", "타 보험사·전체 상품 일반화"],
         ["공식 출처·버전·쪽수·필수 근거 유형", "법률·의학적 의미의 최종 해석 정확성"],
         ["근거 부족·버전 불일치 시 안전 중단", "모든 OCR 문서의 변환 정확성"],
@@ -539,7 +514,7 @@ def build_feature_spec(path):
     story += bullet([
         "공식 근거는 2개 상품·3개 버전으로 한정됩니다. 다른 보험사·상품 일반화를 주장하지 않습니다.",
         "AI 보조를 끄면 텍스트 레이어 PDF·TXT만 처리합니다. AI 변환은 저해상도·손상 문서·복잡한 표에서 실패할 수 있습니다.",
-        "50건 회귀와 15건 수작업 점검은 합성 사실관계입니다. 실제 고객 분포·보험금 지급 정확도·보험사 심사를 대표하지 않습니다.",
+        "50건 회귀와 15건 경계 사례는 모두 answer=no인 같은 상품군의 합성 사실관계입니다. 질문 대기·문서 파싱·AI 품질·실제 지급을 대표하지 않습니다.",
         "보험사의 청구 이력·지급심사·확정 금액을 조회하지 않으며, 최종 지급 여부는 보험회사가 결정합니다.",
         "음성 입력은 Web Speech API 지원 브라우저에서만 보조적으로 제공하며, 텍스트 입력으로 전체 흐름을 완료할 수 있습니다.",
     ], s)
