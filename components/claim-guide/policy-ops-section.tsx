@@ -102,7 +102,7 @@ const diffRows: Record<DiffMode, DiffRow[]> = {
 
 const reviewChecklist = [
   "공식 원문 조항·페이지 확인",
-  "근거 그래프 연결 일관성 확인",
+  "필수 근거 묶음 연결 일관성 확인",
   "공식 표준약관 근거 검사 8/8 통과",
   "운영 인덱스 자동 변경 없음",
 ]
@@ -194,7 +194,7 @@ export function PolicyOpsSection() {
               </CardTitle>
               <CardDescription>
                   국가법령정보센터의 실제 PDF를 질병·상해보험 핵심 조항 단위로
-                  추출해 서비스 근거 그래프와 연결했습니다.
+                  추출해 서비스의 버전별 필수 근거 묶음과 연결했습니다.
                 </CardDescription>
                 <CardAction>
                   <ToggleGroup

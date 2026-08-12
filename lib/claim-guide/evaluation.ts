@@ -1,4 +1,4 @@
-import manualHoldout from "@/data/evaluation/holdout-v1.json"
+import manualBoundary from "@/data/evaluation/boundary-v1.json"
 import { runClaimGraph } from "@/lib/claim-guide/agent-graph"
 import type { DocumentBundle } from "@/lib/claim-guide/documents"
 import { CLAIM_STATUS, type ClaimCase } from "@/lib/claim-guide/types"
@@ -13,8 +13,8 @@ type EvaluationFixture = {
 
 export type EvaluationDataset = {
   name: string
-  evaluationType: "deterministic-regression" | "manual-labelled-holdout"
-  independentHoldout: number
+  evaluationType: "deterministic-regression" | "manual-labelled-boundary"
+  boundaryCaseCount: number
   total: number
   supported: number
   unsupported: number
@@ -40,7 +40,7 @@ export type EvaluationSummary = {
   dataset: EvaluationDataset
   metrics: EvaluationMetrics
   counts: EvaluationCounts
-  holdout: {
+  boundary: {
     dataset: EvaluationDataset
     metrics: EvaluationMetrics
     counts: EvaluationCounts
@@ -212,8 +212,8 @@ export function buildEvaluationFixtures(): EvaluationFixture[] {
   return fixtures
 }
 
-function buildManualHoldout(): EvaluationFixture[] {
-  return manualHoldout.cases.map((fixture) => ({
+function buildManualBoundary(): EvaluationFixture[] {
+  return manualBoundary.cases.map((fixture) => ({
     id: fixture.id,
     caseId: fixture.caseId as ClaimCase["id"],
     expectedVersionResolved: fixture.expectedVersionResolved,
@@ -306,9 +306,9 @@ async function evaluateFixtures(fixtures: EvaluationFixture[]) {
 }
 
 export async function evaluateClaimGraph(): Promise<EvaluationSummary> {
-  const [regression, holdout] = await Promise.all([
+  const [regression, boundary] = await Promise.all([
     evaluateFixtures(buildEvaluationFixtures()),
-    evaluateFixtures(buildManualHoldout()),
+    evaluateFixtures(buildManualBoundary()),
   ])
   const generatedAt = new Date().toISOString()
 
@@ -316,7 +316,7 @@ export async function evaluateClaimGraph(): Promise<EvaluationSummary> {
     dataset: {
       name: "official-policy-regression-v2",
       evaluationType: "deterministic-regression",
-      independentHoldout: manualHoldout.cases.length,
+      boundaryCaseCount: manualBoundary.cases.length,
       total: regression.approved + regression.unsupported,
       supported: regression.approved,
       unsupported: regression.unsupported,
@@ -324,23 +324,24 @@ export async function evaluateClaimGraph(): Promise<EvaluationSummary> {
     },
     metrics: regression.metrics,
     counts: regression.counts,
-    holdout: {
+    boundary: {
       dataset: {
-        name: manualHoldout.name,
-        evaluationType: "manual-labelled-holdout",
-        independentHoldout: manualHoldout.cases.length,
-        total: holdout.approved + holdout.unsupported,
-        supported: holdout.approved,
-        unsupported: holdout.unsupported,
-        generatedAt: manualHoldout.reviewedAt,
-        labelMethod: manualHoldout.labelMethod,
+        name: manualBoundary.name,
+        evaluationType: "manual-labelled-boundary",
+        boundaryCaseCount: manualBoundary.cases.length,
+        total: boundary.approved + boundary.unsupported,
+        supported: boundary.approved,
+        unsupported: boundary.unsupported,
+        generatedAt: manualBoundary.reviewedAt,
+        labelMethod: manualBoundary.labelMethod,
       },
-      metrics: holdout.metrics,
-      counts: holdout.counts,
+      metrics: boundary.metrics,
+      counts: boundary.counts,
     },
     limitations: [
       "공식 원문 근거는 우체국보험 2개 상품, 3개 약관 버전의 골절·입원 사례로 제한됩니다.",
-      "회귀 fixture와 holdout은 모두 비식별 합성 사실관계이며 실제 고객·지급 결과 표본이 아닙니다.",
+      "회귀 fixture와 수작업 라벨 경계 사례는 모두 같은 검증 상품군의 비식별 합성 사실관계이며 실제 고객·지급 결과 표본이 아닙니다.",
+      "두 평가 묶음은 answer=no로 실행하므로 질문 대기·답변 후 재호출 경로를 측정하지 않습니다.",
       "이 평가는 약관 버전 선택·근거 완전성·면책 동반·안전 중단을 점검하며 보험금 지급 정확도를 뜻하지 않습니다.",
       "보험사의 지급심사와 기존 청구 이력은 확인 범위 밖입니다.",
     ],

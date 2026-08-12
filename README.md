@@ -23,8 +23,8 @@ npm run build
 ```
 
 테스트는 LangGraph 분석 API, 50건 결정론적 회귀 fixture, 15건 수작업 라벨
-holdout, 표준약관 provenance API, PolicyOps의 승인 payload 검증까지 실행한다.
-회귀·holdout 지표의 100%는 실제 보험금 지급 정확도가 아니다.
+경계 사례, 표준약관 provenance API, PolicyOps의 승인 payload 검증까지 실행한다.
+회귀·경계 사례 지표는 실제 보험금 지급 정확도가 아니다.
 
 ## 제출 문서
 

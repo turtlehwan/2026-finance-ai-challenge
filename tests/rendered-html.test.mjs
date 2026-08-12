@@ -420,16 +420,16 @@ test("evaluation endpoint runs all 50 fixtures through the graph", async () => {
   assert.equal(result.dataset.supported, 36);
   assert.equal(result.dataset.unsupported, 14);
   assert.equal(result.dataset.evaluationType, "deterministic-regression");
-  assert.equal(result.dataset.independentHoldout, 15);
+  assert.equal(result.dataset.boundaryCaseCount, 15);
   assert.equal(result.metrics.versionSelection, 100);
   assert.equal(result.metrics.evidenceCompleteness, 100);
   assert.equal(result.metrics.safeAbstention, 100);
   assert.equal(result.metrics.traceIntegrity, 100);
-  assert.equal(result.holdout.dataset.total, 15);
-  assert.equal(result.holdout.dataset.evaluationType, "manual-labelled-holdout");
-  assert.equal(result.holdout.metrics.versionSelection, 100);
-  assert.equal(result.holdout.metrics.evidenceCompleteness, 100);
-  assert.equal(result.holdout.metrics.safeAbstention, 100);
+  assert.equal(result.boundary.dataset.total, 15);
+  assert.equal(result.boundary.dataset.evaluationType, "manual-labelled-boundary");
+  assert.equal(result.boundary.metrics.versionSelection, 100);
+  assert.equal(result.boundary.metrics.evidenceCompleteness, 100);
+  assert.equal(result.boundary.metrics.safeAbstention, 100);
   assert.match(result.limitations.join(" "), /보험금 지급 정확도/);
 });
 

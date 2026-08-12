@@ -95,7 +95,7 @@ export const ANALYSIS_STEPS = [
 export const POLICY_OPS_STEPS = [
   "공식 원문 확인",
   "핵심 조항 추출",
-  "근거 그래프 연결",
+  "필수 근거 묶음 연결",
   "내부 회귀 테스트",
   "사람 승인 상태",
 ] as const

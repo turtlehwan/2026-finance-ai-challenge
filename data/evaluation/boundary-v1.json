@@ -1,12 +1,12 @@
 {
   "schemaVersion": "1.0",
-  "name": "official-policy-manual-holdout-v1",
-  "evaluationType": "manual-labelled-holdout",
+  "name": "official-policy-manual-boundary-v1",
+  "evaluationType": "manual-labelled-boundary",
   "reviewedAt": "2026-08-05",
-  "labelMethod": "공식 약관 원문·적용기간·조항 유형을 보고 수작업으로 기대 결과를 라벨링했습니다. 내부 회귀 fixture 생성 규칙과 분리된 명시 사례입니다.",
+  "labelMethod": "같은 검증 상품군의 공식 약관 원문·적용기간·조항 유형을 보고 수작업으로 기대 결과를 라벨링한 합성 경계 사례입니다. 독립 표본이 아닙니다.",
   "cases": [
     {
-      "id": "holdout-fracture-2112-01",
+      "id": "boundary-fracture-2112-01",
       "caseId": "fracture",
       "productCode": "P400051",
       "contractDate": "2021-12-01",
@@ -17,7 +17,7 @@
       "expectedApproved": true
     },
     {
-      "id": "holdout-fracture-2112-02",
+      "id": "boundary-fracture-2112-02",
       "caseId": "fracture",
       "productCode": "P400054",
       "contractDate": "2025-04-02",
@@ -28,7 +28,7 @@
       "expectedApproved": true
     },
     {
-      "id": "holdout-fracture-2504-01",
+      "id": "boundary-fracture-2504-01",
       "caseId": "fracture",
       "productCode": "P400073",
       "contractDate": "2025-04-03",
@@ -39,7 +39,7 @@
       "expectedApproved": true
     },
     {
-      "id": "holdout-fracture-2504-02",
+      "id": "boundary-fracture-2504-02",
       "caseId": "fracture",
       "productCode": "P400076",
       "contractDate": "2025-06-04",
@@ -50,7 +50,7 @@
       "expectedApproved": true
     },
     {
-      "id": "holdout-hospital-01",
+      "id": "boundary-hospital-01",
       "caseId": "hospitalization",
       "productCode": "P600107",
       "contractDate": "2021-12-01",
@@ -61,7 +61,7 @@
       "expectedApproved": true
     },
     {
-      "id": "holdout-hospital-02",
+      "id": "boundary-hospital-02",
       "caseId": "hospitalization",
       "productCode": "P600107",
       "contractDate": "2023-06-11",
@@ -72,7 +72,7 @@
       "expectedApproved": true
     },
     {
-      "id": "holdout-hospital-03",
+      "id": "boundary-hospital-03",
       "caseId": "hospitalization",
       "productCode": "P600107",
       "contractDate": "2024-03-20",
@@ -83,7 +83,7 @@
       "expectedApproved": true
     },
     {
-      "id": "holdout-hospital-04",
+      "id": "boundary-hospital-04",
       "caseId": "hospitalization",
       "productCode": "P600107",
       "contractDate": "2025-04-02",
@@ -94,7 +94,7 @@
       "expectedApproved": true
     },
     {
-      "id": "holdout-version-after-2504",
+      "id": "boundary-version-after-2504",
       "caseId": "fracture",
       "productCode": "P400073",
       "contractDate": "2025-06-05",
@@ -105,7 +105,7 @@
       "expectedApproved": false
     },
     {
-      "id": "holdout-version-before-online",
+      "id": "boundary-version-before-online",
       "caseId": "hospitalization",
       "productCode": "P600107",
       "contractDate": "2021-11-30",
@@ -116,7 +116,7 @@
       "expectedApproved": false
     },
     {
-      "id": "holdout-fracture-missing-rider",
+      "id": "boundary-fracture-missing-rider",
       "caseId": "fracture",
       "productCode": "P400051",
       "contractDate": "2024-02-14",
@@ -127,7 +127,7 @@
       "expectedApproved": false
     },
     {
-      "id": "holdout-fracture-non-s52",
+      "id": "boundary-fracture-non-s52",
       "caseId": "fracture",
       "productCode": "P400073",
       "contractDate": "2025-05-10",
@@ -138,7 +138,7 @@
       "expectedApproved": false
     },
     {
-      "id": "holdout-hospital-three-days",
+      "id": "boundary-hospital-three-days",
       "caseId": "hospitalization",
       "productCode": "P600107",
       "contractDate": "2024-03-20",
@@ -149,7 +149,7 @@
       "expectedApproved": false
     },
     {
-      "id": "holdout-hospital-no-coverage",
+      "id": "boundary-hospital-no-coverage",
       "caseId": "hospitalization",
       "productCode": "P600107",
       "contractDate": "2024-03-20",
@@ -160,7 +160,7 @@
       "expectedApproved": false
     },
     {
-      "id": "holdout-unknown-product",
+      "id": "boundary-unknown-product",
       "caseId": "fracture",
       "productCode": "P999999",
       "contractDate": "2025-05-10",

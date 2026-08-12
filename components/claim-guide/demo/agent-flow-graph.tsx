@@ -96,13 +96,13 @@ const graphDefinition: Array<{
   {
     id: "coverage_matcher",
     label: "보장 항목 대조",
-    role: "Agent",
+    role: "Tool",
     position: { x: 675, y: 0 },
     icon: NetworkIcon,
   },
   {
     id: "graph_retriever",
-    label: "근거 그래프 검색",
+    label: "필수 근거 묶음 확인",
     role: "Tool",
     position: { x: 675, y: 215 },
     icon: RouteIcon,
@@ -124,14 +124,14 @@ const graphDefinition: Array<{
   {
     id: "evidence_auditor",
     label: "근거 감사",
-    role: "Agent",
+    role: "Gate",
     position: { x: 225, y: 215 },
     icon: ShieldCheckIcon,
   },
   {
     id: "action_planner",
     label: "다음 행동 정리",
-    role: "Agent",
+    role: "Tool",
     position: { x: 0, y: 215 },
     icon: BotIcon,
   },

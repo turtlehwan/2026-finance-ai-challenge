@@ -225,7 +225,7 @@ function coverageMatcherAgent(state: ClaimGraphStateValue) {
         {
           nodeId: "coverage_matcher",
           label: "보장 항목 대조",
-          role: "Agent",
+          role: "Tool",
           status:
             caseMatched ? "completed" : "attention",
           inputSummary: `${state.facts.coverages.length}개 특약 · ${state.facts.diagnosisCodes.join(", ") || "진단코드 없음"}`,
@@ -266,7 +266,7 @@ function graphRetrievalTool(state: ClaimGraphStateValue) {
       traceEvent(
         {
           nodeId: "graph_retriever",
-          label: "근거 그래프 검색",
+          label: "필수 근거 묶음 확인",
           role: "Tool",
           status:
             !["fracture", "hospitalization"].includes(state.caseId) || evidence.length
@@ -277,8 +277,8 @@ function graphRetrievalTool(state: ClaimGraphStateValue) {
               ? `${state.resolution.policy.id} · ${state.caseId === "hospitalization" ? "입원·수술" : "S52"}`
               : "검증된 보험약관 버전 없음",
           outputSummary: evidence.length
-            ? `${evidence.length}개 근거 · ${clauseTypes.size}개 관계 유형 확장`
-            : "관계 확장 근거 없음",
+            ? `${evidence.length}개 근거 · ${clauseTypes.size}개 조항 유형 동반 조회`
+            : "검증된 필수 근거 없음",
         },
         startedAt,
       ),
@@ -322,7 +322,7 @@ function humanReviewNode(state: ClaimGraphStateValue) {
           label: "사람 확인",
           role: "Human",
           status: "waiting",
-          inputSummary: "Agent가 식별한 누락 정보",
+          inputSummary: "사례별 확인 질문 1건",
           outputSummary: getClaimCase(state.caseId).question,
         },
         startedAt,
@@ -409,7 +409,7 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
         {
           nodeId: "evidence_auditor",
           label: "근거 감사",
-          role: "Agent",
+          role: "Gate",
           status: approved ? "completed" : "blocked",
           inputSummary: `${state.evidence.length}개 근거 · 사용자 답변 ${getAnswerLabel(state.answer)}`,
           outputSummary: approved
@@ -445,7 +445,7 @@ function actionPlannerAgent(state: ClaimGraphStateValue) {
         {
           nodeId: "action_planner",
           label: "다음 행동 정리",
-          role: "Agent",
+          role: "Tool",
           status: state.audit?.approved ? "completed" : "blocked",
           inputSummary: `${baseResults.length}개 후보 · Evidence Audit`,
           outputSummary: state.audit?.approved

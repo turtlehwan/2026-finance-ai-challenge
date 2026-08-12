@@ -148,7 +148,7 @@ export function EvaluationPanel() {
               <span>
                 {summary ? (
                   <strong>
-                    회귀 {summary.dataset.total}건 · holdout {summary.holdout.dataset.total}건
+                    회귀 {summary.dataset.total}건 · 경계 사례 {summary.boundary.dataset.total}건
                   </strong>
                 ) : (
                   <Skeleton className="h-5 w-28" />
@@ -210,8 +210,8 @@ export function EvaluationPanel() {
                             버전이 어긋나거나 사실이 빠진 사례{" "}
                             {summary.dataset.unsupported}건을 같은 LangGraph에
                             넣었습니다. 매번 같은 답이 나오는 결정론적 회귀이고,
-                            따로 떼어 둔 검증셋은 {summary.dataset.independentHoldout}
-                            건입니다.
+                            별도로 수작업 기대값을 적은 경계 사례는 {summary.dataset.boundaryCaseCount}
+                            건입니다. 같은 검증 상품군이므로 독립 표본은 아닙니다.
                           </p>
                           <ul>
                             {summary.limitations.map((limitation) => (
@@ -227,19 +227,19 @@ export function EvaluationPanel() {
                 </Accordion>
               </div>
 
-              <div className="regression-block regression-block-holdout">
+              <div className="regression-block regression-block-boundary">
                 <h4>
                   {summary
-                    ? `수작업 라벨 holdout ${summary.holdout.dataset.total}건`
-                    : "수작업 라벨 holdout을 불러오는 중"}
+                    ? `수작업 라벨 경계 사례 ${summary.boundary.dataset.total}건`
+                    : "수작업 라벨 경계 사례를 불러오는 중"}
                 </h4>
                 <p>
-                  회귀 fixture 생성 규칙과 분리해 공식 원문·적용기간·조항 유형을
-                  사람이 라벨링한 합성 사실관계입니다. 실제 지급 결과 표본은 아닙니다.
+                  같은 검증 상품군에서 공식 원문·적용기간·조항 유형을 보고 사람이
+                  기대값을 적은 합성 사실관계입니다. 독립 표본이나 실제 지급 결과가 아닙니다.
                 </p>
                 <dl className="regression-list">
                   {checkRows.map((row) => (
-                    <div key={`holdout-${row.key}`}>
+                    <div key={`boundary-${row.key}`}>
                       <dt>
                         {row.label}
                         <span>{row.scope}</span>
@@ -247,9 +247,9 @@ export function EvaluationPanel() {
                       <dd>
                         {summary ? (
                           <>
-                            <strong>{summary.holdout.counts[row.key]}</strong>
+                            <strong>{summary.boundary.counts[row.key]}</strong>
                             <span>
-                              / {row.denominator(summary.holdout.dataset)}건
+                              / {row.denominator(summary.boundary.dataset)}건
                             </span>
                           </>
                         ) : (
@@ -259,9 +259,9 @@ export function EvaluationPanel() {
                     </div>
                   ))}
                 </dl>
-                {summary?.holdout.dataset.labelMethod ? (
+                {summary?.boundary.dataset.labelMethod ? (
                   <p className="evaluation-label-method">
-                    라벨 방법: {summary.holdout.dataset.labelMethod}
+                    라벨 방법: {summary.boundary.dataset.labelMethod}
                   </p>
                 ) : null}
               </div>
