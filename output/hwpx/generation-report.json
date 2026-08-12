@@ -6,24 +6,24 @@
     {
       "label": "기획서",
       "path": "output/hwpx/2026_금융_AI_Challenge_기획서_팀정보입력필요.hwpx",
-      "sha256": "77a3c515885dd605fe56c63856f070c550f963b31677c86f0cdd99daea590fe1",
-      "bytes": 151247,
+      "sha256": "44848fe2c4d8cba9417c927a8d4741209b1eb50aed3bcacbe8ab7f8220d69b2c",
+      "bytes": 444232,
       "templateSha256": "15ba1f89595f15c7582abec69bf4f06dc99864c5ac778a400d224f38ce95c039",
       "rendererPageCount": 1,
       "a4SliceCount": 8,
-      "entryCount": 11,
+      "entryCount": 14,
       "renderWarnings": [],
       "renderSvg": "tmp/hwpx-render/2026_금융_AI_Challenge_기획서_팀정보입력필요.svg"
     },
     {
       "label": "기능명세서",
       "path": "output/hwpx/2026_금융_AI_Challenge_기능명세서_팀정보입력필요.hwpx",
-      "sha256": "3505772339938de8f1cac9b00f7941e470e160398ac2f6c0dce75771c4228156",
-      "bytes": 171527,
+      "sha256": "6a65002d843b2603f1908f7f216e7e21bcf6288c6b4404f03edafacf32a780ae",
+      "bytes": 345877,
       "templateSha256": "83be2cd46904d54717d624272f3af88c99b5b06c45cb12490f93688d31604a4b",
       "rendererPageCount": 1,
-      "a4SliceCount": 7,
-      "entryCount": 11,
+      "a4SliceCount": 9,
+      "entryCount": 13,
       "renderWarnings": [],
       "renderSvg": "tmp/hwpx-render/2026_금융_AI_Challenge_기능명세서_팀정보입력필요.svg"
     }
