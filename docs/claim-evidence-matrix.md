@@ -1,7 +1,7 @@
 ---
 title: "보험금 길잡이 Agent 주장·의사결정 근거 대장"
 status: "shared"
-updated: "2026-08-12"
+updated: "2026-08-13"
 scope: "2026 금융 AI Challenge 예선"
 ---
 
@@ -21,6 +21,7 @@ scope: "2026 금융 AI Challenge 예선"
 | `E` 외부 선례 | 다른 연도·다른 트랙의 사례 또는 연구 | 현재 대회 평가 기준으로 오인하지 않게 표시한다 |
 | `H` 팀 가설 | 문제를 풀기 위한 제품·UX·심사 전략 가설 | 효과를 보장하지 않고 검증 계획과 함께 쓴다 |
 | `S` 합성·제한 | 개인 데이터 부재, 합성 fixture, 미구현 범위 | 실제 데이터·정확도로 표현하지 않는다 |
+| `P` 향후 계획 | 아직 운영 범위가 아닌 확장·실험 계획 | 현재 구현과 분리하고 승인·평가 조건을 쓴다 |
 
 ## 2. 핵심 주장과 근거
 
@@ -36,14 +37,15 @@ scope: "2026 금융 AI Challenge 예선"
 | 결과는 보험금 확정이 아니라 확인할 항목·서류·공식 경로다 | `C` | `lib/claim-guide/agent-graph.ts`, `lib/claim-guide/types.ts`, 결과 상태 enum 및 화면 고지 | Evidence Auditor 실패 시 중단, `확인 권장/정보 필요/가능성 낮음/확인 불가`만 반환 | “보험금 지급 여부는 보험회사가 결정”을 결과 옆에 고정 |
 | 가입 당시 적용 약관을 먼저 선택한다 | `C` + `O` | 우체국보험 약관 API의 적용기간·상품코드, `lib/claim-guide/policies.ts`, `data/policies/manifest.json` | P400051~054, P400073~076, P600107을 계약일과 대조 | “최신 약관 검색”이 아니라 “상품코드·계약일·판매기간 대조”라고 씀 |
 | 결과에 실제 공식 약관 원문·쪽수·해시가 연결된다 | `C` + `O` | `data/policies/manifest.json`, `data/policies/`, `components/claim-guide/demo/results-panel.tsx` | 상품 2개·버전 3개, 조항 유형·페이지·SHA-256 표시 | “실제 약관 3개 버전 범위”를 명시 |
-| 보험금 길잡이는 단순 챗봇이 아니라 사건 처리 Agent다 | `C` | `lib/claim-guide/agent-graph.ts`: Case Analyst → 문서 도구 → 버전 선택 → Coverage Matcher → 정보 게이트 → Evidence Auditor → Action Planner | 실제 LangGraph trace를 React Flow로 렌더링 | 프레임워크 이름보다 노드 입력·출력·분기 이유를 먼저 보여줌 |
+| 보험금 길잡이는 단발 답변이 아니라 제한형 Agentic 실행 계약이다 | `C` | `lib/claim-guide/agent-graph.ts`: 사건 구조화 → 문서 도구 → 버전 선택 → 보장 규칙 → 정보 게이트 → 근거 감사 → 다음 행동 | 실제 LangGraph trace를 React Flow로 렌더링 | 자율 다중 Agent보다 상태·도구·조건 분기·사람 확인·감사를 증거로 제시 |
 | AI를 과장하지 않고 제한된 역할만 사용한다 | `C` | `lib/claim-guide/workers-ai.ts`, `/api/documents/ai-convert`, `/api/ai/interpret` | 동의 시 문서 변환·마스킹 누락 사실 후보만 Workers AI 사용 | 범용 LLM·임베딩·Hybrid RAG를 현재 구현했다고 쓰지 않음 |
 | 실제 사용자가 넣은 PDF/TXT도 같은 파이프라인에서 처리된다 | `C` + `S` | `components/claim-guide/demo/document-intake.tsx`, `lib/claim-guide/documents.ts` | 텍스트 레이어 PDF/TXT 기본, AI 동의 시 이미지·스캔 변환 | 개인 문서·진료 이력은 저장·학습하지 않으며 심사 기본 사례는 합성이라고 고지 |
-| 새 약관을 계속 반영할 수 있다 | `C` + `H` | `components/claim-guide/policy-ops-section.tsx`, `lib/claim-guide/policies.ts`, `lib/claim-guide/evaluation.ts` | 변경 감지·Diff·회귀 평가·승인 시연은 동작; 자동 운영 인덱스 반영은 아님 | “자가 학습” 대신 “사람 승인형 PolicyOps 지식 갱신” |
-| GraphRAG 방식의 관계 확장이 구현됐다 | `C` | `lib/claim-guide/agent-graph.ts`의 `graphRetrievalTool`, `lib/claim-guide/policies.ts` | 보험 도메인 관계 그래프에서 정의·지급·면책·서류를 결정론적으로 확장 | Microsoft GraphRAG 전체 패키지나 임베딩 검색으로 오인시키지 않음 |
+| 새 약관을 계속 반영할 수 있다 | `C` + `P` | `components/claim-guide/policy-ops-section.tsx`, `lib/claim-guide/policies.ts`, `lib/claim-guide/evaluation.ts` | 변경 감지·Diff·회귀 평가·승인 시연은 동작; 자동 운영 인덱스 반영은 아님 | “자가 학습” 대신 “사람 승인형 PolicyOps 지식 갱신” |
+| 버전 확정 후 필수 근거 5유형을 동반 조회한다 | `C` | `lib/claim-guide/agent-graph.ts`의 `graphRetrievalTool`, `lib/claim-guide/policies.ts` | 선택된 버전에 저장된 정의·지급·제한·면책·서류 근거 반환 | 관계 그래프 순회·GraphRAG·임베딩 검색으로 표현하지 않음 |
+| 첫 실행 질문 후 답변을 반영한다 | `C` | `human_review`가 `END`로 종료되고, 클라이언트가 답변을 넣어 `runClaimGraph`를 다시 호출 | 답변 전 결과 미확정·답변 후 전체 trace 재실행 | 체크포인터·영속 상태 기반 중단 지점 재개로 표현하지 않음 |
 | Agent 실행 그래프를 시각화하면 이해가 쉬워진다 | `H` + `C` | `@xyflow/react` 실행 캔버스 + 실제 trace, `docs/submission-visuals.md` | 심사자가 실행 순서·대기·검증 실패를 화면에서 확인 가능 | “심사 이해를 돕는 설계 가설”로 두고 사용성 관찰을 계속 수집 |
 | 실제성과 안전 경계를 동시에 보여주는 것이 상위권 전략이다 | `H` + `E` | 2025 대상 SIGNAL 보도 [ZDNET](https://zdnet.co.kr/view/?no=20251112134842)와 현재 대회 요구의 결합 | 전년도 사례는 참고 선례이며 현재 대회의 공식 점수표가 아님 | “전년도 선례에서 얻은 설계 가설”로 명시 |
-| 50건 회귀·15건 수작업 점검 수치가 실제 지급 정확도다 | `S` | `lib/claim-guide/evaluation.ts`, `data/evaluation/holdout-v1.json` | 모두 합성 사실관계; 지급 이력·보험사 심사 데이터 없음 | “실행 계약의 회귀·스모크 점검”이라고만 표기하고 `100% 정확도` 표현 금지 |
+| 50건 회귀·15건 수작업 점검 수치가 실제 지급 정확도다 | `S` | `lib/claim-guide/evaluation.ts`, `data/evaluation/boundary-v1.json` | 같은 상품군의 합성 사실관계이며 모두 `answer: no`로 실행; 지급 이력·질문 대기·문서 파싱·AI 품질 미포함 | “규칙 경계값 회귀”와 “수작업 라벨 경계 사례”로만 표기하고 `독립 검증셋`·`100% 정확도` 표현 금지 |
 | 인용 검증 통과가 보험금 해석의 정확성을 증명한다 | `S` | `lib/claim-guide/agent-graph.ts`의 Evidence Auditor | 출처·버전·쪽수·필수 근거 유형의 존재와 연결성을 검사 | 법률·의학적 의미의 최종 해석이나 지급 정확성을 증명한다고 쓰지 않음 |
 
 ## 3. 현재 1위 경쟁력 점검
@@ -55,7 +57,7 @@ scope: "2026 금융 AI Challenge 예선"
 |---|---|---|---|---|
 | 문제가 실제 금융 현안인가? | 강함(인접 근거) | 공식 숨은보험금 미인지 근거와 청구 절차·설명 조사 | 청구 전 확인 공백과 가족 보호자 가설의 직접 사용자 근거 부족 | 공식 사실과 제품 가설을 분리하고 5~10명 과업 인터뷰 진행 |
 | 실제 데이터가 있는가? | 강함(범위 제한) | 우체국보험 원문·판매기간·페이지·해시 | 개인 증권·지급 이력은 합성/미공개 | 상품 2개·버전 3개 범위를 화면·문서에서 동일하게 고지 |
-| AI/Agent가 실제로 움직이는가? | 강함 | LangGraph 조건 분기·Human-in-the-loop·Workers AI opt-in | 범용 LLM 검색·임베딩 RAG는 미구현 | 기능명세서에서 구현·비구현을 계속 분리 |
+| AI/Agent가 실제로 움직이는가? | 강함(제한형) | LangGraph 조건 분기·첫 실행 질문 종료·Workers AI opt-in | 체크포인트 재개·범용 LLM 검색·임베딩 RAG는 미구현 | Agent 숫자보다 실행 계약과 AI 권한을 공개 |
 | 결과를 믿을 수 있는가? | 강함(계약 검증) | 면책 동반 검증, 인용·버전 실패 시 안전 중단 | 의미 해석·실제 지급 정확도 평가 불가 | 수작업 합성 점검의 라벨·한계와 실패 사례를 함께 공개 |
 | 90초 안에 차별성을 이해하는가? | 보통~강함 | 실제 trace·Claim Evidence Map·Action Pack | 화면에서 보여줄 정보가 많아질 위험 | 기본 여정은 사례→질문→결과, 심화 근거는 요청 시 전면화 |
 | 제출 실수가 없는가? | 보완 중 | 문서 단일 진실 원천, 공식 HWPX 내용 이식·구조 검증·공개 안전본 생성 | 구성원 실명 입력, 한컴 쪽 나눔·PDF 렌더, 최종 URL 접근 기간은 별도 확인 필요 | 실명본을 Git 제외 경로에 생성하고 한컴 전 페이지 확인·live smoke test 실행 |
@@ -65,7 +67,8 @@ scope: "2026 금융 AI Challenge 예선"
 | 위험한 표현 | 바꿔 쓸 표현 |
 |---|---|
 | AI가 받을 보험금을 찾아준다 | AI가 약관 근거로 확인할 보장 항목을 선별한다 |
-| Self-RAG·Hybrid RAG를 구현했다 | 결정론적 관계 탐색과 제한형 Workers AI 보조를 구현했다 |
+| Self-RAG·Hybrid RAG·GraphRAG를 구현했다 | 계약일 버전 선택과 필수 근거 5유형 동반 조회, 제한형 Workers AI 보조를 구현했다 |
+| 질문 뒤 그래프가 중단 지점에서 재개된다 | 첫 실행은 질문에서 끝나고, 답변을 포함해 같은 사건의 전체 그래프를 다시 호출한다 |
 | 약관이 자동으로 자가 학습된다 | 신규 문서를 감지하고 회귀 평가·사람 승인을 거쳐 지식 구조를 갱신한다 |
 | 50건에서 100% 정확하다 | 합성 회귀 fixture에서 네 실행 계약의 통과 여부를 점검했다 |
 | 숨은보험금 10.3조 원을 찾아준다 | 10.3조 원은 이미 지급액이 확정된 숨은보험금 통계이며, 서비스는 별도의 청구 전 확인 공백을 다룬다 |
@@ -80,8 +83,8 @@ scope: "2026 금융 AI Challenge 예선"
 - [조사 근거](./research-basis.md): 공식 요구·실제 데이터·외부 선례·한계
 - [출처·권리 판단](./source-rights-and-official-sources.md): 공공 원문·이용조건·규제 경계
 - [`data/policies/manifest.json`](../data/policies/manifest.json): 상품·버전·페이지·해시 provenance
-- [`data/evaluation/holdout-v1.json`](../data/evaluation/holdout-v1.json): 생성 규칙과 분리한 합성 holdout
-- [`docs/submission-visuals.md`](./submission-visuals.md): 실제 trace·근거 경로 시각화
+- [`data/evaluation/boundary-v1.json`](../data/evaluation/boundary-v1.json): 수작업 기대값을 둔 같은 상품군의 합성 경계 사례
+- [`docs/submission-visuals.md`](./submission-visuals.md): 버전 경계·필수 근거·실행 결과 비교 시각화
 
 이 대장은 기획서의 새로운 주장 저장소가 아니다. 주장을 추가하거나 범위를
 바꾸면 먼저 이 표의 근거 등급과 검증 상태를 갱신하고, 그 다음 기획서와

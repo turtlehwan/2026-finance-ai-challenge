@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="700" viewBox="0 0 1400 700">
+  <rect width="1400" height="700" rx="36" fill="#F6F3EC"/>
+  <text x="72" y="82" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="34" font-weight="700" fill="#142B3A">지급 문장 하나가 아니라, 필수 근거 5유형을 함께 확인합니다</text>
+  <text x="72" y="126" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="22" fill="#51606A">선택된 한 약관 버전 안에서 근거를 묶고, 하나라도 빠지면 결과를 차단합니다.</text>
+  <rect x="72" y="206" width="230" height="174" rx="26" fill="#173F67"/>
+  <text x="187" y="258" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" fill="#D8E6F3">입력 사실</text>
+  <text x="187" y="306" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="28" font-weight="800" fill="#FFFFFF">상품코드·계약일</text>
+  <text x="187" y="344" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" fill="#D8E6F3">보장·치료 정보</text>
+  <path d="M320 293H380" stroke="#8C9AA2" stroke-width="7" stroke-linecap="round"/>
+  <polygon points="380,293 358,278 358,308" fill="#8C9AA2"/>
+  <rect x="398" y="184" width="226" height="218" rx="26" fill="#1D5B4F"/>
+  <text x="511" y="263" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="23" fill="#DCEBE5">Version Resolver</text>
+  <text x="511" y="316" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="31" font-weight="800" fill="#FFFFFF">약관 버전</text>
+  <text x="511" y="353" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="31" font-weight="800" fill="#FFFFFF">먼저 확정</text>
+  <path d="M642 293H694" stroke="#8C9AA2" stroke-width="7" stroke-linecap="round"/>
+  <polygon points="694,293 672,278 672,308" fill="#8C9AA2"/>
+  <rect x="712" y="166" width="390" height="254" rx="28" fill="#FFFFFF" stroke="#CBD4D8" stroke-width="3"/>
+  <text x="907" y="212" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" font-weight="700" fill="#51606A">같은 버전의 필수 근거</text>
+  <g font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="24" font-weight="800" text-anchor="middle">
+    <rect x="746" y="240" width="104" height="60" rx="18" fill="#E6EFEA"/><text x="798" y="279" fill="#1D5B4F">정의</text>
+    <rect x="864" y="240" width="104" height="60" rx="18" fill="#E7EEF6"/><text x="916" y="279" fill="#173F67">지급</text>
+    <rect x="982" y="240" width="86" height="60" rx="18" fill="#FFF0D6"/><text x="1025" y="279" fill="#995109">제한</text>
+    <rect x="806" y="320" width="104" height="60" rx="18" fill="#F7E6E1"/><text x="858" y="359" fill="#9A3E2F">면책</text>
+    <rect x="924" y="320" width="126" height="60" rx="18" fill="#EFEAF7"/><text x="987" y="359" fill="#5B467B">서류</text>
+  </g>
+  <path d="M1120 293H1170" stroke="#8C9AA2" stroke-width="7" stroke-linecap="round"/>
+  <polygon points="1170,293 1148,278 1148,308" fill="#8C9AA2"/>
+  <rect x="1188" y="206" width="140" height="174" rx="26" fill="#FFFFFF" stroke="#1D5B4F" stroke-width="4"/>
+  <text x="1258" y="263" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" font-weight="700" fill="#1D5B4F">근거 감사</text>
+  <text x="1258" y="309" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="22" font-weight="800" fill="#142B3A">출처·버전</text>
+  <text x="1258" y="343" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="22" font-weight="800" fill="#142B3A">조항·쪽수</text>
+  <rect x="72" y="486" width="1256" height="142" rx="24" fill="#142B3A"/>
+  <text x="112" y="542" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="22" fill="#C9D4DA">감사 통과</text>
+  <text x="112" y="590" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="29" font-weight="800" fill="#FFFFFF">확인 권장 · 정보 필요 · 가능성 낮음</text>
+  <line x1="750" y1="516" x2="750" y2="600" stroke="#566873" stroke-width="2"/>
+  <text x="790" y="542" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="22" fill="#F2C5B8">감사 실패</text>
+  <text x="790" y="590" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="29" font-weight="800" fill="#FFFFFF">확인 불가 · 공식 문의</text>
+</svg>
