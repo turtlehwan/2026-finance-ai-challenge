@@ -13,7 +13,10 @@ type EvaluationFixture = {
 
 export type EvaluationDataset = {
   name: string
-  evaluationType: "deterministic-regression" | "manual-labelled-boundary"
+  evaluationType:
+    | "deterministic-regression"
+    | "rule-reviewed-boundary"
+    | "synthetic-safety-regression"
   boundaryCaseCount: number
   total: number
   supported: number
@@ -41,6 +44,11 @@ export type EvaluationSummary = {
   metrics: EvaluationMetrics
   counts: EvaluationCounts
   boundary: {
+    dataset: EvaluationDataset
+    metrics: EvaluationMetrics
+    counts: EvaluationCounts
+  }
+  safety: {
     dataset: EvaluationDataset
     metrics: EvaluationMetrics
     counts: EvaluationCounts
@@ -229,6 +237,37 @@ function buildManualBoundary(): EvaluationFixture[] {
   }))
 }
 
+function buildSafetyScenarios(): EvaluationFixture[] {
+  return [
+    {
+      id: "safety-maturity-without-policy",
+      caseId: "maturity",
+      expectedVersionResolved: false,
+      expectedApproved: false,
+      bundle: makeBundle({
+        id: "safety-maturity-without-policy",
+        productCode: "P000000",
+        contractDate: "2012-03-20",
+        coverage: "중도보험금",
+        diagnosisCode: null,
+      }),
+    },
+    {
+      id: "safety-exclusion-without-policy",
+      caseId: "exclusion",
+      expectedVersionResolved: false,
+      expectedApproved: false,
+      bundle: makeBundle({
+        id: "safety-exclusion-without-policy",
+        productCode: "P000000",
+        contractDate: "2024-05-10",
+        coverage: "교통상해 특별약관",
+        diagnosisCode: null,
+      }),
+    },
+  ]
+}
+
 function percentage(passed: number, total: number) {
   return total ? Math.round((passed / total) * 1000) / 10 : 0
 }
@@ -276,7 +315,7 @@ async function evaluateFixtures(fixtures: EvaluationFixture[]) {
       nodeIds.has("case_analyst") &&
       nodeIds.has("document_tool") &&
       nodeIds.has("version_resolver") &&
-      nodeIds.has("graph_retriever") &&
+      nodeIds.has("evidence_bundle") &&
       nodeIds.has("evidence_auditor") &&
       nodeIds.has("action_planner") &&
       result.trace.at(-1)?.status === expectedLastStatus
@@ -306,9 +345,10 @@ async function evaluateFixtures(fixtures: EvaluationFixture[]) {
 }
 
 export async function evaluateClaimGraph(): Promise<EvaluationSummary> {
-  const [regression, boundary] = await Promise.all([
+  const [regression, boundary, safety] = await Promise.all([
     evaluateFixtures(buildEvaluationFixtures()),
     evaluateFixtures(buildManualBoundary()),
+    evaluateFixtures(buildSafetyScenarios()),
   ])
   const generatedAt = new Date().toISOString()
 
@@ -327,7 +367,7 @@ export async function evaluateClaimGraph(): Promise<EvaluationSummary> {
     boundary: {
       dataset: {
         name: manualBoundary.name,
-        evaluationType: "manual-labelled-boundary",
+        evaluationType: "rule-reviewed-boundary",
         boundaryCaseCount: manualBoundary.cases.length,
         total: boundary.approved + boundary.unsupported,
         supported: boundary.approved,
@@ -338,10 +378,26 @@ export async function evaluateClaimGraph(): Promise<EvaluationSummary> {
       metrics: boundary.metrics,
       counts: boundary.counts,
     },
+    safety: {
+      dataset: {
+        name: "unsupported-scenario-safety-v1",
+        evaluationType: "synthetic-safety-regression",
+        boundaryCaseCount: 2,
+        total: safety.approved + safety.unsupported,
+        supported: safety.approved,
+        unsupported: safety.unsupported,
+        generatedAt,
+        labelMethod:
+          "공식 상품 약관이 연결되지 않은 두 시나리오가 추천을 만들지 않고 안전 중단하는지 확인합니다.",
+      },
+      metrics: safety.metrics,
+      counts: safety.counts,
+    },
     limitations: [
       "공식 원문 근거는 우체국보험 2개 상품, 3개 약관 버전의 골절·입원 사례로 제한됩니다.",
-      "회귀 fixture와 수작업 라벨 경계 사례는 모두 같은 검증 상품군의 비식별 합성 사실관계이며 실제 고객·지급 결과 표본이 아닙니다.",
-      "두 평가 묶음은 answer=no로 실행하므로 질문 대기·답변 후 재호출 경로를 측정하지 않습니다.",
+      "회귀 fixture와 규칙 재확인 경계 사례는 모두 같은 검증 상품군의 비식별 합성 사실관계이며 실제 고객·지급 결과 표본이 아닙니다.",
+      "세 평가 묶음은 answer=no로 실행하므로 질문 대기·답변 후 재호출 경로를 측정하지 않습니다.",
+      "별도 안전성 회귀 2건은 공식 약관이 연결되지 않은 중도보험금·면책 시나리오의 추천 차단만 확인합니다.",
       "이 평가는 약관 버전 선택·근거 완전성·면책 동반·안전 중단을 점검하며 보험금 지급 정확도를 뜻하지 않습니다.",
       "보험사의 지급심사와 기존 청구 이력은 확인 범위 밖입니다.",
     ],

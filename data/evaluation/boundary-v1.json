@@ -1,9 +1,9 @@
 {
   "schemaVersion": "1.0",
   "name": "official-policy-manual-boundary-v1",
-  "evaluationType": "manual-labelled-boundary",
+  "evaluationType": "rule-reviewed-boundary",
   "reviewedAt": "2026-08-05",
-  "labelMethod": "같은 검증 상품군의 공식 약관 원문·적용기간·조항 유형을 보고 수작업으로 기대 결과를 라벨링한 합성 경계 사례입니다. 독립 표본이 아닙니다.",
+  "labelMethod": "같은 검증 상품군의 공식 약관 원문·적용기간·조항 유형을 보고 사람이 규칙 기대값을 기록한 합성 경계 사례입니다. 독립 holdout이 아닙니다.",
   "cases": [
     {
       "id": "boundary-fracture-2112-01",

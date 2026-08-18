@@ -1,6 +1,5 @@
 import type { Answer, ClaimCase, ClaimResult } from "@/lib/claim-guide/types"
 import {
-  getFractureEvidence,
   getPolicyEvidence,
   type PolicyVersion,
 } from "@/lib/claim-guide/policies"
@@ -12,18 +11,29 @@ import {
 export const claimCases: ClaimCase[] = [
   {
     id: "fracture",
+    claimType: "fracture",
+    evidenceMode: "official-policy",
     title: "손목 골절 — 실손만 청구한 경우",
-    shortTitle: "손목 골절",
+    shortTitle: "골절 · 2504",
     description:
       "넘어져 손목 골절 치료를 받고 실손만 청구했습니다. 같은 보험의 정액 보장 항목은 확인하지 않은 합성 사례입니다.",
     category: "보장 항목이 있는 줄 몰랐던 사례",
     question: "이번 치료에서 수술을 받으셨나요?",
     questionHint: "상해수술비는 진단명만으로는 확인하기 어렵습니다.",
+    sampleFacts: {
+      productCode: "P400073",
+      contractDate: "2025-04-03",
+      coverages: ["무배당 생활재해보장특약Ⅱ 2504"],
+      diagnosisCodes: ["S52.5"],
+      accidentDate: "2025-05-22",
+      treatment: "부목 고정 후 통원 치료",
+      hospitalDays: null,
+    },
     facts: [
       { label: "사고일", value: "2025. 05. 22" },
       { label: "진단명", value: "좌측 요골 원위부 골절 (S52.5)" },
       { label: "가입특약", value: "생활재해보장특약Ⅱ 2504" },
-      { label: "계약", value: "P400073 · 2025. 05. 10" },
+      { label: "계약", value: "P400073 · 2025. 04. 03" },
     ],
     evidence: [
       { label: "사건", meta: "손목 골절" },
@@ -45,7 +55,54 @@ export const claimCases: ClaimCase[] = [
     ],
   },
   {
+    id: "fracture-legacy",
+    claimType: "fracture",
+    evidenceMode: "official-policy",
+    title: "같은 손목 골절 — 이전 약관으로 확인",
+    shortTitle: "골절 · 2112",
+    description:
+      "같은 S52.5 손목 골절 사건이라도 상품코드와 계약일이 하루 앞이면 2112 보험약관을 선택해야 하는 비식별 합성 사례입니다.",
+    category: "가입 시점에 따라 근거 쪽수가 달라지는 사례",
+    question: "이번 치료에서 수술을 받으셨나요?",
+    questionHint: "수술 여부와 별개로 골절 보장 근거는 가입 당시 보험약관에서 확인합니다.",
+    sampleFacts: {
+      productCode: "P400051",
+      contractDate: "2025-04-02",
+      coverages: ["무배당 생활재해보장특약Ⅱ 2112"],
+      diagnosisCodes: ["S52.5"],
+      accidentDate: "2025-05-22",
+      treatment: "부목 고정 후 통원 치료",
+      hospitalDays: null,
+    },
+    facts: [
+      { label: "사고일", value: "2025. 05. 22" },
+      { label: "진단명", value: "좌측 요골 원위부 골절 (S52.5)" },
+      { label: "가입특약", value: "생활재해보장특약Ⅱ 2112" },
+      { label: "계약", value: "P400051 · 2025. 04. 02" },
+    ],
+    evidence: [
+      { label: "사건", meta: "같은 손목 골절" },
+      { label: "진단", meta: "S52.5" },
+      { label: "약관 버전", meta: "P400051 · 2112" },
+      { label: "지급사유", meta: "특약 제3조 · p.491" },
+      { label: "면책·제한", meta: "특약 제4·8조" },
+      { label: "다음 행동", meta: CLAIM_STATUS.recommended },
+    ],
+    actionTitle: "이전 약관의 재해골절보험금을 확인하세요",
+    documents: [
+      "진단명·질병분류코드가 있는 진단서",
+      "상품코드와 계약일이 보이는 보험가입증서",
+      "사고일을 확인할 수 있는 자료",
+    ],
+    questions: [
+      "이 사고로 골절진단비를 이미 청구했나요?",
+      "P400051 계약에 생활재해보장특약Ⅱ가 실제로 가입되어 있나요?",
+    ],
+  },
+  {
     id: "hospitalization",
+    claimType: "hospitalization",
+    evidenceMode: "official-policy",
     title: "5일 입원 — 입원보험금과 수술보험금 구분",
     shortTitle: "5일 입원",
     description:
@@ -54,6 +111,15 @@ export const claimCases: ClaimCase[] = [
     question: "이번 치료에서 약관상 수술에 해당할 수 있는 수술을 받으셨나요?",
     questionHint:
       "수술 여부만으로 수술보험금을 확정하지 않습니다. 수술기록과 약관의 수술 분류표가 더 필요합니다.",
+    sampleFacts: {
+      productCode: "P600107",
+      contractDate: "2024-03-20",
+      coverages: ["입원보험금", "수술보험금"],
+      diagnosisCodes: ["S52.5"],
+      accidentDate: "2024-05-10",
+      treatment: "골절 직접 치료를 위해 5일 입원",
+      hospitalDays: 5,
+    },
     facts: [
       { label: "입원", value: "2024. 05. 10~05. 14 · 5일" },
       { label: "진단명", value: "좌측 요골 원위부 골절 (S52.5)" },
@@ -81,6 +147,8 @@ export const claimCases: ClaimCase[] = [
   },
   {
     id: "maturity",
+    claimType: "unsupported",
+    evidenceMode: "synthetic-safety",
     title: "오래된 계약 — 중도보험금 발생 추정",
     shortTitle: "오래된 계약",
     description:
@@ -89,6 +157,15 @@ export const claimCases: ClaimCase[] = [
     question: "계약 중 중도 인출이나 해지를 한 적이 있나요?",
     questionHint:
       "발생 후보 시점은 추정할 수 있지만, 실제 지급·인출 이력은 보험사 내부 데이터 확인이 필요합니다.",
+    sampleFacts: {
+      productCode: null,
+      contractDate: "2012-03-20",
+      coverages: ["중도보험금"],
+      diagnosisCodes: [],
+      accidentDate: null,
+      treatment: null,
+      hospitalDays: null,
+    },
     facts: [
       { label: "계약일", value: "2012. 03. 20" },
       { label: "유지기간", value: "14년 4개월" },
@@ -99,8 +176,9 @@ export const claimCases: ClaimCase[] = [
       { label: "사건", meta: "장기 유지" },
       { label: "진단", meta: "해당 없음" },
       { label: "보장 항목", meta: "중도보험금" },
-      { label: "지급사유", meta: "제21조" },
-      { label: "면책", meta: "지급 이력", warning: true },
+      { label: "상품코드", meta: "미확인", warning: true },
+      { label: "상품 약관", meta: "공식 근거 미연결", warning: true },
+      { label: "근거 감사", meta: "안전 중단", warning: true },
       { label: "다음 행동", meta: "공식 조회" },
     ],
     actionTitle: "중도보험금이 생겼는지 확인하는 법",
@@ -116,6 +194,8 @@ export const claimCases: ClaimCase[] = [
   },
   {
     id: "exclusion",
+    claimType: "unsupported",
+    evidenceMode: "synthetic-safety",
     title: "면책 함정 — 조항만 보면 오답",
     shortTitle: "면책 함정",
     description:
@@ -124,6 +204,15 @@ export const claimCases: ClaimCase[] = [
     question: "사고 당시 음주운전 또는 무면허 운전이었나요?",
     questionHint:
       "고위험 조건은 Agent가 임의로 채우지 않습니다. 답변이 없으면 근거 경로를 멈추고 판단을 보류합니다.",
+    sampleFacts: {
+      productCode: null,
+      contractDate: null,
+      coverages: ["교통상해 특별약관"],
+      diagnosisCodes: [],
+      accidentDate: null,
+      treatment: "교통사고 상해 치료",
+      hospitalDays: null,
+    },
     facts: [
       { label: "사고", value: "교통사고 · 상해 치료" },
       { label: "가입특약", value: "교통상해 특별약관" },
@@ -134,8 +223,8 @@ export const claimCases: ClaimCase[] = [
       { label: "사건", meta: "교통사고" },
       { label: "진단", meta: "상해 치료" },
       { label: "보장 항목", meta: "교통상해" },
-      { label: "지급사유", meta: "제9조" },
-      { label: "면책", meta: "사고 조건", warning: true },
+      { label: "상품 약관", meta: "공식 근거 미연결", warning: true },
+      { label: "면책 근거", meta: "검증 불가", warning: true },
       { label: "다음 행동", meta: CLAIM_STATUS.unavailable },
     ],
     actionTitle: "면책에 걸리는지 먼저 확인하세요",
@@ -166,7 +255,9 @@ export function buildResults(
   answer: Answer | null,
   policy?: PolicyVersion | null,
 ): ClaimResult[] {
-  if (caseId === "hospitalization") {
+  const claimCase = getClaimCase(caseId)
+
+  if (claimCase.claimType === "hospitalization") {
     const evidence = getPolicyEvidence(policy?.id)
     const findEvidence = (...types: string[]) =>
       evidence.filter((clause) => types.includes(clause.type))
@@ -214,13 +305,13 @@ export function buildResults(
   if (caseId === "maturity") {
     return [
       {
-        ...RESULT_STATE.recommended,
-        title: "중도보험금 발생 시점",
+        ...RESULT_STATE.unavailable,
+        title: "중도보험금 발생 시점 후보",
         reason:
-          "계약일과 약관의 경과기간 조건을 대조하면 2022년이 최초 후보 시점입니다.",
+          "이 합성 사례에는 상품코드와 공식 상품 약관이 연결되어 있지 않아 발생 시점을 검증할 수 없습니다.",
         detail:
-          "발생 가능 시점의 역산 결과이며 미지급 금액을 뜻하지 않습니다. 보험사 계약·지급 내역에서 실제 상태를 확인해야 합니다.",
-        clause: "주계약 약관 제21조 · 중도보험금 지급",
+          "2012년 계약과 10년 경과라는 가정만으로 2022년을 실제 발생 시점처럼 제시하지 않습니다. 보험가입증서의 상품코드와 가입 당시 보험약관, 보험사 지급 이력이 모두 필요합니다.",
+        clause: "공식 상품 약관 근거 미연결",
       },
       {
         ...(answer === "unknown" || answer === null
@@ -249,30 +340,28 @@ export function buildResults(
   if (caseId === "exclusion") {
     return [
       {
-        ...(answer === "no"
-          ? RESULT_STATE.recommended
-          : answer === "yes"
-            ? RESULT_STATE.unavailable
-            : RESULT_STATE.informationRequired),
+        ...(answer === null
+          ? RESULT_STATE.informationRequired
+          : RESULT_STATE.unavailable),
         title: "교통상해 보장 항목",
         reason:
           answer === "yes"
             ? "답변이 면책 검토가 필요한 고위험 조건과 연결됩니다."
             : answer === "no"
-              ? "현재 답변에서는 해당 면책 조건이 확인되지 않았습니다."
+              ? "해당 면책 조건이 아니라는 답변만으로 보장 여부를 확인할 수 없습니다."
               : "사고 당시 운전 조건이 확인되지 않았습니다.",
         detail:
-          "보상 조항만으로 지급 가능성을 제시하지 않습니다. 면책 조항, 사실확인 자료, 보험사의 최종 심사가 함께 필요합니다.",
-        clause: "교통상해 특별약관 제9조 · 제11조",
+          "이 합성 사례에는 상품코드와 공식 특별약관 원문이 연결되어 있지 않습니다. 보상 조항과 면책 조항을 검증할 수 없으므로 지급 가능성을 제시하지 않습니다.",
+        clause: "공식 상품 약관 근거 미연결",
       },
       {
         ...RESULT_STATE.unavailable,
-        title: "보상 조항 단독 검색 결과",
+        title: "보상·면책 근거 묶음",
         reason:
-          "대응하는 면책·정의 조항이 함께 검색되지 않으면 결과를 생성하지 않습니다.",
+          "출처·버전·쪽수가 확인된 보상·면책 조항이 함께 연결되지 않았습니다.",
         detail:
-          "Evidence Auditor가 근거 경로의 누락을 감지해 초안 결과를 차단한 상태입니다.",
-        clause: "Evidence Validator 규칙 EV-02",
+          "근거 감사 단계가 공식 원문 부재를 확인해 모든 결과를 ‘확인 불가’로 끝냅니다.",
+        clause: "근거 감사: 공식 원문·버전·쪽수 미확인",
       },
       {
         ...RESULT_STATE.unavailable,
@@ -285,9 +374,7 @@ export function buildResults(
     ]
   }
 
-  const fractureEvidence = policy
-    ? getPolicyEvidence(policy.id)
-    : getFractureEvidence()
+  const fractureEvidence = policy ? getPolicyEvidence(policy.id) : []
   const findEvidence = (...types: string[]) =>
     fractureEvidence.filter((clause) => types.includes(clause.type))
 
@@ -296,16 +383,21 @@ export function buildResults(
       ...RESULT_STATE.recommended,
       title: "재해골절(치아파절제외)보험금",
       reason:
-        `보험가입증서에서 확인한 상품코드 ${policy?.productCodes[0] ?? "P400073"}의 생활재해보장특약Ⅱ와 S52.5 진단을 ${policy?.versionLabel ?? "2504"} 보험약관 근거로 대조했습니다.`,
+        policy
+          ? `보험가입증서에서 확인한 상품코드 ${policy.productCodes[0]}의 생활재해보장특약Ⅱ와 S52.5 진단을 ${policy.versionLabel} 보험약관 근거로 대조했습니다.`
+          : "상품코드·계약일과 일치하는 검증된 보험약관을 찾지 못했습니다.",
       detail:
-        "확인 권장 상태이며 지급 확정이 아닙니다. 재해 여부, 보장개시일, 기존 청구 여부와 공통 면책은 보험사 공식 채널에서 함께 확인해야 합니다.",
+        "확인 권장 상태이며 지급 확정이 아닙니다. 별표1의 10만 원은 특약보험가입금액 1,000만 원 기준 약관 원문 금액이며, 개인별 확정 지급액 계산이 아닙니다. 재해 여부, 보장개시일, 기존 청구 여부와 공통 면책은 보험사 공식 채널에서 함께 확인해야 합니다.",
       clause:
-        `무배당 생활재해보장특약Ⅱ ${policy?.versionLabel ?? "2504"} 제3조·제4조·제6조·제8조·별표1·별표5`,
+        policy
+          ? `무배당 생활재해보장특약Ⅱ ${policy.versionLabel} 제3조·제4조·제6조·제8조·제9조·별표1·별표5`
+          : "검증된 적용 보험약관 미확인",
       citations: findEvidence(
         "coverage",
         "definition",
         "limitation",
         "exclusion",
+        "procedure",
         "benefit-table",
         "classification",
       ),

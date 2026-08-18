@@ -1,4 +1,8 @@
-import type { EvidenceCitation, PolicySource } from "@/lib/claim-guide/types"
+import type {
+  EvidenceCitation,
+  PolicySource,
+  SupportedClaimType,
+} from "@/lib/claim-guide/types"
 
 export type PolicyClauseType =
   | "coverage"
@@ -32,7 +36,7 @@ export type PolicyVersion = {
   evidenceReady: boolean
   riderName: string
   clauses: PolicyClause[]
-  supportedCaseIds: Array<"fracture" | "hospitalization">
+  supportedClaimTypes: SupportedClaimType[]
 }
 
 export type PolicyResolution =
@@ -396,7 +400,7 @@ export const policyVersions: PolicyVersion[] = [
     evidenceReady: true,
     riderName: "무배당 생활재해보장특약Ⅱ 2112",
     clauses: fractureClauses2112,
-    supportedCaseIds: ["fracture"],
+    supportedClaimTypes: ["fracture"],
   },
   {
     id: "wide-health-2504",
@@ -414,7 +418,7 @@ export const policyVersions: PolicyVersion[] = [
     evidenceReady: true,
     riderName: "무배당 생활재해보장특약Ⅱ 2504",
     clauses: fractureClauses2504,
-    supportedCaseIds: ["fracture"],
+    supportedClaimTypes: ["fracture"],
   },
   {
     id: "online-admission-surgery-2112",
@@ -432,7 +436,7 @@ export const policyVersions: PolicyVersion[] = [
     evidenceReady: true,
     riderName: "주계약",
     clauses: hospitalizationClauses2112,
-    supportedCaseIds: ["hospitalization"],
+    supportedClaimTypes: ["hospitalization"],
   },
 ]
 
@@ -492,16 +496,22 @@ export function getFractureEvidence(policyId = "wide-health-2504") {
   return getPolicyEvidence(policyId)
 }
 
-export function getRequiredEvidenceTypes(policy: PolicyVersion | null) {
-  if (policy?.supportedCaseIds.includes("hospitalization")) {
+export function getRequiredEvidenceTypes(
+  claimType: SupportedClaimType | null,
+) {
+  if (claimType === "hospitalization") {
     return ["coverage", "definition", "limitation", "exclusion", "procedure"] as const
   }
 
-  return [
-    "coverage",
-    "definition",
-    "limitation",
-    "exclusion",
-    "classification",
-  ] as const
+  if (claimType === "fracture") {
+    return [
+      "coverage",
+      "definition",
+      "limitation",
+      "exclusion",
+      "classification",
+    ] as const
+  }
+
+  return [] as const
 }

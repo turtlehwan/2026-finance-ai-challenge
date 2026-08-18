@@ -1,5 +1,24 @@
 export type Answer = "yes" | "no" | "unknown"
 
+export type SupportedClaimType = "fracture" | "hospitalization"
+
+export type ClaimCaseId =
+  | "fracture"
+  | "fracture-legacy"
+  | "hospitalization"
+  | "maturity"
+  | "exclusion"
+
+export type ClaimFacts = {
+  productCode: string | null
+  contractDate: string | null
+  coverages: string[]
+  diagnosisCodes: string[]
+  accidentDate: string | null
+  treatment: string | null
+  hospitalDays: number | null
+}
+
 export type ResultTone = "positive" | "warning" | "muted" | "blocked"
 
 export const CLAIM_STATUS = {
@@ -27,7 +46,7 @@ export type AgentTraceEvent = {
     | "document_tool"
     | "version_resolver"
     | "coverage_matcher"
-    | "graph_retriever"
+    | "evidence_bundle"
     | "information_gate"
     | "human_review"
     | "evidence_auditor"
@@ -37,7 +56,7 @@ export type AgentTraceEvent = {
   status: Exclude<AgentNodeStatus, "pending">
   inputSummary: string
   outputSummary: string
-  durationMs: number
+  durationMs: number | null
 }
 
 export type EvidenceAudit = {
@@ -45,6 +64,8 @@ export type EvidenceAudit = {
   versionMatched: boolean
   citationValidated: boolean
   exclusionIncluded: boolean
+  caseSupported: boolean
+  requiredEvidenceTypes: string[]
   standardTermsIncluded?: boolean
   findings: string[]
 }
@@ -78,6 +99,14 @@ export type ClaimResult = {
   citations?: EvidenceCitation[]
 }
 
+export type ActionPlan = {
+  title: string
+  documents: string[]
+  questions: string[]
+  officialUrl: string
+  evidenceStatus: "verified" | "blocked"
+}
+
 export type EvidenceNode = {
   label: string
   meta: string
@@ -93,13 +122,16 @@ export type EvidenceCitation = {
 }
 
 export type ClaimCase = {
-  id: "fracture" | "hospitalization" | "maturity" | "exclusion"
+  id: ClaimCaseId
+  claimType: SupportedClaimType | "unsupported"
+  evidenceMode: "official-policy" | "synthetic-safety"
   title: string
   shortTitle: string
   description: string
   category: string
   question: string
   questionHint: string
+  sampleFacts: ClaimFacts
   facts: { label: string; value: string }[]
   evidence: EvidenceNode[]
   actionTitle: string
@@ -114,8 +146,12 @@ export type AnalysisResponse = {
   results: ClaimResult[]
   trace: AgentTraceEvent[]
   audit: EvidenceAudit | null
+  actionPlan: ActionPlan | null
   policyResolution: import("@/lib/claim-guide/policies").PolicyResolution | null
   sources: PolicySource[]
-  dataMode: "user-document" | "official-sample" | "synthetic-safety-case"
+  dataMode:
+    | "user-document"
+    | "official-policy-linked-synthetic-case"
+    | "synthetic-safety-case"
   generatedAt: string
 }

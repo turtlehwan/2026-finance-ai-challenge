@@ -11,25 +11,17 @@ import {
 } from "@/lib/claim-guide/policies"
 import {
   CLAIM_STATUS,
+  type ActionPlan,
   type AgentTraceEvent,
   type AnalysisResponse,
   type Answer,
   type ClaimCase,
+  type ClaimFacts,
   type ClaimResult,
   type EvidenceAudit,
 } from "@/lib/claim-guide/types"
 
-type GraphFacts = {
-  productCode: string | null
-  contractDate: string | null
-  coverages: string[]
-  diagnosisCodes: string[]
-  accidentDate: string | null
-  treatment: string | null
-  hospitalDays: number | null
-}
-
-const emptyFacts: GraphFacts = {
+const emptyFacts: ClaimFacts = {
   productCode: null,
   contractDate: null,
   coverages: [],
@@ -53,7 +45,7 @@ const ClaimGraphState = Annotation.Root({
   caseId: Annotation<ClaimCase["id"]>(),
   answer: Annotation<Answer | null>(),
   documentBundle: Annotation<DocumentBundle | null>(),
-  facts: Annotation<GraphFacts>(),
+  facts: Annotation<ClaimFacts>(),
   resolution: Annotation<PolicyResolution | null>(),
   evidence: Annotation<PolicyClause[]>(),
   results: Annotation<ClaimResult[]>(),
@@ -63,6 +55,7 @@ const ClaimGraphState = Annotation.Root({
   }),
   needsAnswer: Annotation<boolean>(),
   audit: Annotation<EvidenceAudit | null>(),
+  actionPlan: Annotation<ActionPlan | null>(),
 })
 
 type ClaimGraphStateValue = typeof ClaimGraphState.State
@@ -105,9 +98,8 @@ function caseAnalystAgent(state: ClaimGraphStateValue) {
 function documentNormalizerTool(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
   const bundleFacts = state.documentBundle?.combinedFacts
-  const isFracture = state.caseId === "fracture"
-  const isHospitalization = state.caseId === "hospitalization"
-  const facts: GraphFacts = bundleFacts
+  const claimCase = getClaimCase(state.caseId)
+  const facts: ClaimFacts = bundleFacts
     ? {
         productCode: bundleFacts.productCode,
         contractDate: bundleFacts.contractDate,
@@ -117,27 +109,7 @@ function documentNormalizerTool(state: ClaimGraphStateValue) {
         treatment: bundleFacts.treatment,
         hospitalDays: bundleFacts.hospitalDays,
       }
-    : isFracture
-      ? {
-          productCode: "P400073",
-          contractDate: "2025-05-10",
-          coverages: ["무배당 생활재해보장특약Ⅱ 2504"],
-          diagnosisCodes: ["S52.5"],
-          accidentDate: "2025-05-22",
-          treatment: "부목 고정 후 통원 치료",
-          hospitalDays: null,
-        }
-      : isHospitalization
-        ? {
-            productCode: "P600107",
-            contractDate: "2024-03-20",
-            coverages: ["입원보험금", "수술보험금"],
-            diagnosisCodes: ["S52.5"],
-            accidentDate: "2024-05-10",
-            treatment: "골절 직접 치료를 위해 5일 입원",
-            hospitalDays: 5,
-          }
-      : emptyFacts
+    : claimCase.sampleFacts
 
   return {
     facts,
@@ -196,6 +168,8 @@ function versionResolverTool(state: ClaimGraphStateValue) {
 
 function coverageMatcherAgent(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
+  const claimCase = getClaimCase(state.caseId)
+  const claimType = claimCase.claimType
   const policy = state.resolution?.status === "resolved" ? state.resolution.policy : null
   const hasRider = state.facts.coverages.some((coverage) =>
     coverage.includes("생활재해보장특약"),
@@ -208,16 +182,15 @@ function coverageMatcherAgent(state: ClaimGraphStateValue) {
   )
   const hasHospitalizationFact = (state.facts.hospitalDays ?? 0) >= 4
   const hasSupportedPolicy = Boolean(
-    policy?.supportedCaseIds.includes(
-      state.caseId as "fracture" | "hospitalization",
-    ),
+    claimType !== "unsupported" &&
+      policy?.supportedClaimTypes.includes(claimType),
   )
   const caseMatched =
-    state.caseId === "fracture"
+    claimType === "fracture"
       ? hasRider && hasFractureCode && hasSupportedPolicy
-      : state.caseId === "hospitalization"
+      : claimType === "hospitalization"
         ? hasAdmissionCoverage && hasHospitalizationFact && hasSupportedPolicy
-        : true
+        : false
 
   return {
     trace: [
@@ -230,15 +203,15 @@ function coverageMatcherAgent(state: ClaimGraphStateValue) {
             caseMatched ? "completed" : "attention",
           inputSummary: `${state.facts.coverages.length}개 특약 · ${state.facts.diagnosisCodes.join(", ") || "진단코드 없음"}`,
           outputSummary:
-            state.caseId === "fracture" && caseMatched
+            claimType === "fracture" && caseMatched
               ? "생활재해 특약 ↔ S52 골절 후보 연결"
-              : state.caseId === "hospitalization" && caseMatched
+              : claimType === "hospitalization" && caseMatched
                 ? `입원 보장 ↔ ${state.facts.hospitalDays}일 입원 후보 연결`
-              : state.caseId === "fracture"
+              : claimType === "fracture"
                 ? "특약 또는 S52 진단 근거 추가 필요"
-                : state.caseId === "hospitalization"
+                : claimType === "hospitalization"
                   ? "입원 보장·4일 이상 입원 사실·검증 약관 확인 필요"
-                  : "합성 안전 시나리오 규칙 연결",
+                  : "공식 상품 약관이 연결되지 않은 안전 중단 시나리오",
         },
         startedAt,
       ),
@@ -246,13 +219,14 @@ function coverageMatcherAgent(state: ClaimGraphStateValue) {
   }
 }
 
-function graphRetrievalTool(state: ClaimGraphStateValue) {
+function evidenceBundleTool(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
+  const claimCase = getClaimCase(state.caseId)
+  const claimType = claimCase.claimType
   const policy = state.resolution?.status === "resolved" ? state.resolution.policy : null
   const supportsCurrentCase = Boolean(
-    policy?.supportedCaseIds.includes(
-      state.caseId as "fracture" | "hospitalization",
-    ),
+    claimType !== "unsupported" &&
+      policy?.supportedClaimTypes.includes(claimType),
   )
   const evidence =
     supportsCurrentCase && policy?.evidenceReady
@@ -265,16 +239,13 @@ function graphRetrievalTool(state: ClaimGraphStateValue) {
     trace: [
       traceEvent(
         {
-          nodeId: "graph_retriever",
+          nodeId: "evidence_bundle",
           label: "필수 근거 묶음 확인",
           role: "Tool",
-          status:
-            !["fracture", "hospitalization"].includes(state.caseId) || evidence.length
-              ? "completed"
-              : "attention",
+          status: evidence.length ? "completed" : "attention",
           inputSummary:
             state.resolution?.status === "resolved"
-              ? `${state.resolution.policy.id} · ${state.caseId === "hospitalization" ? "입원·수술" : "S52"}`
+              ? `${state.resolution.policy.id} · ${claimType === "hospitalization" ? "입원·수술" : claimType === "fracture" ? "S52" : "지원 범위 밖"}`
               : "검증된 보험약관 버전 없음",
           outputSummary: evidence.length
             ? `${evidence.length}개 근거 · ${clauseTypes.size}개 조항 유형 동반 조회`
@@ -312,9 +283,11 @@ function informationGate(state: ClaimGraphStateValue) {
 
 function humanReviewNode(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
+  const policy =
+    state.resolution?.status === "resolved" ? state.resolution.policy : null
 
   return {
-    results: buildResults(state.caseId, null),
+    results: buildResults(state.caseId, null, policy),
     trace: [
       traceEvent(
         {
@@ -333,8 +306,10 @@ function humanReviewNode(state: ClaimGraphStateValue) {
 
 function evidenceAuditorAgent(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
-  const isFracture = state.caseId === "fracture"
-  const isHospitalization = state.caseId === "hospitalization"
+  const claimCase = getClaimCase(state.caseId)
+  const claimType = claimCase.claimType
+  const isFracture = claimType === "fracture"
+  const isHospitalization = claimType === "hospitalization"
   const policy = state.resolution?.status === "resolved" ? state.resolution.policy : null
   const types = new Set(state.evidence.map((clause) => clause.type))
   const versionMatched = state.resolution?.status === "resolved"
@@ -348,8 +323,11 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
         clause.page > 0 &&
         clause.article.length > 0,
     )
-  const requiredTypes = getRequiredEvidenceTypes(policy)
-  const coverageAndLimits = requiredTypes.every((type) => types.has(type))
+  const requiredTypes = getRequiredEvidenceTypes(
+    claimType === "unsupported" ? null : claimType,
+  )
+  const coverageAndLimits =
+    requiredTypes.length > 0 && requiredTypes.every((type) => types.has(type))
   const caseFactsMatched =
     !isFracture ||
     (state.facts.coverages.some((coverage) =>
@@ -360,35 +338,36 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
     !isHospitalization ||
     (state.facts.coverages.some((coverage) => coverage.includes("입원")) &&
       (state.facts.hospitalDays ?? 0) >= 4)
-  const approved = isFracture || isHospitalization
-    ? Boolean(
-        versionMatched &&
-          citationValidated &&
-          coverageAndLimits &&
-          caseFactsMatched &&
-          hospitalizationFactsMatched &&
-          policy?.supportedCaseIds.includes(
-            state.caseId as "fracture" | "hospitalization",
-          ),
-      )
-    : true
+  const caseSupported = Boolean(
+    claimType !== "unsupported" &&
+      policy?.supportedClaimTypes.includes(claimType),
+  )
+  const approved = Boolean(
+    caseSupported &&
+      versionMatched &&
+      citationValidated &&
+      coverageAndLimits &&
+      caseFactsMatched &&
+      hospitalizationFactsMatched,
+  )
   const findings = approved
     ? [
         "계약일 기준 보험약관 버전 확인",
-        "지급·정의·제한·면책 근거 동반",
+        `${requiredTypes.length}개 필수 근거 유형 동반`,
         "공식 원문 URL·페이지 확인",
         "지급 확정 표현 없음",
       ]
     : [
+        claimType === "unsupported"
+          ? "공식 상품 약관을 연결하지 않은 안전 중단 시나리오"
+          : "",
         !versionMatched ? "적용 보험약관 버전 미확인" : "",
-        !coverageAndLimits ? "지급·면책 근거 경로 불완전" : "",
+        !coverageAndLimits ? "사례별 필수 근거 묶음 불완전" : "",
         !caseFactsMatched ? "가입특약 또는 S52 진단 근거 미확인" : "",
         !hospitalizationFactsMatched
           ? "입원 보장 또는 4일 이상 입원 사실 미확인"
           : "",
-        !policy?.supportedCaseIds.includes(
-          state.caseId as "fracture" | "hospitalization",
-        )
+        !caseSupported && claimType !== "unsupported"
           ? "현재 상품 약관은 이 사례 유형의 검증 범위 밖입니다."
           : "",
         !citationValidated ? "공식 원문 인용 검증 실패" : "",
@@ -397,8 +376,9 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
     approved,
     versionMatched,
     citationValidated,
-    exclusionIncluded:
-      types.has("exclusion") || (!isFracture && !isHospitalization),
+    exclusionIncluded: types.has("exclusion"),
+    caseSupported,
+    requiredEvidenceTypes: [...requiredTypes],
     findings,
   }
 
@@ -413,7 +393,7 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
           status: approved ? "completed" : "blocked",
           inputSummary: `${state.evidence.length}개 근거 · 사용자 답변 ${getAnswerLabel(state.answer)}`,
           outputSummary: approved
-            ? "4개 안전성 검사 통과"
+            ? `${requiredTypes.length}개 필수 근거와 공식 메타데이터 검사 통과`
             : findings.join(" · "),
         },
         startedAt,
@@ -424,10 +404,11 @@ function evidenceAuditorAgent(state: ClaimGraphStateValue) {
 
 function actionPlannerAgent(state: ClaimGraphStateValue) {
   const startedAt = performance.now()
+  const claimCase = getClaimCase(state.caseId)
   const policy = state.resolution?.status === "resolved" ? state.resolution.policy : null
   const baseResults = buildResults(state.caseId, state.answer, policy)
   const results =
-    ["fracture", "hospitalization"].includes(state.caseId) && !state.audit?.approved
+    !state.audit?.approved
       ? baseResults.map((result) => ({
           ...result,
           status: CLAIM_STATUS.unavailable,
@@ -437,9 +418,19 @@ function actionPlannerAgent(state: ClaimGraphStateValue) {
             "상품코드·계약일·가입특약·진단코드를 확인한 뒤 다시 분석해 주세요.",
         }))
       : baseResults
+  const actionPlan: ActionPlan = {
+    title: state.audit?.approved
+      ? claimCase.actionTitle
+      : "공식 약관과 계약 정보를 먼저 확인하세요",
+    documents: claimCase.documents,
+    questions: claimCase.questions,
+    officialUrl: "https://cont.insure.or.kr/",
+    evidenceStatus: state.audit?.approved ? "verified" : "blocked",
+  }
 
   return {
     results,
+    actionPlan,
     trace: [
       traceEvent(
         {
@@ -449,7 +440,7 @@ function actionPlannerAgent(state: ClaimGraphStateValue) {
           status: state.audit?.approved ? "completed" : "blocked",
           inputSummary: `${baseResults.length}개 후보 · Evidence Audit`,
           outputSummary: state.audit?.approved
-            ? `${results.length}개 상태와 준비물 목록 생성`
+            ? `${results.length}개 상태 확정 · 준비물 ${actionPlan.documents.length}개 · 질문 ${actionPlan.questions.length}개`
             : "확인 불가 상태로 안전 종료",
         },
         startedAt,
@@ -463,7 +454,7 @@ const claimGraph = new StateGraph(ClaimGraphState)
   .addNode("document_tool", documentNormalizerTool)
   .addNode("version_resolver", versionResolverTool)
   .addNode("coverage_matcher", coverageMatcherAgent)
-  .addNode("graph_retriever", graphRetrievalTool)
+  .addNode("evidence_bundle", evidenceBundleTool)
   .addNode("information_gate", informationGate)
   .addNode("human_review", humanReviewNode)
   .addNode("evidence_auditor", evidenceAuditorAgent)
@@ -472,8 +463,8 @@ const claimGraph = new StateGraph(ClaimGraphState)
   .addEdge("case_analyst", "document_tool")
   .addEdge("document_tool", "version_resolver")
   .addEdge("version_resolver", "coverage_matcher")
-  .addEdge("coverage_matcher", "graph_retriever")
-  .addEdge("graph_retriever", "information_gate")
+  .addEdge("coverage_matcher", "evidence_bundle")
+  .addEdge("evidence_bundle", "information_gate")
   .addConditionalEdges(
     "information_gate",
     (state) => (state.needsAnswer ? "human_review" : "evidence_auditor"),
@@ -500,7 +491,7 @@ export async function runClaimGraph(input: {
             status: "completed",
             inputSummary: "마스킹된 문서 미리보기",
             outputSummary: `${aiProcessing.model ?? "Workers AI"}가 누락 사실 후보만 정리`,
-            durationMs: 1,
+            durationMs: null,
           },
         ]
       : []
@@ -515,6 +506,7 @@ export async function runClaimGraph(input: {
     trace: preGraphTrace,
     needsAnswer: input.answer === null,
     audit: null,
+    actionPlan: null,
   })
 
   return {
@@ -524,20 +516,21 @@ export async function runClaimGraph(input: {
     results: state.results,
     trace: state.trace,
     audit: state.audit,
+    actionPlan: state.actionPlan,
     policyResolution: state.resolution,
-    sources:
-      ["fracture", "hospitalization"].includes(state.caseId) &&
-      state.resolution?.status === "resolved" &&
-      state.resolution.policy.supportedCaseIds.includes(
-        state.caseId as "fracture" | "hospitalization",
-      )
+    sources: (() => {
+      const claimType = getClaimCase(state.caseId).claimType
+      return claimType !== "unsupported" &&
+        state.resolution?.status === "resolved" &&
+        state.resolution.policy.supportedClaimTypes.includes(claimType)
         ? [state.resolution.policy.source]
-        : [],
+        : []
+    })(),
     dataMode:
       state.documentBundle && state.documentBundle.documents.length
         ? "user-document"
-        : ["fracture", "hospitalization"].includes(state.caseId)
-          ? "official-sample"
+        : getClaimCase(state.caseId).evidenceMode === "official-policy"
+          ? "official-policy-linked-synthetic-case"
           : "synthetic-safety-case",
     generatedAt: new Date().toISOString(),
   }
