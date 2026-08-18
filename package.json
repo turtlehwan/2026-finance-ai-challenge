@@ -49,6 +49,7 @@
     "eslint-config-next": "^16.2.12",
     "jszip": "3.10.1",
     "kordoc": "4.7.2",
+    "sharp": "0.34.5",
     "react-server-dom-webpack": "^19.2.8",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",

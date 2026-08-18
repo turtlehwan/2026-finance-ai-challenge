@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import { execFileSync } from "node:child_process";
 import { readFile, writeFile, mkdir, access } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import path from "node:path";
@@ -8,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 import JSZip from "jszip";
 import { parse, renderHwpxToSvg, validateHwpx } from "kordoc";
+import sharp from "sharp";
 
 const HP_NS = "http://www.hancom.co.kr/hwpml/2011/paragraph";
 const HC_NS = "http://www.hancom.co.kr/hwpml/2011/core";
@@ -24,6 +24,7 @@ const RENDER_DIR = path.join(ROOT_DIR, "tmp", "hwpx-render");
 const PUBLIC_OUTPUT_DIR = path.join(ROOT_DIR, "output", "hwpx");
 const PRIVATE_OUTPUT_DIR = path.join(ROOT_DIR, "output", "private", "submission");
 const A4_PAGE_HEIGHT_PT = 841.86;
+const DETERMINISTIC_ZIP_DATE = new Date("2026-01-01T00:00:00.000Z");
 
 const VISUALS = {
   "policy-version-boundary": {
@@ -66,7 +67,7 @@ const DOCUMENTS = [
   {
     id: "proposal",
     label: "기획서",
-    sourcePath: path.join(ROOT_DIR, "docs", "planning-proposal.md"),
+    sourcePath: path.join(ROOT_DIR, "docs", "submission", "proposal", "report.md"),
     templateUrl:
       "https://cfiles.dacon.co.kr/competitions/daker_2026-finance-ai-challenge/%28%EC%B2%A8%EB%B6%801%29%202026%20%EA%B8%88%EC%9C%B5%20AI%20Challenge%20%EA%B3%B5%EB%AA%A8%EC%A0%84%20%EA%B8%B0%ED%9A%8D%EC%84%9C.hwpx",
     templateSha256:
@@ -84,6 +85,8 @@ const DOCUMENTS = [
     requiredMarkers: [
       "보험금 길잡이 Agent",
       "가입 당시 보험약관",
+      "일요일 밤, 실손 청구만 끝낸 가족",
+      "69.6점",
       "10.3조 원",
       "P400073",
       "첫 실행 질문 종료",
@@ -95,7 +98,13 @@ const DOCUMENTS = [
   {
     id: "feature-specification",
     label: "기능명세서",
-    sourcePath: path.join(ROOT_DIR, "docs", "feature-specification.md"),
+    sourcePath: path.join(
+      ROOT_DIR,
+      "docs",
+      "submission",
+      "feature-specification",
+      "report.md",
+    ),
     templateUrl:
       "https://cfiles.dacon.co.kr/competitions/daker_2026-finance-ai-challenge/%28%EC%B2%A8%EB%B6%802%29%202026%20%EA%B8%88%EC%9C%B5%20AI%20Challenge%20%EA%B8%B0%EB%8A%A5%EB%AA%85%EC%84%B8%EC%84%9C.hwpx",
     templateSha256:
@@ -112,6 +121,7 @@ const DOCUMENTS = [
     appendSection: { sourceSection: 6, targetSection: 5, heading: "실제 데이터·기술 출처" },
     requiredMarkers: [
       "실제 LangGraph",
+      "대표 과업",
       "P400073",
       "@xyflow/react",
       "https://finai26.turtlehwan.dev",
@@ -635,7 +645,7 @@ async function assertPreservedParts(zip, expectedHashes, label) {
 async function ensureVisualPngs() {
   await mkdir(RENDER_DIR, { recursive: true });
   for (const visual of Object.values(VISUALS)) {
-    execFileSync("/usr/bin/sips", ["-s", "format", "png", visual.svgPath, "--out", visual.pngPath], { stdio: "ignore" });
+    await sharp(visual.svgPath).png().toFile(visual.pngPath);
   }
 }
 
@@ -673,6 +683,7 @@ async function writeHwpx(zip) {
   if (!mimetypeEntry) throw new Error("HWPX mimetype 엔트리가 없습니다.");
   const mimetype = await mimetypeEntry.async("string");
   zip.file("mimetype", mimetype, { compression: "STORE" });
+  for (const entry of Object.values(zip.files)) entry.date = DETERMINISTIC_ZIP_DATE;
   return zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE", compressionOptions: { level: 9 }, platform: "UNIX" });
 }
 
@@ -698,7 +709,7 @@ async function renderAndBuildPreview(buffer, outputStem) {
   await writeFile(firstPageSvgPath, svgSlice(render.svg), "utf8");
   let preview = null;
   try {
-    execFileSync("/usr/bin/sips", ["-s", "format", "png", "--resampleHeightWidth", "1024", "724", firstPageSvgPath, "--out", previewPath], { stdio: "ignore" });
+    await sharp(firstPageSvgPath).resize(724, 1024, { fit: "fill" }).png().toFile(previewPath);
     preview = await readFile(previewPath);
     await mkdir(qaDirectory, { recursive: true });
     for (let pageIndex = 0; pageIndex < a4SliceCount; pageIndex += 1) {
@@ -706,10 +717,10 @@ async function renderAndBuildPreview(buffer, outputStem) {
       const sliceSvgPath = path.join(qaDirectory, `page-${pageNumber}.svg`);
       const slicePngPath = path.join(qaDirectory, `page-${pageNumber}.png`);
       await writeFile(sliceSvgPath, svgSlice(render.svg, pageIndex), "utf8");
-      execFileSync("/usr/bin/sips", ["-s", "format", "png", "--resampleHeightWidth", "1024", "724", sliceSvgPath, "--out", slicePngPath], { stdio: "ignore" });
+      await sharp(sliceSvgPath).resize(724, 1024, { fit: "fill" }).png().toFile(slicePngPath);
     }
   } catch {
-    // Cross-platform generation remains valid when macOS sips is unavailable.
+    // HWPX generation remains valid even when local preview rasterization fails.
   }
   return { ...render, fullSvgPath, preview, qaDirectory, a4SliceCount };
 }

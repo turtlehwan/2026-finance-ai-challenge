@@ -1,8 +1,8 @@
 # 예선 제출용 HWPX
 
 이 폴더의 두 HWPX는 DAKER가 제공한 공식 `첨부 1`·`첨부 2` 양식에
-[`docs/planning-proposal.md`](../../docs/planning-proposal.md)와
-[`docs/feature-specification.md`](../../docs/feature-specification.md)의 최신 내용을
+[`docs/submission/proposal/report.md`](../../docs/submission/proposal/report.md)와
+[`docs/submission/feature-specification/report.md`](../../docs/submission/feature-specification/report.md)의 최신 내용을
 이식한 공개 안전본이다.
 
 ## 현재 파일
@@ -53,6 +53,9 @@ SUBMISSION_MEMBER_NAMES="팀장 실명, 팀원 실명" npm run docs:hwpx
 3. 모든 표가 여러 쪽에 정상 분할되고 글자 겹침·잘림이 없는지 전 페이지를 본다.
 4. 한컴에서 PDF로 내보낸 뒤 다시 전 페이지를 확인한다.
 5. 기획서 PDF, 기능명세서 PDF, 배포 URL을 DAKER 제출란에 각각 등록한다.
+
+저장소에는 위 4단계에서 만든 PDF를 커밋하지 않는다. HWPX를 유일한 제출 문서
+관리본으로 두고, 공식 업로드용 PDF는 검수한 최종 HWPX에서 사용자가 직접 만든다.
 
 Kordoc 독립 렌더러는 긴 HWPX 표를 연속 캔버스로 그리므로 생성 보고서의
 `rendererPageCount`는 한컴의 실제 쪽 수가 아니다. `a4SliceCount`는 시각 감사용
