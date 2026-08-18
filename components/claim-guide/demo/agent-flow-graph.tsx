@@ -51,6 +51,7 @@ type AgentFlowNodeData = {
   inputSummary: string
   outputSummary: string
   durationMs: number | null
+  wasExecuted: boolean
   icon: LucideIcon
   isActive: boolean
   isSelected: boolean
@@ -101,7 +102,7 @@ const graphDefinition: Array<{
     icon: NetworkIcon,
   },
   {
-    id: "graph_retriever",
+    id: "evidence_bundle",
     label: "필수 근거 묶음 확인",
     role: "Tool",
     position: { x: 675, y: 215 },
@@ -171,13 +172,13 @@ const edgeDefinitions: Array<
   {
     id: "coverage-graph",
     source: "coverage_matcher",
-    target: "graph_retriever",
+    target: "evidence_bundle",
     sourceHandle: "source-bottom",
     targetHandle: "target-top",
   },
   {
     id: "graph-gate",
-    source: "graph_retriever",
+    source: "evidence_bundle",
     target: "information_gate",
     sourceHandle: "source-left",
     targetHandle: "target-right",
@@ -381,6 +382,7 @@ export function AgentFlowGraph({
                 ? `사용자 답변 반영: ${getAnswerLabel(humanAnswer)}`
                 : "아직 실행되지 않음"),
             durationMs: event?.durationMs ?? null,
+            wasExecuted: Boolean(event),
             icon: definition.icon,
             isActive: definition.id === activeNodeId,
             isSelected: definition.id === (selectedNodeId ?? activeNodeId),
@@ -495,7 +497,7 @@ export function AgentFlowGraph({
           </span>
           <h3>근거가 이동한 경로를 캔버스에서 확인하세요</h3>
           <p>
-            LangFlow처럼 노드를 따라 읽되, 화면은 실제 LangGraph trace만 활성화합니다.
+            고정된 흐름 배치 위에 서버가 반환한 실제 trace의 실행·대기·중단 상태만 덧입힙니다.
           </p>
         </div>
         <ul
@@ -562,8 +564,12 @@ export function AgentFlowGraph({
                 <dd>{inspectedNode.data.outputSummary}</dd>
               </div>
             </dl>
-            {inspectedNode.data.durationMs ? (
-              <small>{inspectedNode.data.durationMs}ms · 서버 trace 기준</small>
+            {inspectedNode.data.durationMs !== null ? (
+              <small>{inspectedNode.data.durationMs}ms · 노드 내부 측정</small>
+            ) : inspectedNode.data.wasExecuted ? (
+              <small>
+                실행됨 · AI 문서 전처리 호출 시간은 현재 수집하지 않습니다.
+              </small>
             ) : (
               <small>아직 실행되지 않은 선택 단계입니다.</small>
             )}

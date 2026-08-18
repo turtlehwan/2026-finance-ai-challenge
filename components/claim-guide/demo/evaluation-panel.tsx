@@ -33,7 +33,7 @@ const checkRows: CheckRow[] = [
   },
   {
     key: "evidenceCompletenessPassed",
-    label: "정의·지급·면책·서류 근거를 모두 달았는가",
+    label: "사례별 필수 근거 5유형을 모두 달았는가",
     scope: "보장 항목이 있는 사례",
     denominator: (dataset) => dataset.supported,
   },
@@ -59,10 +59,10 @@ const sourceKindLabel = {
 function SourceLedger() {
   return (
     <div className="source-ledger">
-      <h4>근거로 쓴 공식 원문</h4>
+      <h4>직접 인용·버전 참고에 쓴 공식 원문</h4>
       <p>
-        금융감독원 표준약관과 우체국보험 상품 약관입니다. 내려받은 원문의
-        시행일·분량·해시를 그대로 적었으니 직접 대조해 보세요.
+        상품 약관 3건은 결과의 직접 인용 근거이고, 표준약관 2건은 공통 용어와
+        시행본 비교 참고입니다. 내려받은 원문의 시행일·분량·해시를 공개합니다.
       </p>
       <ul>
         {SOURCE_LEDGER.map((source) => (
@@ -148,7 +148,7 @@ export function EvaluationPanel() {
               <span>
                 {summary ? (
                   <strong>
-                    회귀 {summary.dataset.total}건 · 경계 사례 {summary.boundary.dataset.total}건
+                    회귀 {summary.dataset.total}건 · 경계 {summary.boundary.dataset.total}건 · 안전 중단 {summary.safety.dataset.total}건
                   </strong>
                 ) : (
                   <Skeleton className="h-5 w-28" />
@@ -210,8 +210,9 @@ export function EvaluationPanel() {
                             버전이 어긋나거나 사실이 빠진 사례{" "}
                             {summary.dataset.unsupported}건을 같은 LangGraph에
                             넣었습니다. 매번 같은 답이 나오는 결정론적 회귀이고,
-                            별도로 수작업 기대값을 적은 경계 사례는 {summary.dataset.boundaryCaseCount}
-                            건입니다. 같은 검증 상품군이므로 독립 표본은 아닙니다.
+                            별도로 공식 약관 규칙을 다시 확인해 기대값을 기록한
+                            경계 사례는 {summary.dataset.boundaryCaseCount}건입니다.
+                            같은 검증 상품군이므로 독립 holdout은 아닙니다.
                           </p>
                           <ul>
                             {summary.limitations.map((limitation) => (
@@ -230,8 +231,8 @@ export function EvaluationPanel() {
               <div className="regression-block regression-block-boundary">
                 <h4>
                   {summary
-                    ? `수작업 라벨 경계 사례 ${summary.boundary.dataset.total}건`
-                    : "수작업 라벨 경계 사례를 불러오는 중"}
+                    ? `규칙 재확인 경계 사례 ${summary.boundary.dataset.total}건`
+                    : "규칙 재확인 경계 사례를 불러오는 중"}
                 </h4>
                 <p>
                   같은 검증 상품군에서 공식 원문·적용기간·조항 유형을 보고 사람이
@@ -264,6 +265,52 @@ export function EvaluationPanel() {
                     라벨 방법: {summary.boundary.dataset.labelMethod}
                   </p>
                 ) : null}
+              </div>
+
+              <div className="regression-block regression-block-boundary">
+                <h4>
+                  {summary
+                    ? `공식 근거 미연결 안전 중단 ${summary.safety.dataset.total}건`
+                    : "안전 중단 시나리오를 불러오는 중"}
+                </h4>
+                <p>
+                  중도보험금·면책 시연처럼 공식 상품 약관이 연결되지 않은
+                  사례에서 추천 결과를 만들지 않는지 별도로 검사합니다.
+                </p>
+                <dl className="regression-list">
+                  <div>
+                    <dt>
+                      근거가 없을 때 모든 결과를 차단했는가
+                      <span>공식 약관 미연결 사례</span>
+                    </dt>
+                    <dd>
+                      {summary ? (
+                        <>
+                          <strong>{summary.safety.counts.safeAbstentionPassed}</strong>
+                          <span>/ {summary.safety.dataset.total}건</span>
+                        </>
+                      ) : (
+                        <Skeleton className="h-5 w-20" />
+                      )}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      안전 중단 trace를 끝까지 남겼는가
+                      <span>전체 안전 시나리오</span>
+                    </dt>
+                    <dd>
+                      {summary ? (
+                        <>
+                          <strong>{summary.safety.counts.traceIntegrityPassed}</strong>
+                          <span>/ {summary.safety.dataset.total}건</span>
+                        </>
+                      ) : (
+                        <Skeleton className="h-5 w-20" />
+                      )}
+                    </dd>
+                  </div>
+                </dl>
               </div>
             </div>
           </AccordionContent>

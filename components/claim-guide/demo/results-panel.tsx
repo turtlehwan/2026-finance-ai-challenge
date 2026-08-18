@@ -126,6 +126,16 @@ export function ResultsPanel({
   return (
     <>
       {display === "summary" ? <ResultSummary results={results} /> : null}
+      {display === "evidence" && !sources.length ? (
+        <Alert variant="destructive">
+          <ShieldAlertIcon />
+          <AlertTitle>연결된 공식 상품 약관이 없습니다</AlertTitle>
+          <AlertDescription>
+            출처·버전·쪽수를 검증할 수 없어 어떤 보장 항목도 추천하지
+            않습니다. 상품코드와 계약일을 확인해 보험회사에 문의해 주세요.
+          </AlertDescription>
+        </Alert>
+      ) : null}
       {display === "evidence" && sources.length ? (
         <div className="result-sources" aria-label="분석에 사용한 공식 출처">
           <div className="result-sources-heading">

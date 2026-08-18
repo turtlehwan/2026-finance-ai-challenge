@@ -8,6 +8,7 @@ import type { DocumentBundle } from "@/lib/claim-guide/documents"
 import { ANALYSIS_STEPS } from "@/lib/claim-guide/presentation"
 import type {
   AgentTraceEvent,
+  ActionPlan,
   AnalysisResponse,
   Answer,
   ClaimCase,
@@ -72,6 +73,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
   const [activeTraceIndex, setActiveTraceIndex] = useState(0)
   const [trace, setTrace] = useState<AgentTraceEvent[]>([])
   const [results, setResults] = useState<ClaimResult[]>([])
+  const [actionPlan, setActionPlan] = useState<ActionPlan | null>(null)
   const [sources, setSources] = useState<PolicySource[]>([])
 
   const activeCase = useMemo(
@@ -154,6 +156,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
         defaults: { duration: 0.28, ease: "power2.out" },
         onComplete: () => {
           setResults(payload.results)
+          setActionPlan(payload.actionPlan)
           setPhase("question")
           animateResults()
         },
@@ -188,6 +191,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
     timelineRef.current?.kill()
     setAnswer(null)
     setResults([])
+    setActionPlan(null)
     setSources([])
     setTrace([])
     setActiveTraceIndex(0)
@@ -208,6 +212,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
         setActiveStep(ANALYSIS_STEPS.length - 1)
         setActiveTraceIndex(payload.trace.length - 1)
         setResults(payload.results)
+        setActionPlan(payload.actionPlan)
         setPhase("question")
         return
       }
@@ -216,6 +221,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
       if (!timeline) {
         setActiveStep(ANALYSIS_STEPS.length - 1)
         setResults(payload.results)
+        setActionPlan(payload.actionPlan)
         setPhase("question")
         return
       }
@@ -244,6 +250,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
         return
       }
       setResults(payload.results)
+      setActionPlan(payload.actionPlan)
       setTrace(payload.trace)
       setSources(payload.sources)
       setActiveTraceIndex(payload.trace.length - 1)
@@ -269,6 +276,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
     setSelectedId(nextCase.id)
     setAnswer(null)
     setResults([])
+    setActionPlan(null)
     setSources([])
     setTrace([])
     setActiveTraceIndex(0)
@@ -289,6 +297,7 @@ export function useClaimAnalysis(documentBundle: DocumentBundle | null) {
   }
 
   return {
+    actionPlan,
     activeCase,
     activeStep,
     activeTraceIndex,

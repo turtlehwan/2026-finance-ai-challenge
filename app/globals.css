@@ -1088,7 +1088,7 @@ button.evidence-node {
   display: grid;
   width: 100%;
   height: auto;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   margin: 0;
   padding: 0.35rem;
 }
@@ -2584,6 +2584,10 @@ button.evidence-node {
 }
 
 @media (max-width: 68rem) {
+  .case-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .hero-section {
     grid-template-columns: 1fr;
     min-height: auto;

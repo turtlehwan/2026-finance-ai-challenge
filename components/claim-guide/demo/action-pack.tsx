@@ -19,11 +19,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import type { ClaimCase, ClaimResult } from "@/lib/claim-guide/types"
+import type {
+  ActionPlan,
+  ClaimCase,
+  ClaimResult,
+} from "@/lib/claim-guide/types"
 
 function buildActionPackText(
   activeCase: ClaimCase,
   results: ClaimResult[],
+  actionPlan: ActionPlan,
 ) {
   const resultLines = results
     .map(
@@ -31,8 +36,8 @@ function buildActionPackText(
         `- ${result.title}: ${result.status}\n  근거: ${result.clause}\n  이유: ${result.reason}`,
     )
     .join("\n")
-  const documents = activeCase.documents.map((item) => `- ${item}`).join("\n")
-  const questions = activeCase.questions
+  const documents = actionPlan.documents.map((item) => `- ${item}`).join("\n")
+  const questions = actionPlan.questions
     .map((item, index) => `${index + 1}. ${item}`)
     .join("\n")
 
@@ -56,14 +61,16 @@ function buildActionPackText(
 
 export function ActionPack({
   activeCase,
+  actionPlan,
   results,
 }: {
   activeCase: ClaimCase
+  actionPlan: ActionPlan
   results: ClaimResult[]
 }) {
   const copyQuestions = async () => {
     try {
-      await navigator.clipboard.writeText(activeCase.questions.join("\n"))
+      await navigator.clipboard.writeText(actionPlan.questions.join("\n"))
       toast.success("보험사에 물어볼 질문을 복사했습니다.")
     } catch {
       toast.error("복사하지 못했습니다. 다시 시도해 주세요.")
@@ -71,7 +78,7 @@ export function ActionPack({
   }
 
   const downloadPack = () => {
-    const blob = new Blob([buildActionPackText(activeCase, results)], {
+    const blob = new Blob([buildActionPackText(activeCase, results, actionPlan)], {
       type: "text/plain;charset=utf-8",
     })
     const href = URL.createObjectURL(blob)
@@ -84,7 +91,7 @@ export function ActionPack({
   }
 
   const sharePack = async () => {
-    const shareText = buildActionPackText(activeCase, results)
+    const shareText = buildActionPackText(activeCase, results, actionPlan)
     try {
       if (navigator.share) {
         await navigator.share({
@@ -106,7 +113,7 @@ export function ActionPack({
   return (
     <Card className="action-pack-card">
       <CardHeader>
-        <CardTitle>{activeCase.actionTitle}</CardTitle>
+        <CardTitle>{actionPlan.title}</CardTitle>
         <CardDescription>
           보험사에 가기 전에 챙길 것들입니다. 내려받아 그대로 쓰셔도 됩니다.
         </CardDescription>
@@ -118,7 +125,7 @@ export function ActionPack({
         <div>
           <strong>준비할 자료</strong>
           <ul>
-            {activeCase.documents.map((item) => (
+            {actionPlan.documents.map((item) => (
               <li key={item}>
                 <FileCheck2Icon aria-hidden="true" />
                 {item}
@@ -129,7 +136,7 @@ export function ActionPack({
         <div>
           <strong>보험사에 물어볼 질문</strong>
           <ol>
-            {activeCase.questions.map((item) => (
+            {actionPlan.questions.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ol>

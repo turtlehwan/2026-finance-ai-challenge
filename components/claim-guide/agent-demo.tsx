@@ -8,6 +8,7 @@ import {
   CheckCircle2Icon,
   ExternalLinkIcon,
   HospitalIcon,
+  HistoryIcon,
   PlayIcon,
   ShieldAlertIcon,
 } from "lucide-react"
@@ -51,12 +52,13 @@ import { ANALYSIS_STEPS } from "@/lib/claim-guide/presentation"
 import type { Answer, DemoPhase } from "@/lib/claim-guide/types"
 import type { DocumentBundle } from "@/lib/claim-guide/documents"
 
-const caseIcons: LucideIcon[] = [
-  BoneIcon,
-  HospitalIcon,
-  CalendarClockIcon,
-  ShieldAlertIcon,
-]
+const caseIcons: Record<(typeof claimCases)[number]["id"], LucideIcon> = {
+  fracture: BoneIcon,
+  "fracture-legacy": HistoryIcon,
+  hospitalization: HospitalIcon,
+  maturity: CalendarClockIcon,
+  exclusion: ShieldAlertIcon,
+}
 
 export function AgentDemo() {
   const [documentBundle, setDocumentBundle] = useState<DocumentBundle | null>(
@@ -68,6 +70,7 @@ export function AgentDemo() {
   } | null>(null)
   const assistantFocusRef = useRef<HTMLElement>(null)
   const {
+    actionPlan,
     activeCase,
     activeStep,
     activeTraceIndex,
@@ -142,8 +145,8 @@ export function AgentDemo() {
           }}
           aria-label="합성 사례 선택"
         >
-          {claimCases.map((claimCase, index) => {
-            const Icon = caseIcons[index]
+          {claimCases.map((claimCase) => {
+            const Icon = caseIcons[claimCase.id]
             return (
               <ToggleGroupItem
                 value={claimCase.id}
@@ -161,7 +164,11 @@ export function AgentDemo() {
       <Card className="journey-card" id="case-workspace">
         <CardHeader>
           <div>
-            <Badge variant="outline">비식별 합성 사례</Badge>
+            <Badge variant="outline">
+              {activeCase.evidenceMode === "official-policy"
+                ? "합성 사건 · 공식 약관 근거"
+                : "안전 중단 시연 · 공식 근거 미연결"}
+            </Badge>
             <CardTitle>{activeCase.title}</CardTitle>
             <CardDescription>{activeCase.description}</CardDescription>
           </div>
@@ -200,16 +207,23 @@ export function AgentDemo() {
               >
                 <div className="journey-stage-heading">
                   <span className="journey-stage-label">
-                    {phase === "complete" ? "공식 근거" : "지금까지 확인"}
+                    {phase === "complete"
+                      ? activeCase.evidenceMode === "official-policy"
+                        ? "공식 근거"
+                        : "안전 중단 근거"
+                      : "지금까지 확인"}
                   </span>
                   <h3 id="journey-stage-title">
                     {phase === "complete"
-                      ? "근거가 된 약관과 쪽수입니다"
+                      ? activeCase.evidenceMode === "official-policy"
+                        ? "근거가 된 약관과 쪽수입니다"
+                        : "공식 약관 근거가 없어 여기서 멈췄습니다"
                       : "여기까지 확인한 근거예요"}
                   </h3>
                   <p>
-                    보장 항목과 연결된 약관 버전, 지급사유, 면책·제한을 한
-                    흐름으로 보여드립니다.
+                    {activeCase.evidenceMode === "official-policy"
+                      ? "보장 항목과 연결된 약관 버전, 지급사유, 면책·제한을 한 흐름으로 보여드립니다."
+                      : "공식 원문의 출처·버전·쪽수가 연결되지 않은 시나리오는 추천 결과를 만들지 않습니다."}
                   </p>
                 </div>
                 {phase === "complete" ? (
@@ -230,7 +244,7 @@ export function AgentDemo() {
               </section>
             ) : null}
 
-            {activeView === "actions" && isComplete ? (
+            {activeView === "actions" && isComplete && actionPlan ? (
               <section
                 className="journey-stage assistant-actions-stage"
                 aria-live="polite"
@@ -248,10 +262,14 @@ export function AgentDemo() {
                     공식 채널에서 진행합니다.
                   </p>
                 </div>
-                <ActionPack activeCase={activeCase} results={results} />
+                <ActionPack
+                  activeCase={activeCase}
+                  actionPlan={actionPlan}
+                  results={results}
+                />
                 <Button size="lg" asChild>
                   <a
-                    href="https://cont.insure.or.kr/"
+                    href={actionPlan.officialUrl}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -363,11 +381,14 @@ export function AgentDemo() {
                         4단계 · {journeyPresentation[3].label}
                       </span>
                       <h3 id="journey-stage-title">
-                        먼저 확인할 항목부터 정리했어요
+                        {activeCase.evidenceMode === "official-policy"
+                          ? "먼저 확인할 항목부터 정리했어요"
+                          : "검증할 근거가 없어 안전하게 멈췄어요"}
                       </h3>
                       <p>
-                        지급 여부는 보험회사가 정합니다. 여기서는 약관 근거로
-                        확인할 순서만 짚어드려요.
+                        {activeCase.evidenceMode === "official-policy"
+                          ? "지급 여부는 보험회사가 정합니다. 여기서는 약관 근거로 확인할 순서만 짚어드려요."
+                          : "상품코드와 가입 당시 공식 약관이 확인되기 전에는 어떤 항목도 추천하지 않습니다."}
                       </p>
                     </div>
                     <ResultsPanel
