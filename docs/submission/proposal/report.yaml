@@ -1,0 +1,68 @@
+schema_version: 1
+
+document:
+  id: finai26-proposal
+  version: 2.0.0
+  status: pre-submission
+  type: contest-proposal
+  title: "2026 금융 AI Challenge 기획서 — 보험금 길잡이 Agent"
+  purpose: "금융 현안의 실제성, Agentic 해결 원리, 구현·검증 범위를 심사자가 판단하게 한다."
+  audience:
+    - "2026 금융 AI Challenge 예선 심사위원"
+  decision: "문제 적합성·차별성·실현성·안전성을 근거로 본선 진출작을 선정할지 판단"
+  open_decisions:
+    - "제출 직전 구성원 실명 입력"
+    - "한컴오피스 또는 한컴독스에서 전 페이지 쪽 나눔 확인"
+    - "공식 제출용 PDF는 검수 완료 HWPX에서 사용자가 직접 변환"
+  baseline_date: 2026-08-18
+
+requirements:
+  official_notice: "https://daker.ai/public/hackathons/2026-finance-ai-challenge"
+  deadline: "2026-09-07T10:00:00+09:00"
+  page_limit: null
+  required_formats:
+    - "저장소 관리본: HWPX"
+    - "공식 업로드: 제공 양식 기반 PDF"
+  must_include:
+    - "서비스 명칭"
+    - "아이디어 기획 핵심내용"
+    - "문제 정의 및 제안 배경"
+    - "서비스 컨셉 및 차별성"
+    - "활용 데이터 및 생성형 AI 모델 적용 방안"
+    - "기대 효과 및 확장 가능성"
+  must_not_include:
+    - "보험금 지급 확정 또는 예상 금액"
+    - "GraphRAG·Hybrid RAG 구현 주장"
+    - "독립 검증셋 또는 실제 지급 정확도 주장"
+    - "가족 보호자 가설을 실제 사용자 조사 결과로 표현"
+
+inputs:
+  - id: official-template
+    type: hwpx-template
+    url: "https://cfiles.dacon.co.kr/competitions/daker_2026-finance-ai-challenge/%28%EC%B2%A8%EB%B6%801%29%202026%20%EA%B8%88%EC%9C%B5%20AI%20Challenge%20%EA%B3%B5%EB%AA%A8%EC%A0%84%20%EA%B8%B0%ED%9A%8D%EC%84%9C.hwpx"
+  - id: runtime
+    type: deployed-web-service
+    url: "https://finai26.turtlehwan.dev"
+
+source:
+  body: report.md
+  evidence: ../evidence.json
+  render_review: render-review.json
+  data: ../../../data
+  assets: ../../visuals
+  adapters: ../../../scripts
+
+template:
+  path: null
+  provider: DAKER
+  version: "2026 금융 AI Challenge 첨부 1"
+  checked_at: 2026-08-18
+  sha256: 15ba1f89595f15c7582abec69bf4f06dc99864c5ac778a400d224f38ce95c039
+
+outputs:
+  - id: proposal-public-hwpx
+    format: HWPX
+    path: ../../../output/hwpx/2026_금융_AI_Challenge_기획서_팀정보입력필요.hwpx
+    status: generated-public-safe
+    source_version: 2.0.0
+    sha256: f9bde2212f430ff724dc27b91e24747359ba2d49dbef0e38f65368bd4b99958e

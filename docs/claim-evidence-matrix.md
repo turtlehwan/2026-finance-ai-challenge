@@ -1,7 +1,7 @@
 ---
 title: "보험금 길잡이 Agent 주장·의사결정 근거 대장"
 status: "shared"
-updated: "2026-08-13"
+updated: "2026-08-18"
 scope: "2026 금융 AI Challenge 예선"
 ---
 
@@ -30,10 +30,12 @@ scope: "2026 금융 AI Challenge 예선"
 | 대회는 AI 금융 현안 해결 아이디어와 실제 작동 웹서비스를 요구한다 | `O` | [DAKER 대회 안내](https://daker.ai/public/hackathons/2026-finance-ai-challenge), [금융보안원 공고](https://www.fsec.or.kr/bbs/detail?bbsNo=11997&menuNo=66) | 제출물(기획서·기능명세서·URL)과 URL 접근 기간 확인 | “예선 제출물의 실제 작동 범위”로 한정 |
 | 현재 공개 페이지에는 세부 가중치가 공개되지 않았다 | `O` | [DAKER 평가 안내](https://daker.ai/public/hackathons/2026-finance-ai-challenge) | 주제 적합성·부적격 여부 중심으로 확인 | “1위 보장”, “가중치 공략”이라고 쓰지 않음 |
 | 숨은보험금의 미인지 문제가 실제로 존재한다 | `O` | [금융위원회 2026 보도자료](https://www.fsc.go.kr/po010103/87270) | 2025년 말 10.3조 원, 2025년 약 80만 건·3조 2,470억 원 환급 | 이미 지급금액이 확정된 중도·만기·휴면보험금 통계이며 본 서비스의 시장 규모·발견 가능 금액으로 사용하지 않음 |
-| 청구 절차·지급 안내가 소비자 불편으로 조사됐다 | `O` | [보험연구원 2022 보험소비자 행태조사](https://www.kiri.or.kr/report/downloadFile.do?docId=270439) | 전체 결과 표본 2,551명 중 불만족 이유 문항 n=179, 청구 절차 불편 39.7%, 지급 과정 안내 부족 54.7% | 전체 국민 비율로 일반화하지 않고 조사연도·대상·문항 표본을 함께 표시 |
+| 청구 절차·지급 안내가 소비자 불편으로 조사됐다 | `O` | [보험연구원 2022 보험소비자 행태조사](https://www.kiri.or.kr/report/downloadFile.do?docId=270439) | 전체 결과 표본 2,551명 중 불만족 이유 문항 n=179, 1순위 청구 절차 불편 39.7%, 복수응답 진행과정 안내 부족 54.7% | 전체 국민 비율로 일반화하지 않고 조사연도·대상·단일·복수응답을 함께 표시 |
+| 보험약관은 공식 평가에서도 쉽게 읽힌다고 단정하기 어렵다 | `O` | [보험개발원 제29차 보험약관등 이해도 평가](https://www.kidi.or.kr/data/UPLOAD/common/%EC%A0%9C29%EC%B0%A8%20%EB%B3%B4%ED%97%98%EC%95%BD%EA%B4%80%EB%93%B1%20%EC%9D%B4%ED%95%B4%EB%8F%84%20%ED%8F%89%EA%B0%80%EA%B2%B0%EA%B3%BC%20%EA%B3%B5%EC%8B%9C%28%EC%B5%9C%EC%A2%85_%EC%A2%85%EB%A5%98%EB%B3%84%20%EA%B5%AC%EB%B6%84%EA%B3%B5%EC%8B%9C%29.pdf) | 장기손해보험(상해) 15개 상품 종합 69.6점 `보통`, 약관 41.5/60점 | 개인별 이해 실패율이나 서비스 효과로 바꾸지 않고 문서 해석 부담의 공식 근거로 사용 |
+| 고령층의 디지털 이용 여건은 일반 국민과 차이가 있다 | `O` | [NIA 2025 디지털정보격차 실태조사](https://nia.or.kr/site/nia_kor/ex/bbs/View.do?bcIdx=29168&cbIdx=81623&parentSeq=29168) | 일반 국민=100 대비 고령층 종합 71.8%, AI 서비스 경험 30.2% 대 일반 국민 59.4% | 보험 과업·가족 대리 행동을 직접 측정한 조사로 오인하지 않음 |
 | 금융 AI는 보조 수단이며 사람의 최종 의사결정과 책임이 필요하다 | `O` | [금융위원회 금융분야 AI 가이드라인 개정](https://www.fsc.go.kr/po010101/87142?srchCtgry=1) | 2026-06-22 시행, 보조성·신뢰성·소비자 이익·보안 등 7대 원칙 확인 | Human-in-the-loop와 권한 제한의 설계 근거로 사용하고 법률상 개별 지급 판단으로 확대하지 않음 |
 | 청구 전 ‘무엇을 확인할지’ 정리하기 어렵다 | `H` | 숨은보험금 미인지 근거, 청구 절차·안내 불편 조사, 실제 약관 대조 업무 구조의 결합 | MVP와 후속 사용자 조사로 검증할 제품 가설 | 공식 통계가 해당 공백의 규모를 직접 측정했다고 쓰지 않음 |
-| 가족 보호자를 1차 사용자로 둔다 | `H` | 고령층 접근성 문제에 대한 [금융위원회 안내](https://www.fsc.go.kr/po010103/87270) + 문서 수집·공식 채널 실행을 가족이 돕는 제품 관찰 | 사용자 인터뷰 표본으로 검증 전 | “핵심 가설”로 쓰고 고령층 전체의 대표 통계처럼 말하지 않음 |
+| 가족을 1차 사용자로 둔다 | `H` | 고령층 접근성 문제에 대한 [금융위원회 안내](https://www.fsc.go.kr/po010103/87270), NIA 디지털격차 조사, 가족 공동 확인이라는 팀 설계 | 사용자 인터뷰 표본으로 검증 전 | “핵심 가설”로 쓰고 가족이 실제로 대리한다는 통계처럼 말하지 않음 |
 | 결과는 보험금 확정이 아니라 확인할 항목·서류·공식 경로다 | `C` | `lib/claim-guide/agent-graph.ts`, `lib/claim-guide/types.ts`, 결과 상태 enum 및 화면 고지 | Evidence Auditor 실패 시 중단, `확인 권장/정보 필요/가능성 낮음/확인 불가`만 반환 | “보험금 지급 여부는 보험회사가 결정”을 결과 옆에 고정 |
 | 가입 당시 적용 약관을 먼저 선택한다 | `C` + `O` | 우체국보험 약관 API의 적용기간·상품코드, `lib/claim-guide/policies.ts`, `data/policies/manifest.json` | P400051~054, P400073~076, P600107을 계약일과 대조 | “최신 약관 검색”이 아니라 “상품코드·계약일·판매기간 대조”라고 씀 |
 | 결과에 실제 공식 약관 원문·쪽수·해시가 연결된다 | `C` + `O` | `data/policies/manifest.json`, `data/policies/`, `components/claim-guide/demo/results-panel.tsx` | 상품 2개·버전 3개, 조항 유형·페이지·SHA-256 표시 | “실제 약관 3개 버전 범위”를 명시 |
@@ -78,8 +80,8 @@ scope: "2026 금융 AI Challenge 예선"
 
 ## 5. 제출 전 증거 패키지
 
-- [기획서](./planning-proposal.md): 문제·컨셉·데이터·AI·효과의 최신본
-- [기능명세서](./feature-specification.md): 배포 URL에서 실제 동작하는 범위
+- [기획서](./submission/proposal/report.md): 문제·컨셉·데이터·AI·효과의 최신본
+- [기능명세서](./submission/feature-specification/report.md): 배포 URL에서 실제 동작하는 범위
 - [조사 근거](./research-basis.md): 공식 요구·실제 데이터·외부 선례·한계
 - [출처·권리 판단](./source-rights-and-official-sources.md): 공공 원문·이용조건·규제 경계
 - [`data/policies/manifest.json`](../data/policies/manifest.json): 상품·버전·페이지·해시 provenance

@@ -1,0 +1,25 @@
+{
+  "source_version": "2.0.0",
+  "renders": [
+    {
+      "id": "feature-spec-public-hwpx-review",
+      "output_id": "feature-spec-public-hwpx",
+      "renderer": "kordoc 4.7.2 plus HWPX ZIP/XML inspection",
+      "scope": "package integrity, body text, tables, captions, two embedded PNG visuals, continuous-canvas preview",
+      "status": "package_pass_native_screen_pending",
+      "observations": [
+        "Kordoc 연속 캔버스를 A4 높이로 나눈 9개 슬라이스에서 본문·그림의 가로 잘림은 발견하지 못함",
+        "긴 코드 경로와 공식 URL은 줄바꿈되어 보이므로 한컴 네이티브 렌더에서 마지막으로 확인 필요"
+      ],
+      "issues": [
+        {
+          "id": "feature-spec-native-layout-pending",
+          "severity": "blocking-before-submission",
+          "problem": "한컴 호환 렌더러에서 실제 쪽 나눔·글꼴 대체·표 분할을 아직 확인하지 않음",
+          "owner": "사용자",
+          "next_action": "실명 입력본을 한컴오피스 또는 한컴독스에서 열어 전 페이지 확인 후 PDF로 변환"
+        }
+      ]
+    }
+  ]
+}

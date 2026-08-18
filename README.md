@@ -28,14 +28,13 @@ npm run build
 
 ## 제출 문서
 
-- [기획서 최신본](docs/planning-proposal.md)
-- [기능명세서 최신본](docs/feature-specification.md)
+- [제출 문서 정본 안내](docs/submission/README.md)
+- [기획서 최신본](docs/submission/proposal/report.md)
+- [기능명세서 최신본](docs/submission/feature-specification/report.md)
 - [주장·의사결정 근거 대장](docs/claim-evidence-matrix.md)
 - [예선 준비도 보고서](docs/contest-readiness-report.md)
 - [조사 근거와 1위 전략](docs/research-basis.md)
 - [제출 문서용 시각 자료](docs/submission-visuals.md)
-- [기획서 PDF 초안](output/pdf/2026-finance-ai-challenge-proposal-draft.pdf)
-- [기능명세서 PDF 초안](output/pdf/2026-finance-ai-challenge-feature-specification-draft.pdf)
 - [공식 양식 기반 HWPX와 최종 생성 안내](output/hwpx/README.md)
 - [공식 양식 기반 기획서 HWPX](output/hwpx/2026_금융_AI_Challenge_기획서_팀정보입력필요.hwpx)
 - [공식 양식 기반 기능명세서 HWPX](output/hwpx/2026_금융_AI_Challenge_기능명세서_팀정보입력필요.hwpx)
@@ -43,7 +42,9 @@ npm run build
 공식 HWPX에는 최신 내용과 팀명 `쿠쿠`가 이식되어 있다. 공개 저장소의 두 파일은
 구성원 실명 대신 제출 차단 표식을 포함하므로 그대로 제출하지 않는다. 제출 직전
 `SUBMISSION_MEMBER_NAMES` 환경 변수로 Git 제외 경로에 실명본을 생성하고, 한컴에서
-쪽 나눔을 확인한 뒤 PDF로 변환한다. 자세한 절차는 HWPX 안내 문서를 따른다.
+쪽 나눔을 확인한 뒤 공식 업로드용 PDF로 변환한다. PDF는 저장소에서 관리하지
+않으며, HWPX를 유일한 제출 문서 관리본으로 둔다. 자세한 절차는 HWPX 안내 문서를
+따른다.
 
 ## 실제 데이터 출처
 

@@ -1,0 +1,67 @@
+schema_version: 1
+
+document:
+  id: finai26-feature-specification
+  version: 2.0.0
+  status: pre-submission
+  type: contest-feature-specification
+  title: "2026 금융 AI Challenge 기능명세서 — 보험금 길잡이 Agent"
+  purpose: "배포 URL에서 실제로 재현되는 기능·AI 역할·데이터 경계·검증 절차를 명세한다."
+  audience:
+    - "2026 금융 AI Challenge 예선 심사위원"
+  decision: "MVP의 실제 동작, 재현 가능성, 데이터·AI 처리의 정직성과 안전성을 확인"
+  open_decisions:
+    - "제출 직전 구성원 실명 입력"
+    - "한컴오피스 또는 한컴독스에서 전 페이지 쪽 나눔 확인"
+    - "공식 제출용 PDF는 검수 완료 HWPX에서 사용자가 직접 변환"
+  baseline_date: 2026-08-18
+
+requirements:
+  official_notice: "https://daker.ai/public/hackathons/2026-finance-ai-challenge"
+  deadline: "2026-09-07T10:00:00+09:00"
+  page_limit: null
+  required_formats:
+    - "저장소 관리본: HWPX"
+    - "공식 업로드: 제공 양식 기반 PDF와 웹서비스 URL"
+  must_include:
+    - "MVP 구현 범위"
+    - "주요 기능 목록"
+    - "사용자 이용 흐름"
+    - "AI 및 데이터 처리 방식"
+    - "MVP 검증 방법"
+  must_not_include:
+    - "미구현 기능을 구현 상태로 표시"
+    - "체크포인트 기반 영속 재개 주장"
+    - "GraphRAG·Hybrid RAG·범용 LLM 약관 검색 구현 주장"
+    - "합성 경계 평가를 실제 지급 정확도로 표현"
+
+inputs:
+  - id: official-template
+    type: hwpx-template
+    url: "https://cfiles.dacon.co.kr/competitions/daker_2026-finance-ai-challenge/%28%EC%B2%A8%EB%B6%802%29%202026%20%EA%B8%88%EC%9C%B5%20AI%20Challenge%20%EA%B8%B0%EB%8A%A5%EB%AA%85%EC%84%B8%EC%84%9C.hwpx"
+  - id: runtime
+    type: deployed-web-service
+    url: "https://finai26.turtlehwan.dev"
+
+source:
+  body: report.md
+  evidence: ../evidence.json
+  render_review: render-review.json
+  data: ../../../data
+  assets: ../../visuals
+  adapters: ../../../scripts
+
+template:
+  path: null
+  provider: DAKER
+  version: "2026 금융 AI Challenge 첨부 2"
+  checked_at: 2026-08-18
+  sha256: 83be2cd46904d54717d624272f3af88c99b5b06c45cb12490f93688d31604a4b
+
+outputs:
+  - id: feature-spec-public-hwpx
+    format: HWPX
+    path: ../../../output/hwpx/2026_금융_AI_Challenge_기능명세서_팀정보입력필요.hwpx
+    status: generated-public-safe
+    source_version: 2.0.0
+    sha256: b656bdc9f239cf2e1ff503f9612441448bb1d2f5132bb20d2de0d746f121d84f

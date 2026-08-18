@@ -1,0 +1,111 @@
+{
+  "document_version": "2.0.0",
+  "checked_at": "2026-08-18",
+  "items": [
+    {
+      "id": "E-COMPETITION-01",
+      "status": "official-observation",
+      "source": {
+        "organization": "DAKER",
+        "title": "2026 금융 AI Challenge",
+        "url": "https://daker.ai/public/hackathons/2026-finance-ai-challenge",
+        "checked_at": "2026-08-18"
+      },
+      "limitations": ["공개 페이지에는 세부 심사 배점이 제시되지 않음"],
+      "tags": ["competition", "requirements"]
+    },
+    {
+      "id": "E-FSC-HIDDEN-2026",
+      "status": "official-observation",
+      "source": {
+        "organization": "금융위원회",
+        "title": "잠자고 있는 보험금 10조 3천억원",
+        "published_at": "2026-07-07",
+        "url": "https://www.fsc.go.kr/po010103/87270",
+        "checked_at": "2026-08-18"
+      },
+      "limitations": ["숨은보험금은 지급금액이 확정된 중도·만기·휴면보험금이며 본 서비스의 시장 규모가 아님"],
+      "tags": ["problem-context", "official-statistics"]
+    },
+    {
+      "id": "E-KIRI-CLAIMS-2022",
+      "status": "official-research",
+      "source": {
+        "organization": "보험연구원",
+        "title": "2022 보험소비자 행태조사: 보험금 지급심사",
+        "published_at": "2022-11-21",
+        "url": "https://www.kiri.or.kr/report/downloadFile.do?docId=270439",
+        "checked_at": "2026-08-18"
+      },
+      "limitations": ["39.7%와 20.1%는 전체 국민이 아니라 청구·지급 과정 불만족 응답자 179명의 1순위 응답"],
+      "tags": ["consumer-friction", "survey"]
+    },
+    {
+      "id": "E-KIDI-UNDERSTANDING-29",
+      "status": "official-evaluation",
+      "source": {
+        "organization": "보험개발원",
+        "title": "제29차 보험약관등 이해도 평가결과 공시",
+        "evaluation_period": "2024-10/2025-03",
+        "url": "https://www.kidi.or.kr/data/UPLOAD/common/%EC%A0%9C29%EC%B0%A8%20%EB%B3%B4%ED%97%98%EC%95%BD%EA%B4%80%EB%93%B1%20%EC%9D%B4%ED%95%B4%EB%8F%84%20%ED%8F%89%EA%B0%80%EA%B2%B0%EA%B3%BC%20%EA%B3%B5%EC%8B%9C%28%EC%B5%9C%EC%A2%85_%EC%A2%85%EB%A5%98%EB%B3%84%20%EA%B5%AC%EB%B6%84%EA%B3%B5%EC%8B%9C%29.pdf",
+        "checked_at": "2026-08-18"
+      },
+      "limitations": ["15개 장기손해보험 상해 상품 평가이며 개인별 이해 실패율이나 서비스 효과를 뜻하지 않음"],
+      "tags": ["terms-comprehension", "official-evaluation"]
+    },
+    {
+      "id": "E-NIA-DIGITAL-GAP-2025",
+      "status": "national-statistics",
+      "source": {
+        "organization": "한국지능정보사회진흥원",
+        "title": "2025 디지털정보격차 실태조사",
+        "published_at": "2026-03-27",
+        "url": "https://nia.or.kr/site/nia_kor/ex/bbs/View.do?bcIdx=29168&cbIdx=81623&parentSeq=29168",
+        "checked_at": "2026-08-18"
+      },
+      "limitations": ["보험 확인 과업이나 가족의 대리 행동을 직접 측정한 조사가 아님"],
+      "tags": ["older-adults", "digital-inclusion"]
+    },
+    {
+      "id": "E-MK-FSS-TERMS-2026",
+      "status": "secondary-context",
+      "source": {
+        "publisher": "매일경제",
+        "title": "보험 설명서가 수능 지문인가요? 이해 어려웠던 보험약관 쉽게 바뀐다",
+        "published_at": "2026-05-02",
+        "url": "https://v.daum.net/v/20260502185401815",
+        "checked_at": "2026-08-18"
+      },
+      "limitations": ["금융감독원 TF 추진에 관한 언론 보도이며 정책 확정문이나 제품 효과 근거가 아님"],
+      "tags": ["news", "policy-context"]
+    },
+    {
+      "id": "E-POLICY-RUNTIME-01",
+      "claim_ids": ["2개 상품·3개"],
+      "status": "implemented-and-source-backed",
+      "source": {
+        "repository_paths": [
+          "data/policies/manifest.json",
+          "lib/claim-guide/policies.ts",
+          "lib/claim-guide/agent-graph.ts"
+        ],
+        "official_api": "https://www.data.go.kr/data/15111699/openapi.do"
+      },
+      "limitations": ["우체국보험 전체나 민간 보험사로 일반화할 수 없음"],
+      "tags": ["implementation", "official-policy-data"]
+    },
+    {
+      "id": "E-EVALUATION-01",
+      "claim_ids": ["50건", "15건"],
+      "status": "synthetic-regression",
+      "source": {
+        "repository_paths": [
+          "lib/claim-guide/evaluation.ts",
+          "data/evaluation/boundary-v1.json"
+        ]
+      },
+      "limitations": ["질문 대기·문서 파싱·Workers AI 품질·실사용자 분포·보험금 지급 정확도를 측정하지 않음"],
+      "tags": ["evaluation", "synthetic"]
+    }
+  ]
+}
