@@ -63,7 +63,10 @@ test("server-renders the insurance claim guide MVP", async () => {
   assert.match(html, /태블릿에서 보험약관과 보험증권을 함께 확인하는 어머니와 청년 자녀/);
   assert.match(html, /최종 지급 여부는 보험회사가 정합니다/);
   assert.match(html, /새 약관은 검토 후 반영합니다/);
+  assert.match(html, /가입 당시 적용된 보험약관 버전/);
+  assert.doesNotMatch(html, /중도·만기보험금이 생겼을 시점/);
   assert.match(html, /먼저, 사례 하나를 골라보세요/);
+  assert.match(html, /골절 · 2112/);
   assert.match(html, /글이나 음성으로 요청하기/);
   assert.match(html, /내 문서로 확인하기/);
   assert.match(html, /사례 선택/);
@@ -239,15 +242,17 @@ test("analysis API asks for missing facts and updates the result", async () => {
   const answered = await answeredResponse.json();
   assert.equal(answered.needsAnswer, false);
   assert.equal(answered.results[1].status, "정보 필요");
-  assert.equal(answered.results[0].citations.length, 6);
+  assert.equal(answered.results[0].citations.length, 7);
   assert.match(answered.results[0].clause, /생활재해보장특약Ⅱ 2504/);
   assert.equal(answered.trace.length, 8);
   assert.equal(answered.trace.at(-2).nodeId, "evidence_auditor");
   assert.equal(answered.trace.at(-1).nodeId, "action_planner");
   assert.equal(answered.audit.approved, true);
+  assert.equal(answered.actionPlan.evidenceStatus, "verified");
+  assert.equal(answered.actionPlan.documents.length, 3);
   assert.equal(answered.sources.length, 1);
   assert.match(answered.sources[0].title, /우체국와이드건강보험 2504/);
-  assert.equal(answered.dataMode, "official-sample");
+  assert.equal(answered.dataMode, "official-policy-linked-synthetic-case");
 });
 
 test("policy resolver selects the official version by product code and date", async () => {
@@ -316,12 +321,22 @@ test("document parser masks PII and structures uploaded facts", async () => {
   );
 });
 
-test("official policy graph covers prior wide-health and admission-surgery versions", async () => {
-  const [priorVersionResponse, admissionVersionResponse, admissionAnalysisResponse] =
+test("official policy graph exposes the 2025-04-02 and 2025-04-03 version boundary", async () => {
+  const [priorVersionResponse, priorAnalysisResponse, currentAnalysisResponse, admissionVersionResponse, admissionAnalysisResponse] =
     await Promise.all([
       fetchWorker(
         "/api/policies/resolve?productCode=P400051&contractDate=2024-02-14",
       ),
+      fetchWorker("/api/analyze", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ caseId: "fracture-legacy", answer: "no" }),
+      }),
+      fetchWorker("/api/analyze", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ caseId: "fracture", answer: "no" }),
+      }),
       fetchWorker(
         "/api/policies/resolve?productCode=P600107&contractDate=2024-03-20",
       ),
@@ -332,20 +347,76 @@ test("official policy graph covers prior wide-health and admission-surgery versi
       }),
     ]);
 
-  const [priorVersion, admissionVersion, admissionAnalysis] = await Promise.all([
+  const [priorVersion, priorAnalysis, currentAnalysis, admissionVersion, admissionAnalysis] = await Promise.all([
     priorVersionResponse.json(),
+    priorAnalysisResponse.json(),
+    currentAnalysisResponse.json(),
     admissionVersionResponse.json(),
     admissionAnalysisResponse.json(),
   ]);
   assert.equal(priorVersion.status, "resolved");
   assert.equal(priorVersion.policy.versionLabel, "2112");
   assert.equal(priorVersion.policy.clauses.length, 7);
+  assert.equal(priorAnalysis.policyResolution.policy.versionLabel, "2112");
+  assert.equal(priorAnalysis.results[0].citations[0].page, 491);
+  assert.match(priorAnalysis.results[0].clause, /2112/);
+  assert.equal(currentAnalysis.policyResolution.policy.versionLabel, "2504");
+  assert.equal(currentAnalysis.results[0].citations[0].page, 497);
+  assert.match(currentAnalysis.results[0].clause, /2504/);
   assert.equal(admissionVersion.status, "resolved");
   assert.equal(admissionVersion.policy.productCodes[0], "P600107");
   assert.equal(admissionVersion.policy.clauses.length, 6);
   assert.equal(admissionAnalysis.audit.approved, true);
   assert.equal(admissionAnalysis.results[0].status, "확인 권장");
   assert.equal(admissionAnalysis.sources[0].id, "epostlife-online-admission-surgery-2112");
+});
+
+test("synthetic safety scenarios never pass evidence audit or recommend a benefit", async () => {
+  const responses = await Promise.all(
+    ["maturity", "exclusion"].map((caseId) =>
+      fetchWorker("/api/analyze", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ caseId, answer: "no" }),
+      }),
+    ),
+  );
+  const results = await Promise.all(responses.map((response) => response.json()));
+
+  for (const result of results) {
+    assert.equal(result.audit.approved, false);
+    assert.equal(result.audit.caseSupported, false);
+    assert.equal(result.audit.citationValidated, false);
+    assert.equal(result.audit.exclusionIncluded, false);
+    assert.equal(result.actionPlan.evidenceStatus, "blocked");
+    assert.equal(result.sources.length, 0);
+    assert.equal(result.dataMode, "synthetic-safety-case");
+    assert.ok(result.results.every((item) => item.status === "확인 불가"));
+    assert.equal(
+      result.trace.find((event) => event.nodeId === "evidence_bundle").status,
+      "attention",
+    );
+    assert.equal(result.trace.at(-2).status, "blocked");
+    assert.equal(result.trace.at(-1).status, "blocked");
+  }
+});
+
+test("cost-bearing AI routes are guarded by the Cloudflare rate limiter", async () => {
+  const [workerSource, wranglerConfig] = await Promise.all([
+    readFile(new URL("../worker/index.ts", import.meta.url), "utf8"),
+    readFile(new URL("../wrangler.jsonc", import.meta.url), "utf8"),
+  ]);
+  const config = JSON.parse(wranglerConfig);
+  const limiter = config.ratelimits.find(
+    (item) => item.name === "AI_RATE_LIMITER",
+  );
+
+  assert.equal(limiter.simple.limit, 30);
+  assert.equal(limiter.simple.period, 60);
+  assert.match(workerSource, /\/api\/ai\/interpret/);
+  assert.match(workerSource, /\/api\/documents\/ai-convert/);
+  assert.match(workerSource, /AI_RATE_LIMITER\.limit/);
+  assert.match(workerSource, /status: 429/);
 });
 
 test("user document facts run through the graph and block unsupported versions", async () => {
@@ -426,8 +497,12 @@ test("evaluation endpoint runs all 50 fixtures through the graph", async () => {
   assert.equal(result.metrics.safeAbstention, 100);
   assert.equal(result.metrics.traceIntegrity, 100);
   assert.equal(result.boundary.dataset.total, 15);
-  assert.equal(result.boundary.dataset.evaluationType, "manual-labelled-boundary");
+  assert.equal(result.boundary.dataset.evaluationType, "rule-reviewed-boundary");
   assert.equal(result.boundary.metrics.versionSelection, 100);
+  assert.equal(result.safety.dataset.total, 2);
+  assert.equal(result.safety.dataset.evaluationType, "synthetic-safety-regression");
+  assert.equal(result.safety.counts.safeAbstentionPassed, 2);
+  assert.equal(result.safety.counts.traceIntegrityPassed, 2);
   assert.equal(result.boundary.metrics.evidenceCompleteness, 100);
   assert.equal(result.boundary.metrics.safeAbstention, 100);
   assert.match(result.limitations.join(" "), /보험금 지급 정확도/);
