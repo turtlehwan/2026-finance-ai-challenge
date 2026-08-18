@@ -1,5 +1,5 @@
 {
-  "document_version": "2.0.0",
+  "document_version": "2.1.0",
   "checked_at": "2026-08-18",
   "items": [
     {
@@ -96,7 +96,7 @@
     },
     {
       "id": "E-EVALUATION-01",
-      "claim_ids": ["50건", "15건"],
+      "claim_ids": ["50건", "15건", "안전 중단 2건"],
       "status": "synthetic-regression",
       "source": {
         "repository_paths": [
@@ -104,8 +104,21 @@
           "data/evaluation/boundary-v1.json"
         ]
       },
-      "limitations": ["질문 대기·문서 파싱·Workers AI 품질·실사용자 분포·보험금 지급 정확도를 측정하지 않음"],
+      "limitations": ["50건·15건은 같은 검증 상품군이며, 2건은 공식 약관 미연결 시 추천 차단만 검사함", "질문 대기·문서 파싱·Workers AI 품질·실사용자 분포·보험금 지급 정확도를 측정하지 않음"],
       "tags": ["evaluation", "synthetic"]
+    },
+    {
+      "id": "E-CF-RATE-LIMIT-01",
+      "status": "implemented-and-source-backed",
+      "source": {
+        "organization": "Cloudflare",
+        "title": "Workers Rate Limiting binding",
+        "url": "https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/",
+        "repository_paths": ["wrangler.jsonc", "worker/index.ts"],
+        "checked_at": "2026-08-18"
+      },
+      "limitations": ["경로별 분당 30회로 설정한 위치별·eventually consistent 보호 장치이며 사용자별 정확한 사용량 계측이나 인증이 아님"],
+      "tags": ["security", "cost-control", "implementation"]
     }
   ]
 }

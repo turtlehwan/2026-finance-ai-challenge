@@ -2,7 +2,7 @@ schema_version: 1
 
 document:
   id: finai26-feature-specification
-  version: 2.0.0
+  version: 2.1.0
   status: pre-submission
   type: contest-feature-specification
   title: "2026 금융 AI Challenge 기능명세서 — 보험금 길잡이 Agent"
@@ -63,5 +63,5 @@ outputs:
     format: HWPX
     path: ../../../output/hwpx/2026_금융_AI_Challenge_기능명세서_팀정보입력필요.hwpx
     status: generated-public-safe
-    source_version: 2.0.0
-    sha256: b656bdc9f239cf2e1ff503f9612441448bb1d2f5132bb20d2de0d746f121d84f
+    source_version: 2.1.0
+    sha256: e02366df8097b4208104a170394e342ccfa01042dc7ed838f324698e2607a6f3

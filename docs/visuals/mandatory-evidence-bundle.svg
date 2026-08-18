@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="700" viewBox="0 0 1400 700">
   <rect width="1400" height="700" rx="36" fill="#F6F3EC"/>
-  <text x="72" y="82" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="34" font-weight="700" fill="#142B3A">지급 문장 하나가 아니라, 필수 근거 5유형을 함께 확인합니다</text>
-  <text x="72" y="126" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="22" fill="#51606A">선택된 한 약관 버전 안에서 근거를 묶고, 하나라도 빠지면 결과를 차단합니다.</text>
+  <text x="72" y="82" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="34" font-weight="700" fill="#142B3A">지급 문장 하나가 아니라, 사례별 필수 근거 5유형을 확인합니다</text>
+  <text x="72" y="126" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="22" fill="#51606A">공통 4유형과 사례별 1유형을 묶고, 하나라도 빠지면 결과를 차단합니다.</text>
   <rect x="72" y="206" width="230" height="174" rx="26" fill="#173F67"/>
   <text x="187" y="258" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" fill="#D8E6F3">입력 사실</text>
   <text x="187" y="306" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="28" font-weight="800" fill="#FFFFFF">상품코드·계약일</text>
@@ -15,13 +15,15 @@
   <path d="M642 293H694" stroke="#8C9AA2" stroke-width="7" stroke-linecap="round"/>
   <polygon points="694,293 672,278 672,308" fill="#8C9AA2"/>
   <rect x="712" y="166" width="390" height="254" rx="28" fill="#FFFFFF" stroke="#CBD4D8" stroke-width="3"/>
-  <text x="907" y="212" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" font-weight="700" fill="#51606A">같은 버전의 필수 근거</text>
+  <text x="907" y="212" text-anchor="middle" font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="21" font-weight="700" fill="#51606A">같은 버전 · 사례별 필수 5유형</text>
   <g font-family="Pretendard, Apple SD Gothic Neo, sans-serif" font-size="24" font-weight="800" text-anchor="middle">
-    <rect x="746" y="240" width="104" height="60" rx="18" fill="#E6EFEA"/><text x="798" y="279" fill="#1D5B4F">정의</text>
-    <rect x="864" y="240" width="104" height="60" rx="18" fill="#E7EEF6"/><text x="916" y="279" fill="#173F67">지급</text>
+    <rect x="746" y="240" width="104" height="60" rx="18" fill="#E7EEF6"/><text x="798" y="279" fill="#173F67">지급</text>
+    <rect x="864" y="240" width="104" height="60" rx="18" fill="#E6EFEA"/><text x="916" y="279" fill="#1D5B4F">정의</text>
     <rect x="982" y="240" width="86" height="60" rx="18" fill="#FFF0D6"/><text x="1025" y="279" fill="#995109">제한</text>
     <rect x="806" y="320" width="104" height="60" rx="18" fill="#F7E6E1"/><text x="858" y="359" fill="#9A3E2F">면책</text>
-    <rect x="924" y="320" width="126" height="60" rx="18" fill="#EFEAF7"/><text x="987" y="359" fill="#5B467B">서류</text>
+    <rect x="924" y="314" width="144" height="72" rx="18" fill="#EFEAF7"/>
+    <text x="996" y="342" fill="#5B467B" font-size="18">골절·분류표</text>
+    <text x="996" y="371" fill="#5B467B" font-size="18">입원·서류</text>
   </g>
   <path d="M1120 293H1170" stroke="#8C9AA2" stroke-width="7" stroke-linecap="round"/>
   <polygon points="1170,293 1148,278 1148,308" fill="#8C9AA2"/>

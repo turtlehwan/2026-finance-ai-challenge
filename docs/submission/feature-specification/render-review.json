@@ -1,5 +1,5 @@
 {
-  "source_version": "2.0.0",
+  "source_version": "2.1.0",
   "renders": [
     {
       "id": "feature-spec-public-hwpx-review",
@@ -8,7 +8,7 @@
       "scope": "package integrity, body text, tables, captions, two embedded PNG visuals, continuous-canvas preview",
       "status": "package_pass_native_screen_pending",
       "observations": [
-        "Kordoc 연속 캔버스를 A4 높이로 나눈 9개 슬라이스에서 본문·그림의 가로 잘림은 발견하지 못함",
+        "Kordoc 연속 캔버스를 A4 높이로 나눈 10개 슬라이스에서 본문·그림의 가로 잘림은 발견하지 못함",
         "긴 코드 경로와 공식 URL은 줄바꿈되어 보이므로 한컴 네이티브 렌더에서 마지막으로 확인 필요"
       ],
       "issues": [
